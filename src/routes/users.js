@@ -59,7 +59,7 @@ router.post('/auth', userController.login);
  * @apiName PostRefreshToken
  * @apiGroup User
  */
-router.post('/auth/refresh',userController.refreshToken);
+router.post('/auth/refresh', userController.refreshToken);
 
 /**
  * @api {post} /users/logout Logout user
