@@ -9,10 +9,10 @@ const router = express.Router();
  * @apiParam {String} login Username
  * @apiParam {String} password User password
  * @apiParam {String} email User email
- * @apiSuccess (Success 200) {String} msg Response message
+ * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccessExample {json} Response(example):
  *     {
- *       "msg": "User created."
+ *       "message": "User created."
  *     }
  */
 router.post('/', userController.createNewUser);
@@ -46,10 +46,19 @@ router.put('/:id', userController.modifyUser);
  * @apiParam {String} password User password
  * @apiSuccess (Success 200) {String} token Access token
  * @apiSuccess (Success 200) {String} refresh_token Refresh token
+ * @apiSuccess (Success 200) {String} expires Expiry date of access token
+ * @apiSuccess (Success 200) {String} email User's email address
+ * @apiSuccess (Success 200) {String} role User's role
+ * @apiSuccess (Success 200) {String} id User's id
+ * @apiFailure (Failure 400) {String} message Error message
  * @apiSuccessExample {json} Response(example):
  *     {
  *       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
  *       "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+ *       "expires": "2020-08-03T11:11:13.000Z",
+ *       "id": "5f2584b9bb2de6e74fd3b39e",
+ *       "email": "john_doe@gmail.com",
+ *       "role": "user"
  *     }
  */
 router.post('/auth', userController.login);

@@ -30,11 +30,12 @@ app.use((req, res, next) => {
   next(error);
 });
 app.use((error, req, res, next) => {
+  console.log(error);
   return res.sendStatus(error.status || 500);
 });
 
 mongoose
-  .connect(dotenv.mongodb_uri, {
+  .connect(dotenv.mongodbUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

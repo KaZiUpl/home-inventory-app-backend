@@ -76,7 +76,7 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "msg",
+            "field": "message",
             "description": "<p>Response message</p>"
           }
         ]
@@ -84,7 +84,7 @@
       "examples": [
         {
           "title": "Response(example):",
-          "content": "{\n  \"msg\": \"User created.\"\n}",
+          "content": "{\n  \"message\": \"User created.\"\n}",
           "type": "json"
         }
       ]
@@ -135,13 +135,41 @@
             "optional": false,
             "field": "refresh_token",
             "description": "<p>Refresh token</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "expires",
+            "description": "<p>Expiry date of access token</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>User's email address</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "role",
+            "description": "<p>User's role</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>User's id</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Response(example):",
-          "content": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\",\n  \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\",\n}",
+          "content": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\",\n  \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\",\n  \"expires\": \"2020-08-03T11:11:13.000Z\",\n  \"id\": \"5f2584b9bb2de6e74fd3b39e\",\n  \"email\": \"john_doe@gmail.com\",\n  \"role\": \"user\"\n}",
           "type": "json"
         }
       ]
