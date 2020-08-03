@@ -95,6 +95,38 @@ exports.login = async function (req, res, next) {
 };
 
 exports.refreshToken = async function (req, res, next) {
+  try {
+    // get user with provided refresh token
+    let user = await User.findOne({refresh_token: req.body.token});
+
+    // create new access token
+    const tokenTimestamp = Math.floor(Date.now() / 1000) + 15*60; // expires in 15 minutes
+    const tokenExpDate = new Date(tokenTimestamp*1000);
+
+    const token = jwt.sign(
+      {
+        login: user.login,
+        email: user.email,
+        id: user._id,
+        role: user.role,
+        exp: tokenTimestamp
+      },
+      dotenv.jwtSecret
+    );
+
+    // return token output
+    return res.status(200).json({ 
+      access_token: token,
+      refresh_token: user.refresh_token,
+      expires: tokenExpDate,
+      id: user._id,
+      email: user.email,
+      role: user.role
+    });
+
+  } catch (error) {
+    next(error);
+  }
   return res.status(200).json({ msg: 'Token refreshed.' });
 };
 
