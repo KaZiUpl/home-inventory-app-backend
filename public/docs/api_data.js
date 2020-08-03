@@ -5,6 +5,11 @@ define({ "api": [
     "title": "Get user info",
     "name": "GetUserInfo",
     "group": "User",
+    "permission": [
+      {
+        "name": "logged in user"
+      }
+    ],
     "success": {
       "fields": {
         "Success 200": [
@@ -13,21 +18,28 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "login",
-            "description": "<p>User login</p>"
+            "description": "<p>User's login</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "email",
-            "description": "<p>User email</p>"
+            "description": "<p>User's email</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "role",
+            "description": "<p>User's role</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Response(example):",
-          "content": "{\n  \"login\": \"john_doe\",\n  \"email\": \"john@doe.com\"\n}",
+          "content": "{\n    \"login\": \"user\",\n    \"email\": \"john_doe@gmail.com\",\n    \"role\": \"user\",\n}",
           "type": "json"
         }
       ]
@@ -184,6 +196,39 @@ define({ "api": [
     "title": "Logout user",
     "name": "PostLogout",
     "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>User's refresh token</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Response message</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response(example):",
+          "content": "{\n  \"message\": \"User logged out.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
     "version": "0.0.0",
     "filename": "src/routes/users.js",
     "groupTitle": "User"

@@ -45,7 +45,23 @@ exports.modifyUser = async function (req, res, next) {
 };
 
 exports.getUser = async function (req, res, next) {
-  return res.status(200).json({ msg: 'User retrieved.' });
+  try {
+    //check whether user is requesting his info
+    if (req.params.id != req.userData.id) {
+      return res
+        .status(403)
+        .json({ message: 'You do not have access to this resource.' });
+    }
+    let user = await User.findById(req.params.id).select('-refresh_token -password -_id');
+
+    if (user === null) {
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.login = async function (req, res, next) {

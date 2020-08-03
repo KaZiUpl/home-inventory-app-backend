@@ -24,13 +24,16 @@ router.post('/', userController.createNewUser);
  * @api {get} /users/:id Get user info
  * @apiName GetUserInfo
  * @apiGroup User
- * @apiSuccess (Success 200) {String} login User login
- * @apiSuccess (Success 200) {String} email User email
+ * @apiPermission logged in user
+ * @apiSuccess (Success 200) {String} login User's login
+ * @apiSuccess (Success 200) {String} email User's email
+ * @apiSuccess (Success 200) {String} role User's role
  * @apiSuccessExample {json} Response(example):
- *     {
- *       "login": "john_doe",
- *       "email": "john@doe.com"
- *     }
+ * {
+ *     "login": "user",
+ *     "email": "john_doe@gmail.com",
+ *     "role": "user",
+ * }
  */
 router.get('/:id', checkAuthMiddleware, userController.getUser);
 
