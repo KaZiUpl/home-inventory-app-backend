@@ -102,6 +102,10 @@ exports.refreshToken = async function (req, res, next) {
   try {
     // get user with provided refresh token
     let user = await User.findOne({ refresh_token: req.body.token });
+    // if user is not logged in
+    if (user === null) {
+      return res.status(400).json({ message: 'User not logged in' });
+    }
 
     // create new access token
     const tokenTimestamp = Math.floor(Date.now() / 1000) + 15 * 60; // expires in 15 minutes
@@ -137,7 +141,7 @@ exports.logout = async function (req, res, next) {
     let user = await User.findOne({ refresh_token: req.body.token });
     // user with provided token does not exist
     if (user === null) {
-      return res.status(400).json({ message: 'Bad request' });
+      return res.status(200).json({ message: 'User logged out.' });
     }
     // delete refresh token
     user.refresh_token = undefined;
