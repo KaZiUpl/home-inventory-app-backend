@@ -317,6 +317,31 @@ define({ "api": [
     "title": "Update user info",
     "name": "PutUserInfo",
     "group": "User",
+    "permission": [
+      {
+        "name": "logged in user"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Response message</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response(example):",
+          "content": "{\n  \"message\": \"User modified.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
     "version": "0.0.0",
     "filename": "src/routes/users.js",
     "groupTitle": "User"

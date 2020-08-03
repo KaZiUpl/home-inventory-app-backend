@@ -41,6 +41,12 @@ router.get('/:id', checkAuthMiddleware, userController.getUser);
  * @api {put} /users/:id Update user info
  * @apiName PutUserInfo
  * @apiGroup User
+ * @apiPermission logged in user
+ * @apiSuccess (Success 200) {String} message Response message
+ * @apiSuccessExample {json} Response(example):
+ *     {
+ *       "message": "User modified."
+ *     }
  */
 router.put('/:id', checkAuthMiddleware, userController.modifyUser);
 

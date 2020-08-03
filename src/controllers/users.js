@@ -41,7 +41,25 @@ exports.createNewUser = async function (req, res, next) {
 };
 
 exports.modifyUser = async function (req, res, next) {
-  return res.status(200).json({ msg: 'User modified.' });
+  try {
+    //check whether user is trying to change his data
+    if (req.params.id != req.userData.id) {
+      return res
+        .status(403)
+        .json({ message: 'You can\'t modify other user\'s profile' });
+    }
+    // check for login duplicate
+    let user = await User.findOne({login: req.body.login});
+    if(user !== null) {
+      return res.status(400).json({ message: 'Login is already in use.'});
+    }
+    // change login
+    await User.update({_id: req.userData.id}, { $set: {login: req.body.login}});
+
+    return res.status(200).json({ msg: 'User modified.' });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.getUser = async function (req, res, next) {
