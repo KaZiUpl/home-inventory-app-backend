@@ -89,6 +89,12 @@ router.post('/auth/refresh', userController.refreshToken);
  * @api {post} /users/logout Logout user
  * @apiName PostLogout
  * @apiGroup User
+ * @apiParam {String} token User's refresh token
+ * @apiSuccess (Success 200) {String} message Response message
+ * @apiSuccessExample {json} Response(example):
+ *     {
+ *       "message": "User logged out."
+ *     }
  */
 router.post('/logout', userController.logout);
 

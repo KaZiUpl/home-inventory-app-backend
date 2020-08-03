@@ -35,7 +35,7 @@ exports.login = async function (req, res, next) {
       password: req.body.password,
     });
     let user = await User.findOne({
-      login: credentials.login
+      login: credentials.login,
     });
     // user not found, wrong username
     if (user === null) {
@@ -43,14 +43,17 @@ exports.login = async function (req, res, next) {
     }
     // user exists
     // TODO: uncomment after example user changed passwd to encrypted
-    let passwordMatch = await bcrypt.compare(credentials.password, user.password);
+    let passwordMatch = await bcrypt.compare(
+      credentials.password,
+      user.password
+    );
     // wrong password
     if (!passwordMatch) {
       return res.status(400).json({ message: 'Wrong credentials' });
     }
     // create access token
-    const tokenTimestamp = Math.floor(Date.now() / 1000) + 15*60; // expires in 15 minutes
-    const tokenExpDate = new Date(tokenTimestamp*1000);
+    const tokenTimestamp = Math.floor(Date.now() / 1000) + 15 * 60; // expires in 15 minutes
+    const tokenExpDate = new Date(tokenTimestamp * 1000);
 
     const token = jwt.sign(
       {
@@ -58,20 +61,21 @@ exports.login = async function (req, res, next) {
         email: user.email,
         id: user._id,
         role: user.role,
-        exp: tokenTimestamp
+        exp: tokenTimestamp,
       },
       dotenv.jwtSecret
     );
 
     // create refresh token
-    const refreshTokenTimestamp = Math.floor(Date.now() / 1000) + 365*24*60*60; // expires in 1 year
+    const refreshTokenTimestamp =
+      Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60; // expires in 1 year
     const refreshToken = jwt.sign(
       {
         login: user.login,
         email: user.email,
         id: user._id,
         role: user.role,
-        exp: refreshTokenTimestamp
+        exp: refreshTokenTimestamp,
       },
       dotenv.jwtSecret
     );
@@ -81,13 +85,13 @@ exports.login = async function (req, res, next) {
     await user.save();
 
     // return token output
-    return res.status(200).json({ 
+    return res.status(200).json({
       access_token: token,
       refresh_token: refreshToken,
       expires: tokenExpDate,
       id: user._id,
       email: user.email,
-      role: user.role
+      role: user.role,
     });
   } catch (error) {
     next(error);
@@ -97,11 +101,11 @@ exports.login = async function (req, res, next) {
 exports.refreshToken = async function (req, res, next) {
   try {
     // get user with provided refresh token
-    let user = await User.findOne({refresh_token: req.body.token});
+    let user = await User.findOne({ refresh_token: req.body.token });
 
     // create new access token
-    const tokenTimestamp = Math.floor(Date.now() / 1000) + 15*60; // expires in 15 minutes
-    const tokenExpDate = new Date(tokenTimestamp*1000);
+    const tokenTimestamp = Math.floor(Date.now() / 1000) + 15 * 60; // expires in 15 minutes
+    const tokenExpDate = new Date(tokenTimestamp * 1000);
 
     const token = jwt.sign(
       {
@@ -109,27 +113,37 @@ exports.refreshToken = async function (req, res, next) {
         email: user.email,
         id: user._id,
         role: user.role,
-        exp: tokenTimestamp
+        exp: tokenTimestamp,
       },
       dotenv.jwtSecret
     );
 
     // return token output
-    return res.status(200).json({ 
+    return res.status(200).json({
       access_token: token,
       refresh_token: user.refresh_token,
       expires: tokenExpDate,
       id: user._id,
       email: user.email,
-      role: user.role
+      role: user.role,
     });
-
   } catch (error) {
     next(error);
   }
-  return res.status(200).json({ msg: 'Token refreshed.' });
 };
 
 exports.logout = async function (req, res, next) {
-  return res.status(200).json({ msg: 'User logged out.' });
+  try {
+    let user = await User.findOne({ refresh_token: req.body.token });
+    // user with provided token does not exist
+    if (user === null) {
+      return res.status(400).json({ message: 'Bad request' });
+    }
+    // delete refresh token
+    user.refresh_token = undefined;
+    await user.save();
+    return res.status(200).json({ msg: 'User logged out.' });
+  } catch (error) {
+    next(error);
+  }
 };
