@@ -12,6 +12,22 @@ exports.createNewUser = async function (req, res, next) {
       email: req.body.email,
       password: req.body.password,
     });
+    //check for duplicate login
+    let user = await User.findOne({login: newUser.login});
+    if(user !== null) {
+      return res.status(400).json({message: 'User with such login already exist.'});
+    }
+    //check for duplicate email
+    user = await User.findOne({email: newUser.email});
+    if(user !== null) {
+      return res.status(400).json({message: 'User with such email already exist.'});
+    }
+    //add new user
+    //set password
+    let passwordHash = await bcrypt.hash(newUser.password, 10);
+    newUser.password = passwordHash;
+    //set role
+    newUser.role = 'user';
     await newUser.save();
 
     return res.status(201).json({ message: 'User created.' });
