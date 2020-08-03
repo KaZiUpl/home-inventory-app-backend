@@ -19,7 +19,7 @@ const userSchema = new Schema({
   },
   role: {
     type: String,
-    required: true
+    required: true,
   },
   refresh_token: {
     type: String,

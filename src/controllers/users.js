@@ -13,14 +13,18 @@ exports.createNewUser = async function (req, res, next) {
       password: req.body.password,
     });
     //check for duplicate login
-    let user = await User.findOne({login: newUser.login});
-    if(user !== null) {
-      return res.status(400).json({message: 'User with such login already exist.'});
+    let user = await User.findOne({ login: newUser.login });
+    if (user !== null) {
+      return res
+        .status(400)
+        .json({ message: 'User with such login already exist.' });
     }
     //check for duplicate email
-    user = await User.findOne({email: newUser.email});
-    if(user !== null) {
-      return res.status(400).json({message: 'User with such email already exist.'});
+    user = await User.findOne({ email: newUser.email });
+    if (user !== null) {
+      return res
+        .status(400)
+        .json({ message: 'User with such email already exist.' });
     }
     //add new user
     //set password

@@ -1,5 +1,8 @@
 const express = require('express');
+
 const userController = require('../controllers/users');
+const checkAuthMiddleware = require('../middleware/checkAuth');
+
 const router = express.Router();
 
 /**
@@ -29,14 +32,14 @@ router.post('/', userController.createNewUser);
  *       "email": "john@doe.com"
  *     }
  */
-router.get('/:id', userController.getUser);
+router.get('/:id', checkAuthMiddleware, userController.getUser);
 
 /**
  * @api {put} /users/:id Update user info
  * @apiName PutUserInfo
  * @apiGroup User
  */
-router.put('/:id', userController.modifyUser);
+router.put('/:id', checkAuthMiddleware, userController.modifyUser);
 
 /**
  * @api {post} /users/auth Login user
