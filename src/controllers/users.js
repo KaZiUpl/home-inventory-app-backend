@@ -223,6 +223,30 @@ exports.logout = async function (req, res, next) {
   }
 };
 
+exports.changeLogin = async function (req, res, next) {
+  try {
+    let user  = await User.findOne({email: req.userData.email});
+    console.log(user);
+    console.log(req.body.login);
+    // if new login is the same
+    if(user.login == req.body.login) {
+      return res.status(200).json({message:'Login changed successfully.'});
+    }
+    // check whether new login is taken
+    let newLogin = await User.findOne({login: req.body.login});
+    if(newLogin !== null) {
+      return res.status(400).json({message:'User login already in use.'});
+    }
+
+    user.login = req.body.login;
+    await user.save();
+
+    return res.status(200).json({message:'Login changed successfully.'});
+  } catch (error) {
+    next(error);
+  }
+}
+
 function validateEmail(email) {
   const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());

@@ -38,6 +38,19 @@ router.post('/', userController.createNewUser);
 router.get('/:id', checkAuthMiddleware, userController.getUser);
 
 /**
+ * @api {put} /users/login Change user's login
+ * @apiName PutChangeLogin
+ * @apiGroup User
+ * @apiParam {String} login New login
+ * @apiSuccess (Success 200) {String} message Response message
+ * @apiSuccessExample {json} Response(example):
+ *     {
+ *       "message": "Login changed."
+ *     }
+ */
+router.put('/login', checkAuthMiddleware, userController.changeLogin);
+
+/**
  * @api {put} /users/:id Update user info
  * @apiName PutUserInfo
  * @apiGroup User
