@@ -120,10 +120,15 @@ exports.login = async function (req, res, next) {
       dotenv.jwtSecret
     );
 
+    let refreshToken;
     // create refresh token
-    const refreshTokenTimestamp =
+    if(user.refresh_token) {
+      refreshToken = user.refresh_token;
+    }
+    else {
+      const refreshTokenTimestamp =
       Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60; // expires in 1 year
-    const refreshToken = jwt.sign(
+    refreshToken = jwt.sign(
       {
         login: user.login,
         email: user.email,
@@ -133,6 +138,8 @@ exports.login = async function (req, res, next) {
       },
       dotenv.jwtSecret
     );
+    }
+
 
     // add refresh token to database
     user.refresh_token = refreshToken;
