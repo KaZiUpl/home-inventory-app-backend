@@ -10,7 +10,7 @@ exports.createNewUser = async function (req, res, next) {
     let newUser = new User({
       login: req.body.login,
       email: req.body.email,
-      password: req.body.password,
+      password: req.body.password
     });
     //check for duplicate login
     let user = await User.findOne({ login: newUser.login });
@@ -46,15 +46,18 @@ exports.modifyUser = async function (req, res, next) {
     if (req.params.id != req.userData.id) {
       return res
         .status(403)
-        .json({ message: 'You can\'t modify other user\'s profile' });
+        .json({ message: "You can't modify other user's profile" });
     }
     // check for login duplicate
-    let user = await User.findOne({login: req.body.login});
-    if(user !== null) {
-      return res.status(400).json({ message: 'Login is already in use.'});
+    let user = await User.findOne({ login: req.body.login });
+    if (user !== null) {
+      return res.status(400).json({ message: 'Login is already in use.' });
     }
     // change login
-    await User.update({_id: req.userData.id}, { $set: {login: req.body.login}});
+    await User.update(
+      { _id: req.userData.id },
+      { $set: { login: req.body.login } }
+    );
 
     return res.status(200).json({ msg: 'User modified.' });
   } catch (error) {
@@ -70,7 +73,9 @@ exports.getUser = async function (req, res, next) {
         .status(403)
         .json({ message: 'You do not have access to this resource.' });
     }
-    let user = await User.findById(req.params.id).select('-refresh_token -password -_id');
+    let user = await User.findById(req.params.id).select(
+      '-refresh_token -password -_id'
+    );
 
     if (user === null) {
       return res.status(500).json({ message: 'Internal server error' });
@@ -86,18 +91,16 @@ exports.login = async function (req, res, next) {
   try {
     let credentials = new User({
       login: req.body.login,
-      password: req.body.password,
+      password: req.body.password
     });
     let user;
-    if(validateEmail(credentials.login))
-    {
+    if (validateEmail(credentials.login)) {
       user = await User.findOne({
-        email: credentials.login,
+        email: credentials.login
       });
-    }
-    else {
+    } else {
       user = await User.findOne({
-        login: credentials.login,
+        login: credentials.login
       });
     }
 
@@ -106,7 +109,6 @@ exports.login = async function (req, res, next) {
       return res.status(400).json({ message: 'Wrong credentials' });
     }
     // user exists
-    // TODO: uncomment after example user changed password to encrypted
     let passwordMatch = await bcrypt.compare(
       credentials.password,
       user.password
@@ -125,31 +127,29 @@ exports.login = async function (req, res, next) {
         email: user.email,
         id: user._id,
         role: user.role,
-        exp: tokenTimestamp,
+        exp: tokenTimestamp
       },
       dotenv.jwtSecret
     );
 
     let refreshToken;
     // create refresh token
-    if(user.refresh_token) {
+    if (user.refresh_token) {
       refreshToken = user.refresh_token;
-    }
-    else {
+    } else {
       const refreshTokenTimestamp =
-      Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60; // expires in 1 year
-    refreshToken = jwt.sign(
-      {
-        login: user.login,
-        email: user.email,
-        id: user._id,
-        role: user.role,
-        exp: refreshTokenTimestamp,
-      },
-      dotenv.jwtSecret
-    );
+        Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60; // expires in 1 year
+      refreshToken = jwt.sign(
+        {
+          login: user.login,
+          email: user.email,
+          id: user._id,
+          role: user.role,
+          exp: refreshTokenTimestamp
+        },
+        dotenv.jwtSecret
+      );
     }
-
 
     // add refresh token to database
     user.refresh_token = refreshToken;
@@ -162,7 +162,7 @@ exports.login = async function (req, res, next) {
       expires: tokenExpDate,
       id: user._id,
       email: user.email,
-      role: user.role,
+      role: user.role
     });
   } catch (error) {
     next(error);
@@ -188,7 +188,7 @@ exports.refreshToken = async function (req, res, next) {
         email: user.email,
         id: user._id,
         role: user.role,
-        exp: tokenTimestamp,
+        exp: tokenTimestamp
       },
       dotenv.jwtSecret
     );
@@ -200,7 +200,7 @@ exports.refreshToken = async function (req, res, next) {
       expires: tokenExpDate,
       id: user._id,
       email: user.email,
-      role: user.role,
+      role: user.role
     });
   } catch (error) {
     next(error);
@@ -225,27 +225,31 @@ exports.logout = async function (req, res, next) {
 
 exports.changeLogin = async function (req, res, next) {
   try {
-    let user  = await User.findOne({email: req.userData.email});
-    console.log(user);
-    console.log(req.body.login);
+    //check whether user is requesting his info
+    if (req.params.id != req.userData.id) {
+      return res
+        .status(403)
+        .json({ message: 'You do not have access to this resource.' });
+    }
+    let user = await User.findOne({ email: req.userData.email });
     // if new login is the same
-    if(user.login == req.body.login) {
-      return res.status(200).json({message:'Login changed successfully.'});
+    if (user.login == req.body.login) {
+      return res.status(200).json({ message: 'Login changed successfully.' });
     }
     // check whether new login is taken
-    let newLogin = await User.findOne({login: req.body.login});
-    if(newLogin !== null) {
-      return res.status(400).json({message:'User login already in use.'});
+    let newLogin = await User.findOne({ login: req.body.login });
+    if (newLogin !== null) {
+      return res.status(400).json({ message: 'User login already in use.' });
     }
 
     user.login = req.body.login;
     await user.save();
 
-    return res.status(200).json({message:'Login changed successfully.'});
+    return res.status(200).json({ message: 'Login changed successfully.' });
   } catch (error) {
     next(error);
   }
-}
+};
 
 function validateEmail(email) {
   const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
