@@ -8,7 +8,8 @@ const cors = require('cors');
 const dotenv = require('./config/index');
 
 // Routes
-const userRoutes = require('./routes/users');
+const usersRoutes = require('./routes/users');
+const housesRoutes = require('./routes/houses');
 
 const app = express();
 
@@ -21,7 +22,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Add routes
-app.use('/users', userRoutes);
+app.use('/users', usersRoutes);
+app.use('/houses', housesRoutes);
 
 // Catching errors
 app.use((req, res, next) => {
