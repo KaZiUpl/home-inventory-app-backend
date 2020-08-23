@@ -27,7 +27,7 @@ exports.getHouseList = async function (req, res, next) {
 
     // get house list
     let houseList = await House.find({ owner: userId });
-    
+
     res.status(200).json(houseList);
   } catch (error) {
     next(error);
@@ -39,11 +39,13 @@ exports.getHouse = async function (req, res, next) {
   try {
     const houseId = req.params.id;
     //get house
-    let requestedHouse = await House.findOne({_id: houseId});
+    let requestedHouse = await House.findOne({ _id: houseId });
 
     // if user is not an owner of requested house
-    if(requestedHouse.owner != req.userData.id) {
-      return res.status(403).json({message: 'You are not an owner of the requested house'});
+    if (requestedHouse.owner != req.userData.id) {
+      return res
+        .status(403)
+        .json({ message: 'You are not an owner of the requested house' });
     }
 
     res.status(200).json(requestedHouse);
@@ -64,10 +66,12 @@ exports.deleteHouse = async function (req, res, next) {
   try {
     const houseId = req.params.id;
     // get house
-    let house = await House.findOne({_id: houseId});
+    let house = await House.findOne({ _id: houseId });
 
-    if(req.userData.id != house.owner) {
-      return res.status(403).json({message:'You are not the owner owner of this house.'});
+    if (req.userData.id != house.owner) {
+      return res
+        .status(403)
+        .json({ message: 'You are not the owner owner of this house.' });
     }
 
     await house.delete();
