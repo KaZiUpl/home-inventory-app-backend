@@ -42,6 +42,26 @@ define({ "api": [
         "name": "logged in user"
       }
     ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "Array",
+            "description": "<p>of user's main containers</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "[\n  {\n     \"collaborators\": [],\n     \"_id\": \"5f3fc8decebf502870d04c84\",\n     \"name\": \"house\",\n     \"description\": \"some description\",\n     \"__v\": 0\n },\n {\n     \"collaborators\": [],\n     \"_id\": \"5f42cf14c7367b3868a7355c\",\n    \"name\": \"asd\",\n    \"description\": \"some description\",\n    \"__v\": 0\n}\n]",
+          "type": "json"
+        }
+      ]
+    },
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
     "groupTitle": "House",
@@ -58,6 +78,46 @@ define({ "api": [
         "name": "logged in user"
       }
     ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of the main container (house)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Description of the main container (house)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Response message</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response(example):",
+          "content": "{\n     \"message\": \"House created.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
     "groupTitle": "House",

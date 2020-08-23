@@ -16,6 +16,13 @@ router.use(checkAuthMiddleware);
  * @apiName PostHouse
  * @apiGroup House
  * @apiPermission logged in user
+ * @apiParam {String} name Name of the main container (house)
+ * @apiParam {String} description Description of the main container (house)
+ * @apiSuccess (Success 200) {String} message Response message
+ * @apiSuccessExample {json} Response(example):
+ * {
+ *      "message": "House created."
+ * }
  */
 router.post('/', housesController.createHouse);
 
@@ -24,6 +31,24 @@ router.post('/', housesController.createHouse);
  * @apiName GetHouseList
  * @apiGroup House
  * @apiPermission logged in user
+ * @apiSuccess (Success 200) {Object[]} Array of user's main containers
+ * @apiSuccessExample {json} Success-Response:
+ * [
+ *   {
+ *      "collaborators": [],
+ *      "_id": "5f3fc8decebf502870d04c84",
+ *      "name": "house",
+ *      "description": "some description",
+ *      "__v": 0
+ *  },
+ *  {
+ *      "collaborators": [],
+ *      "_id": "5f42cf14c7367b3868a7355c",
+ *     "name": "asd",
+ *     "description": "some description",
+ *     "__v": 0
+ * }
+ *]
  */
 router.get('/', housesController.getHouseList);
 
