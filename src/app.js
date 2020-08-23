@@ -32,8 +32,8 @@ app.use((req, res, next) => {
   next(error);
 });
 app.use((error, req, res, next) => {
-  console.log(error);
-  return res.sendStatus(error.status || 500);
+  res.sendStatus(error.status || 500);
+
 });
 
 mongoose
@@ -44,11 +44,13 @@ mongoose
   .then((result) => {
     app.listen(dotenv.port, (err) => {
       if (err) {
+        console.log('Server initialization failed');
         console.log(err);
       }
       console.log(`Server started on port ${dotenv.port}!`);
     });
   })
   .catch((error) => {
+    console.log('Error on db connection')
     console.log(error);
   });
