@@ -10,6 +10,39 @@ define({ "api": [
         "name": "main container's owner"
       }
     ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Main container's id</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Response message</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n  \"message\": \"House deleted.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
     "groupTitle": "House",
@@ -54,7 +87,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n \"collaborators\": [],\n\"_id\": \"5f3fc8decebf502870d04c84\",\n\"name\": \"house\",\n\"description\": \"some desccription\",\n\"owner\": \"5f2584b9bb2de6e74fd3b39e\",\n\"__v\": 0\n}",
+          "content": "{\n \"collaborators\": [],\n\"_id\": \"5f3fc8decebf502870d04c84\",\n\"name\": \"house\",\n\"description\": \"some description\",\n\"owner\": \"5f2584b9bb2de6e74fd3b39e\",\n\"__v\": 0\n}",
           "type": "json"
         }
       ]
@@ -167,6 +200,46 @@ define({ "api": [
         "name": "main container's owner"
       }
     ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>New name of the main container (house)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>New description of the main container (house)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Response message</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n  \"message\": \"House info updated.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
     "groupTitle": "House",
