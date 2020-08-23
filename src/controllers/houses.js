@@ -24,7 +24,7 @@ exports.createHouse = async function (req, res, next) {
 exports.getHouseList = async function (req, res, next) {
   try {
     const userId = req.userData.id;
-    
+
     // get house list
     let houseList = await House.find({ owner: userId });
     
@@ -62,7 +62,17 @@ exports.editHouse = async function (req, res, next) {
 
 exports.deleteHouse = async function (req, res, next) {
   try {
-    res.status(200).json({ message: 'House deleted' });
+    const houseId = req.params.id;
+    // get house
+    let house = await House.findOne({_id: houseId});
+
+    if(req.userData.id != house.owner) {
+      return res.status(403).json({message:'You are not the owher owner of this house.'});
+    }
+
+    await house.delete();
+
+    res.status(200).json({ message: 'House deleted.' });
   } catch (error) {
     next(error);
   }

@@ -64,7 +64,7 @@ router.get('/', housesController.getHouseList);
  *  "collaborators": [],
  * "_id": "5f3fc8decebf502870d04c84",
  * "name": "house",
- * "description": "some desccription",
+ * "description": "some description",
  * "owner": "5f2584b9bb2de6e74fd3b39e",
  * "__v": 0
  *}
@@ -84,6 +84,12 @@ router.put('/:id', housesController.editHouse);
  * @apiName DeleteHouse
  * @apiGroup House
  * @apiPermission main container's owner
+ * @apiParam {String} id Main container's id
+ * @apiSuccess {String} message Response  message
+ * @apiSuccessExample {json} Success-Response:
+ *     {
+ *       "message": "House deleted."
+ *     }
  */
 router.delete('/:id', housesController.deleteHouse);
 
