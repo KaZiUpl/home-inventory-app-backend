@@ -67,7 +67,7 @@ exports.deleteHouse = async function (req, res, next) {
     let house = await House.findOne({_id: houseId});
 
     if(req.userData.id != house.owner) {
-      return res.status(403).json({message:'You are not the owher owner of this house.'});
+      return res.status(403).json({message:'You are not the owner owner of this house.'});
     }
 
     await house.delete();
