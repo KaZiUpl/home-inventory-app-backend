@@ -56,7 +56,24 @@ exports.getHouse = async function (req, res, next) {
 
 exports.editHouse = async function (req, res, next) {
   try {
-    res.status(200).json({ message: 'House updated' });
+    const houseId = req.params.id;
+
+    let house = await House.findOne({ _id: houseId });
+    if (house == null) {
+      res.status(404).json({ message: 'The requested house does not exist' });
+    }
+
+    if (house.owner != req.userData.id) {
+      return res
+        .status(403)
+        .json({ message: 'You are not an owner of the requested house' });
+    }
+
+    house.name = req.body.name;
+    house.description = req.body.description;
+    await house.save();
+
+    res.status(200).json({ message: 'House info updated' });
   } catch (error) {
     next(error);
   }
@@ -67,6 +84,9 @@ exports.deleteHouse = async function (req, res, next) {
     const houseId = req.params.id;
     // get house
     let house = await House.findOne({ _id: houseId });
+    if (house == null) {
+      return res.status(200).json({ message: 'House deleted.' });
+    }
 
     if (req.userData.id != house.owner) {
       return res

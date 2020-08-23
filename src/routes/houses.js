@@ -76,6 +76,13 @@ router.get('/:id', housesController.getHouse);
  * @apiName PutHouseInfo
  * @apiGroup House
  * @apiPermission main container's owner
+ * @apiParam {String} name New name of the main container (house)
+ * @apiParam {String} description New description of the main container (house)
+ * @apiSuccess (Success 200) {String} message Response message
+ * @apiSuccessExample Success-Response:
+ *     {
+ *       "message": "House info updated."
+ *     }
  */
 router.put('/:id', housesController.editHouse);
 
@@ -85,7 +92,7 @@ router.put('/:id', housesController.editHouse);
  * @apiGroup House
  * @apiPermission main container's owner
  * @apiParam {String} id Main container's id
- * @apiSuccess {String} message Response  message
+ * @apiSuccess {String} message Response message
  * @apiSuccessExample {json} Success-Response:
  *     {
  *       "message": "House deleted."
