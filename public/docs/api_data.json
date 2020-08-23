@@ -26,6 +26,39 @@
         "name": "main container's owner or collaborators"
       }
     ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the main container (house)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "Requested",
+            "description": "<p>main container</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n \"collaborators\": [],\n\"_id\": \"5f3fc8decebf502870d04c84\",\n\"name\": \"house\",\n\"description\": \"some desccription\",\n\"owner\": \"5f2584b9bb2de6e74fd3b39e\",\n\"__v\": 0\n}",
+          "type": "json"
+        }
+      ]
+    },
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
     "groupTitle": "House",

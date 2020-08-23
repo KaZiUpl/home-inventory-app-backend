@@ -57,6 +57,17 @@ router.get('/', housesController.getHouseList);
  * @apiName GetHouseInfo
  * @apiGroup House
  * @apiPermission main container's owner or collaborators
+ * @apiParam {String} id ID of the main container (house)
+ * @apiSuccess (Success 200) {Object} Requested main container
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *  "collaborators": [],
+ * "_id": "5f3fc8decebf502870d04c84",
+ * "name": "house",
+ * "description": "some desccription",
+ * "owner": "5f2584b9bb2de6e74fd3b39e",
+ * "__v": 0
+ *}
  */
 router.get('/:id', housesController.getHouse);
 

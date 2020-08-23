@@ -32,14 +32,14 @@ app.use((req, res, next) => {
   next(error);
 });
 app.use((error, req, res, next) => {
+  console.log(error);
   res.sendStatus(error.status || 500);
-
 });
 
 mongoose
   .connect(dotenv.mongodbUri, {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
+    useUnifiedTopology: true
   })
   .then((result) => {
     app.listen(dotenv.port, (err) => {
@@ -51,6 +51,6 @@ mongoose
     });
   })
   .catch((error) => {
-    console.log('Error on db connection')
+    console.log('Error on db connection');
     console.log(error);
   });

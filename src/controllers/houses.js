@@ -20,11 +20,13 @@ exports.createHouse = async function (req, res, next) {
   }
 };
 
+// TODO: Return for owner or if user is a collaborator
 exports.getHouseList = async function (req, res, next) {
   try {
     const userId = req.userData.id;
+    
     // get house list
-    let houseList = await House.find({ owner: userId }).select(['-owner']);
+    let houseList = await House.find({ owner: userId });
     
     res.status(200).json(houseList);
   } catch (error) {
@@ -32,9 +34,19 @@ exports.getHouseList = async function (req, res, next) {
   }
 };
 
+// TODO: Return for owner or if user is a collaborator
 exports.getHouse = async function (req, res, next) {
   try {
-    res.status(200).json({ message: 'House placeholder' });
+    const houseId = req.params.id;
+    //get house
+    let requestedHouse = await House.findOne({_id: houseId});
+
+    // if user is not an owner of requested house
+    if(requestedHouse.owner != req.userData.id) {
+      return res.status(403).json({message: 'You are not an owner of the requested house'});
+    }
+
+    res.status(200).json(requestedHouse);
   } catch (error) {
     next(error);
   }
