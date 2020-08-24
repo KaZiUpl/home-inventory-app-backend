@@ -1,4 +1,5 @@
 const House = require('../models/house.model');
+const User = require('../models/user.model');
 
 exports.createHouse = async function (req, res, next) {
   try {
@@ -22,6 +23,28 @@ exports.createHouse = async function (req, res, next) {
 
 exports.addCollaborator = async function (req, res, next) {
   try {
+    const houseId = req.params.id;
+    let house = await House.findOne({ _id: houseId });
+    if (house.owner != req.userData.id) {
+      return res
+        .status(403)
+        .json({
+          message:
+            'You have to be the owner of the house to add a collaborator.'
+        });
+    }
+
+    const name = req.body.name;
+    let user = await User.findOne({ $or: [{ login: name }, { email: name }] });
+    if (user == null) {
+      return res
+        .status(404)
+        .json({ message: 'No user with provided login or email.' });
+    }
+
+    house.collaborators.push(user._id);
+    await house.save();
+
     return res.status(200).json({ message: 'Collaborator added.' });
   } catch (error) {
     next(error);

@@ -31,8 +31,9 @@ router.post('/', housesController.createHouse);
  * @apiName PostAddCollaborator
  * @apiGroup House
  * @apiPermission main container's owner
+ * @apiDescription Adds a user as a collaborator. First user with login of email matching the provided name is added.
  * @apiParam {String} id main container's id
- * @apiParam {String} name Name or email of the collaborator
+ * @apiParam {String} name login or email of the collaborator
  * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccessExample {json} Response(example):
  * {

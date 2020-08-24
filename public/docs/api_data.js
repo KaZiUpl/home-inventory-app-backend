@@ -1,6 +1,63 @@
 define({ "api": [
   {
     "type": "delete",
+    "url": "/houses/:id/collaborators/:user_id",
+    "title": "Delete a collaborator from a main container (house)",
+    "name": "DeleteCollaborator",
+    "group": "House",
+    "permission": [
+      {
+        "name": "main container's owner or collaborator"
+      }
+    ],
+    "description": "<p>Deletes user with provided id from collaborators list. Can be used either by main container's owner or one of its collaborators.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>main container's id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "user_id",
+            "description": "<p>id of a user</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Response message</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response(example):",
+          "content": "{\n     \n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/houses.js",
+    "groupTitle": "House",
+    "groupDescription": "<p>Endpoints for managing information about user's main containers.</p>"
+  },
+  {
+    "type": "delete",
     "url": "/houses/:id",
     "title": "Delete main container (house) with it's content.",
     "name": "DeleteHouse",
@@ -39,6 +96,55 @@ define({ "api": [
         {
           "title": "Success-Response:",
           "content": "{\n  \"message\": \"House deleted.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/houses.js",
+    "groupTitle": "House",
+    "groupDescription": "<p>Endpoints for managing information about user's main containers.</p>"
+  },
+  {
+    "type": "get",
+    "url": "/houses/:id/collaborators",
+    "title": "Add collaborator to a main container (house)",
+    "name": "GetCollaboratorList",
+    "group": "House",
+    "permission": [
+      {
+        "name": "main container's owner or collaborator"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>main container's id</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Response message</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response(example):",
+          "content": "{\n     \n}",
           "type": "json"
         }
       ]
@@ -124,6 +230,63 @@ define({ "api": [
         {
           "title": "Success-Response:",
           "content": "[\n  {\n     \"collaborators\": [],\n     \"_id\": \"5f3fc8decebf502870d04c84\",\n     \"name\": \"house\",\n     \"description\": \"some description\",\n     \"__v\": 0\n },\n {\n     \"collaborators\": [],\n     \"_id\": \"5f42cf14c7367b3868a7355c\",\n    \"name\": \"asd\",\n    \"description\": \"some description\",\n    \"__v\": 0\n}\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/houses.js",
+    "groupTitle": "House",
+    "groupDescription": "<p>Endpoints for managing information about user's main containers.</p>"
+  },
+  {
+    "type": "post",
+    "url": "/houses/:id/collaborators",
+    "title": "Add collaborator to a main container (house)",
+    "name": "PostAddCollaborator",
+    "group": "House",
+    "permission": [
+      {
+        "name": "main container's owner"
+      }
+    ],
+    "description": "<p>Adds a user as a collaborator. First user with login of email matching the provided name is added.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>main container's id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>login or email of the collaborator</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Response message</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response(example):",
+          "content": "{\n     \"message\": \"Collaborator added.\"\n}",
           "type": "json"
         }
       ]
