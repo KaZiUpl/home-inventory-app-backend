@@ -136,19 +136,19 @@ router.put('/:id', housesController.editHouse);
 router.delete('/:id', housesController.deleteHouse);
 
 /**
- * @api {delete} /houses/:id/collaborators/:user_id Delete a collaborator from a main container (house)
+ * @api {delete} /houses/:id/collaborators Delete a collaborator from a main container (house)
  * @apiName DeleteCollaborator
  * @apiGroup House
  * @apiPermission main container's owner or collaborator
- * @apiDescription Deletes user with provided id from collaborators list. Can be used either by main container's owner or one of its collaborators.
+ * @apiDescription Deletes user with provided id from collaborators list. Can be used either by main container's owner or one of its collaborators in order to remove oneself from collaborating.
  * @apiParam {String} id main container's id
- * @apiParam {String} user_id id of a user
+ * @apiParam {String} id collaborator's id
  * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccessExample {json} Response(example):
  * {
- *
+ *      "message": "Collaborator deleted."
  * }
  */
-router.delete(':id/collaborators', housesController.deleteCollaborator);
+router.delete('/:id/collaborators', housesController.deleteCollaborator);
 
 module.exports = router;

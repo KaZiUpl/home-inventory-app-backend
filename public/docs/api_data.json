@@ -1,7 +1,7 @@
 [
   {
     "type": "delete",
-    "url": "/houses/:id/collaborators/:user_id",
+    "url": "/houses/:id/collaborators",
     "title": "Delete a collaborator from a main container (house)",
     "name": "DeleteCollaborator",
     "group": "House",
@@ -10,7 +10,7 @@
         "name": "main container's owner or collaborator"
       }
     ],
-    "description": "<p>Deletes user with provided id from collaborators list. Can be used either by main container's owner or one of its collaborators.</p>",
+    "description": "<p>Deletes user with provided id from collaborators list. Can be used either by main container's owner or one of its collaborators in order to remove oneself from collaborating.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -20,13 +20,6 @@
             "optional": false,
             "field": "id",
             "description": "<p>main container's id</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "user_id",
-            "description": "<p>id of a user</p>"
           }
         ]
       }
@@ -46,7 +39,7 @@
       "examples": [
         {
           "title": "Response(example):",
-          "content": "{\n\n}",
+          "content": "{\n     \"message\": \"Collaborator deleted.\"\n}",
           "type": "json"
         }
       ]

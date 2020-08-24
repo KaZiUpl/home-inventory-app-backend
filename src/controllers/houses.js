@@ -157,6 +157,22 @@ exports.deleteHouse = async function (req, res, next) {
 
 exports.deleteCollaborator = async function (req, res, next) {
   try {
+    const houseId = req.params.id;
+    const collaboratorId = req.body.id;
+    let house = await House.findById(houseId);
+    if (house == null) {
+      return res
+        .status(404)
+        .json({ message: 'House with such id does not exist.' });
+    }
+
+    if (house.owner != req.userData.id) {
+      res.status(403).json({ message: 'You are not the owner of this house.' });
+    }
+
+    house.collaborators = house.collaborators.filter(element => element != collaboratorId);
+    await house.save();
+
     return res.status(200).json({ message: 'Collaborator deleted.' });
   } catch (error) {
     next(error);
