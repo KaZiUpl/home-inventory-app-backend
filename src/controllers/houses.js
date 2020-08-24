@@ -20,6 +20,14 @@ exports.createHouse = async function (req, res, next) {
   }
 };
 
+exports.addCollaborator = async function (req, res, next) {
+  try {
+    return res.status(200).json({ message: 'Collaborator added.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // TODO: Return for owner or if user is a collaborator
 exports.getHouseList = async function (req, res, next) {
   try {
@@ -29,6 +37,16 @@ exports.getHouseList = async function (req, res, next) {
     let houseList = await House.find({ owner: userId });
 
     res.status(200).json(houseList);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getCollaborators = async function (req, res, next) {
+  try {
+    return res
+      .status(200)
+      .json({ message: 'Collaborators array placeholder.' });
   } catch (error) {
     next(error);
   }
@@ -97,6 +115,14 @@ exports.deleteHouse = async function (req, res, next) {
     await house.delete();
 
     res.status(200).json({ message: 'House deleted.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteCollaborator = async function (req, res, next) {
+  try {
+    return res.status(200).json({ message: 'Collaborator deleted.' });
   } catch (error) {
     next(error);
   }

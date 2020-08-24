@@ -27,6 +27,35 @@ router.use(checkAuthMiddleware);
 router.post('/', housesController.createHouse);
 
 /**
+ * @api {post} /houses/:id/collaborators Add collaborator to a main container (house)
+ * @apiName PostAddCollaborator
+ * @apiGroup House
+ * @apiPermission main container's owner
+ * @apiParam {String} id main container's id
+ * @apiParam {String} name Name or email of the collaborator
+ * @apiSuccess (Success 200) {String} message Response message
+ * @apiSuccessExample {json} Response(example):
+ * {
+ *      "message": "Collaborator added."
+ * }
+ */
+router.post('/:id/collaborators', housesController.addCollaborator);
+
+/**
+ * @api {get} /houses/:id/collaborators Add collaborator to a main container (house)
+ * @apiName GetCollaboratorList
+ * @apiGroup House
+ * @apiPermission main container's owner or collaborator
+ * @apiParam {String} id main container's id
+ * @apiSuccess (Success 200) {Object[]} message Response message
+ * @apiSuccessExample {json} Response(example):
+ * {
+ *      
+ * }
+ */
+router.get(':id/collaborators', housesController.getCollaborators);
+
+/**
  * @api {get} /houses Get list of user's main containers (houses).
  * @apiName GetHouseList
  * @apiGroup House
@@ -99,5 +128,21 @@ router.put('/:id', housesController.editHouse);
  *     }
  */
 router.delete('/:id', housesController.deleteHouse);
+
+/**
+ * @api {delete} /houses/:id/collaborators/:user_id Delete a collaborator from a main container (house)
+ * @apiName DeleteCollaborator
+ * @apiGroup House
+ * @apiPermission main container's owner or collaborator
+ * @apiDescription Deletes user with provided id from collaborators list. Can be used either by main container's owner or one of its collaborators.
+ * @apiParam {String} id main container's id
+ * @apiParam {String} user_id id of a user
+ * @apiSuccess (Success 200) {String} message Response message
+ * @apiSuccessExample {json} Response(example):
+ * {
+ *      
+ * }
+ */
+router.delete(':id/collaborators', housesController.deleteCollaborator);
 
 module.exports = router;
