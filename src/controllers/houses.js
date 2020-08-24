@@ -48,13 +48,14 @@ exports.addCollaborator = async function (req, res, next) {
   }
 };
 
-// TODO: Return for owner or if user is a collaborator
 exports.getHouseList = async function (req, res, next) {
   try {
     const userId = req.userData.id;
 
     // get house list
-    let houseList = await House.find({ owner: userId });
+    let houseList = await House.find({
+      $or: [{ owner: userId }, { collaborators: userId }]
+    }).populate('owner', 'login');
 
     res.status(200).json(houseList);
   } catch (error) {
@@ -87,18 +88,25 @@ exports.getCollaborators = async function (req, res, next) {
   }
 };
 
-// TODO: Return for owner or if user is a collaborator
 exports.getHouse = async function (req, res, next) {
   try {
     const houseId = req.params.id;
     //get house
-    let requestedHouse = await House.findOne({ _id: houseId });
+    let requestedHouse = await House.findById(houseId)
+      .populate('owner', 'login')
+      .populate('collaborators', 'login');
 
-    // if user is not an owner of requested house
-    if (requestedHouse.owner != req.userData.id) {
-      return res
-        .status(403)
-        .json({ message: 'You are not an owner of the requested house' });
+    // if user is not an owner or collaborator of requested house
+    if (
+      requestedHouse.owner._id != req.userData.id &&
+      requestedHouse.collaborators.filter(
+        (element) => element._id == req.userData.id
+      ) == undefined
+    ) {
+      return res.status(403).json({
+        message:
+          'You are not an owner nor the collaborator of the requested house'
+      });
     }
 
     res.status(200).json(requestedHouse);
@@ -170,7 +178,9 @@ exports.deleteCollaborator = async function (req, res, next) {
       res.status(403).json({ message: 'You are not the owner of this house.' });
     }
 
-    house.collaborators = house.collaborators.filter(element => element != collaboratorId);
+    house.collaborators = house.collaborators.filter(
+      (element) => element != collaboratorId
+    );
     await house.save();
 
     return res.status(200).json({ message: 'Collaborator deleted.' });

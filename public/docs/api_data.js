@@ -194,13 +194,48 @@ define({ "api": [
             "optional": false,
             "field": "Requested",
             "description": "<p>main container</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "collaborators",
+            "description": "<p>Array of collaborators' logins and ids</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "_id",
+            "description": "<p>Main container's id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of the main container</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Description of the main container</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>Object with owner's id and login</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n \"collaborators\": [],\n\"_id\": \"5f3fc8decebf502870d04c84\",\n\"name\": \"house\",\n\"description\": \"some description\",\n\"owner\": \"5f2584b9bb2de6e74fd3b39e\",\n\"__v\": 0\n}",
+          "content": "{\n \"collaborators\": [\n     {\n         \"_id\": \"5f327188295d5f121464d782\",\n         \"login\": \"kacperkaz\"\n     }\n ],\n \"_id\": \"5f438a3f1b69ff37807e2a0c\",\n \"name\": \"asd\",\n \"description\": \"some description\",\n \"owner\": {\n     \"_id\": \"5f2584b9bb2de6e74fd3b39e\",\n       \"login\": \"admin\"\n  },\n  \"__v\": 3\n}",
           "type": "json"
         }
       ]
@@ -221,6 +256,7 @@ define({ "api": [
         "name": "logged in user"
       }
     ],
+    "description": "<p>Returns a list of houses that user owns of is a collaborator in</p>",
     "success": {
       "fields": {
         "Success 200": [
@@ -230,13 +266,48 @@ define({ "api": [
             "optional": false,
             "field": "Array",
             "description": "<p>of user's main containers</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String[]",
+            "optional": false,
+            "field": "collaborators",
+            "description": "<p>Array of collaborator's id's</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "_id",
+            "description": "<p>Main container's id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of the main container</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Description of the main container</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "owner",
+            "description": "<p>Object with owner's id and login</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "[\n  {\n     \"collaborators\": [],\n     \"_id\": \"5f3fc8decebf502870d04c84\",\n     \"name\": \"house\",\n     \"description\": \"some description\",\n     \"__v\": 0\n },\n {\n     \"collaborators\": [],\n     \"_id\": \"5f42cf14c7367b3868a7355c\",\n    \"name\": \"asd\",\n    \"description\": \"some description\",\n    \"__v\": 0\n}\n]",
+          "content": "[\n {\n     \"collaborators\": [\n         \"5f327188295d5f121464d782\"\n    ],\n    \"_id\": \"5f438a3f1b69ff37807e2a0c\",\n   \"name\": \"asd\",\n   \"description\": \"some description\",\n   \"owner\": {\n       \"_id\": \"5f2584b9bb2de6e74fd3b39e\",\n       \"login\": \"admin\"\n   },\n  \"__v\": 3\n}\n]",
           "type": "json"
         }
       ]

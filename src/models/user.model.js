@@ -6,26 +6,24 @@ const userSchema = new Schema({
   login: {
     type: String,
     required: true,
-    unique: true,
+    unique: true
   },
   email: {
     type: String,
     required: true,
-    unique: true,
+    unique: true
   },
   password: {
     type: String,
-    required: true,
+    required: true
   },
   role: {
     type: String,
-    required: true,
+    required: true
   },
   refresh_token: {
-    type: String,
-  },
+    type: String
+  }
 });
-
-// TODO: add unique validator for email and login (https://stackoverflow.com/questions/13580589/mongoose-unique-validation-error-type)
 
 module.exports = mongoose.model('User', userSchema);

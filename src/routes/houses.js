@@ -66,23 +66,28 @@ router.get('/:id/collaborators', housesController.getCollaborators);
  * @apiName GetHouseList
  * @apiGroup House
  * @apiPermission logged in user
- * @apiSuccess (Success 200) {Object[]} Array of user's main containers
+ * @apiDescription Returns a list of houses that user owns of is a collaborator in
+ * @apiSuccess (Success 200) {Object[]} houses Array of user's main containers
+ * @apiSuccess (Success 200) {String[]} collaborators Array of collaborator's id's
+ * @apiSuccess (Success 200) {String} _id Main container's id
+ * @apiSuccess (Success 200) {String} name Name of the main container
+ * @apiSuccess (Success 200) {String} description Description of the main container
+ * @apiSuccess (Success 200) {Object} owner Object with owner's id and login
  * @apiSuccessExample {json} Success-Response:
- * [
- *   {
- *      "collaborators": [],
- *      "_id": "5f3fc8decebf502870d04c84",
- *      "name": "house",
- *      "description": "some description",
- *      "__v": 0
- *  },
+ *[
  *  {
- *      "collaborators": [],
- *      "_id": "5f42cf14c7367b3868a7355c",
- *     "name": "asd",
- *     "description": "some description",
- *     "__v": 0
- * }
+ *      "collaborators": [
+ *          "5f327188295d5f121464d782"
+ *     ],
+ *     "_id": "5f438a3f1b69ff37807e2a0c",
+ *    "name": "asd",
+ *    "description": "some description",
+ *    "owner": {
+ *        "_id": "5f2584b9bb2de6e74fd3b39e",
+ *        "login": "admin"
+ *    },
+ *   "__v": 3
+ *}
  *]
  */
 router.get('/', housesController.getHouseList);
@@ -94,14 +99,27 @@ router.get('/', housesController.getHouseList);
  * @apiPermission main container's owner or collaborators
  * @apiParam {String} id ID of the main container (house)
  * @apiSuccess (Success 200) {Object} Requested main container
+ * @apiSuccess (Success 200) {Object[]} collaborators Array of collaborators' logins and ids
+ * @apiSuccess (Success 200) {String} _id Main container's id
+ * @apiSuccess (Success 200) {String} name Name of the main container
+ * @apiSuccess (Success 200) {String} description Description of the main container
+ * @apiSuccess (Success 200) {Object} owner Object with owner's id and login
  * @apiSuccessExample {json} Success-Response:
- * {
- *  "collaborators": [],
- * "_id": "5f3fc8decebf502870d04c84",
- * "name": "house",
- * "description": "some description",
- * "owner": "5f2584b9bb2de6e74fd3b39e",
- * "__v": 0
+ *{
+ *  "collaborators": [
+ *      {
+ *          "_id": "5f327188295d5f121464d782",
+ *          "login": "kacperkaz"
+ *      }
+ *  ],
+ *  "_id": "5f438a3f1b69ff37807e2a0c",
+ *  "name": "asd",
+ *  "description": "some description",
+ *  "owner": {
+ *      "_id": "5f2584b9bb2de6e74fd3b39e",
+ *        "login": "admin"
+ *   },
+ *   "__v": 3
  *}
  */
 router.get('/:id', housesController.getHouse);
