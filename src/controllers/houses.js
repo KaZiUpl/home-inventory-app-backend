@@ -26,12 +26,9 @@ exports.addCollaborator = async function (req, res, next) {
     const houseId = req.params.id;
     let house = await House.findOne({ _id: houseId });
     if (house.owner != req.userData.id) {
-      return res
-        .status(403)
-        .json({
-          message:
-            'You have to be the owner of the house to add a collaborator.'
-        });
+      return res.status(403).json({
+        message: 'You have to be the owner of the house to add a collaborator.'
+      });
     }
 
     const name = req.body.name;
@@ -67,9 +64,24 @@ exports.getHouseList = async function (req, res, next) {
 
 exports.getCollaborators = async function (req, res, next) {
   try {
-    return res
-      .status(200)
-      .json({ message: 'Collaborators array placeholder.' });
+    const houseId = req.params.id;
+
+    let house = await await await House.findOne({ _id: houseId })
+      .populate('owner', 'login')
+      .populate('collaborators', 'login');
+
+    // check whether requesting user is either owner or a collaborator
+    if (
+      house.owner._id != req.userData.id &&
+      house.collaborators.find((collab) => collab._id == req.userData.id) ==
+        undefined
+    ) {
+      return res
+        .status(403)
+        .json({ message: 'You do not have access to this resource.' });
+    }
+
+    return res.status(200).json(house.collaborators);
   } catch (error) {
     next(error);
   }

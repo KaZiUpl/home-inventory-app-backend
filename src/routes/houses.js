@@ -43,18 +43,23 @@ router.post('/', housesController.createHouse);
 router.post('/:id/collaborators', housesController.addCollaborator);
 
 /**
- * @api {get} /houses/:id/collaborators Add collaborator to a main container (house)
+ * @api {get} /houses/:id/collaborators Get the list of collaborators
  * @apiName GetCollaboratorList
  * @apiGroup House
  * @apiPermission main container's owner or collaborator
  * @apiParam {String} id main container's id
- * @apiSuccess (Success 200) {Object[]} message Response message
+ * @apiSuccess (Success 200) {Object[]} users Array of collaborators
+ * @apiSuccess (Success 200) {String} _id Collaborator's id
+ * @apiSuccess (Success 200) {String} login Collaborator's login
  * @apiSuccessExample {json} Response(example):
- * {
- *      
- * }
+ *[
+ *   {
+ *       "_id": "5f327188295d5f121464d782",
+ *       "login": "kacperkaz"
+ *   }
+ *]
  */
-router.get(':id/collaborators', housesController.getCollaborators);
+router.get('/:id/collaborators', housesController.getCollaborators);
 
 /**
  * @api {get} /houses Get list of user's main containers (houses).
@@ -141,7 +146,7 @@ router.delete('/:id', housesController.deleteHouse);
  * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccessExample {json} Response(example):
  * {
- *      
+ *
  * }
  */
 router.delete(':id/collaborators', housesController.deleteCollaborator);

@@ -46,7 +46,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Response(example):",
-          "content": "{\n     \n}",
+          "content": "{\n\n}",
           "type": "json"
         }
       ]
@@ -108,7 +108,7 @@ define({ "api": [
   {
     "type": "get",
     "url": "/houses/:id/collaborators",
-    "title": "Add collaborator to a main container (house)",
+    "title": "Get the list of collaborators",
     "name": "GetCollaboratorList",
     "group": "House",
     "permission": [
@@ -136,15 +136,29 @@ define({ "api": [
             "group": "Success 200",
             "type": "Object[]",
             "optional": false,
-            "field": "message",
-            "description": "<p>Response message</p>"
+            "field": "users",
+            "description": "<p>Array of collaborators</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "_id",
+            "description": "<p>Collaborator's id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "login",
+            "description": "<p>Collaborator's login</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Response(example):",
-          "content": "{\n     \n}",
+          "content": "[\n  {\n      \"_id\": \"5f327188295d5f121464d782\",\n      \"login\": \"kacperkaz\"\n  }\n]",
           "type": "json"
         }
       ]
