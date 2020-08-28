@@ -10,6 +10,7 @@ const dotenv = require('./config/index');
 // Routes
 const usersRoutes = require('./routes/users');
 const housesRoutes = require('./routes/houses');
+const roomsRoutes = require('./routes/rooms');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(bodyParser.json());
 // Add routes
 app.use('/users', usersRoutes);
 app.use('/houses', housesRoutes);
+app.use('/rooms', roomsRoutes);
 
 // Catching errors
 app.use((req, res, next) => {
