@@ -47,7 +47,7 @@ router.post('/:id/collaborators', housesController.addCollaborator);
  * @apiName GetCollaboratorList
  * @apiGroup House
  * @apiPermission House owner or collaborator
- * @apiParam {String} id house's id
+ * @apiParam {String} id house id
  * @apiSuccess (Success 200) {Object[]} users Array of collaborators
  * @apiSuccess (Success 200) {String} _id Collaborator's id
  * @apiSuccess (Success 200) {String} login Collaborator's login
@@ -62,7 +62,16 @@ router.post('/:id/collaborators', housesController.addCollaborator);
 router.get('/:id/collaborators', housesController.getCollaborators);
 
 /**
- * @api {get} /houses Get list of houses
+ * @api {get} /houses/:id/rooms Get the list of rooms
+ * @apiName GetRoomsList
+ * @apiGroup House
+ * @apiPermission House owner or collaborator
+ * @apiParam {String} id house id
+ */
+router.get('/:id/rooms', housesController.getRooms);
+
+/**
+ * @api {get} /houses Get the list of houses
  * @apiName GetHouseList
  * @apiGroup House
  * @apiPermission logged in user
