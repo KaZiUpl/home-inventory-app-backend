@@ -2,15 +2,15 @@
   {
     "type": "delete",
     "url": "/houses/:id/collaborators",
-    "title": "Delete a collaborator from a main container (house)",
+    "title": "Remove a collaborator",
     "name": "DeleteCollaborator",
     "group": "House",
     "permission": [
       {
-        "name": "main container's owner or collaborator"
+        "name": "house owner or collaborator"
       }
     ],
-    "description": "<p>Deletes user with provided id from collaborators list. Can be used either by main container's owner or one of its collaborators in order to remove oneself from collaborating.</p>",
+    "description": "<p>Removes user with provided id from collaborators list. Can be used either by house owner or one of its collaborators in order to remove oneself from collaborating.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -19,7 +19,7 @@
             "type": "String",
             "optional": false,
             "field": "id",
-            "description": "<p>main container's id</p>"
+            "description": "<p>house id</p>"
           }
         ]
       }
@@ -47,17 +47,17 @@
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
     "groupTitle": "House",
-    "groupDescription": "<p>Endpoints for managing information about user's main containers.</p>"
+    "groupDescription": "<p>Endpoints for managing information about user's houses called houses. Every house has one owner that can change house info and add other users as collaborators.</p>"
   },
   {
     "type": "delete",
     "url": "/houses/:id",
-    "title": "Delete main container (house) with it's content.",
+    "title": "Delete a house",
     "name": "DeleteHouse",
     "group": "House",
     "permission": [
       {
-        "name": "main container's owner"
+        "name": "house owner"
       }
     ],
     "parameter": {
@@ -68,7 +68,7 @@
             "type": "String",
             "optional": false,
             "field": "id",
-            "description": "<p>Main container's id</p>"
+            "description": "<p>house id</p>"
           }
         ]
       }
@@ -96,7 +96,7 @@
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
     "groupTitle": "House",
-    "groupDescription": "<p>Endpoints for managing information about user's main containers.</p>"
+    "groupDescription": "<p>Endpoints for managing information about user's houses called houses. Every house has one owner that can change house info and add other users as collaborators.</p>"
   },
   {
     "type": "get",
@@ -106,7 +106,7 @@
     "group": "House",
     "permission": [
       {
-        "name": "main container's owner or collaborator"
+        "name": "House owner or collaborator"
       }
     ],
     "parameter": {
@@ -117,7 +117,7 @@
             "type": "String",
             "optional": false,
             "field": "id",
-            "description": "<p>main container's id</p>"
+            "description": "<p>house's id</p>"
           }
         ]
       }
@@ -159,17 +159,17 @@
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
     "groupTitle": "House",
-    "groupDescription": "<p>Endpoints for managing information about user's main containers.</p>"
+    "groupDescription": "<p>Endpoints for managing information about user's houses called houses. Every house has one owner that can change house info and add other users as collaborators.</p>"
   },
   {
     "type": "get",
     "url": "/houses/:id",
-    "title": "Get main container (house) info.",
+    "title": "Get house info",
     "name": "GetHouseInfo",
     "group": "House",
     "permission": [
       {
-        "name": "main container's owner or collaborators"
+        "name": "house owner or collaborators"
       }
     ],
     "parameter": {
@@ -180,7 +180,7 @@
             "type": "String",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the main container (house)</p>"
+            "description": "<p>ID of the house</p>"
           }
         ]
       }
@@ -193,7 +193,7 @@
             "type": "Object",
             "optional": false,
             "field": "Requested",
-            "description": "<p>main container</p>"
+            "description": "<p>house</p>"
           },
           {
             "group": "Success 200",
@@ -207,21 +207,21 @@
             "type": "String",
             "optional": false,
             "field": "_id",
-            "description": "<p>Main container's id</p>"
+            "description": "<p>house's id</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the main container</p>"
+            "description": "<p>Name of the house</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Description of the main container</p>"
+            "description": "<p>Description of the house</p>"
           },
           {
             "group": "Success 200",
@@ -243,12 +243,12 @@
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
     "groupTitle": "House",
-    "groupDescription": "<p>Endpoints for managing information about user's main containers.</p>"
+    "groupDescription": "<p>Endpoints for managing information about user's houses called houses. Every house has one owner that can change house info and add other users as collaborators.</p>"
   },
   {
     "type": "get",
     "url": "/houses",
-    "title": "Get list of user's main containers (houses).",
+    "title": "Get list of houses",
     "name": "GetHouseList",
     "group": "House",
     "permission": [
@@ -256,7 +256,7 @@
         "name": "logged in user"
       }
     ],
-    "description": "<p>Returns a list of houses that user owns of is a collaborator in</p>",
+    "description": "<p>Returns a list of houses that user owns or is collaborating in.</p>",
     "success": {
       "fields": {
         "Success 200": [
@@ -264,8 +264,8 @@
             "group": "Success 200",
             "type": "Object[]",
             "optional": false,
-            "field": "Array",
-            "description": "<p>of user's main containers</p>"
+            "field": "houses",
+            "description": "<p>Array of user's houses</p>"
           },
           {
             "group": "Success 200",
@@ -279,21 +279,21 @@
             "type": "String",
             "optional": false,
             "field": "_id",
-            "description": "<p>Main container's id</p>"
+            "description": "<p>House id</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the main container</p>"
+            "description": "<p>Name of the house</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Description of the main container</p>"
+            "description": "<p>Description of the house</p>"
           },
           {
             "group": "Success 200",
@@ -315,20 +315,20 @@
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
     "groupTitle": "House",
-    "groupDescription": "<p>Endpoints for managing information about user's main containers.</p>"
+    "groupDescription": "<p>Endpoints for managing information about user's houses called houses. Every house has one owner that can change house info and add other users as collaborators.</p>"
   },
   {
     "type": "post",
     "url": "/houses/:id/collaborators",
-    "title": "Add collaborator to a main container (house)",
+    "title": "Add a collaborator",
     "name": "PostAddCollaborator",
     "group": "House",
     "permission": [
       {
-        "name": "main container's owner"
+        "name": "house owner"
       }
     ],
-    "description": "<p>Adds a user as a collaborator. First user with login of email matching the provided name is added.</p>",
+    "description": "<p>Adds a user as a collaborator. First user with matching login or email is added.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -337,7 +337,7 @@
             "type": "String",
             "optional": false,
             "field": "id",
-            "description": "<p>main container's id</p>"
+            "description": "<p>house id</p>"
           },
           {
             "group": "Parameter",
@@ -372,12 +372,12 @@
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
     "groupTitle": "House",
-    "groupDescription": "<p>Endpoints for managing information about user's main containers.</p>"
+    "groupDescription": "<p>Endpoints for managing information about user's houses called houses. Every house has one owner that can change house info and add other users as collaborators.</p>"
   },
   {
     "type": "post",
     "url": "/houses",
-    "title": "Create new main container (house)",
+    "title": "Create new house",
     "name": "PostHouse",
     "group": "House",
     "permission": [
@@ -393,14 +393,14 @@
             "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the main container (house)</p>"
+            "description": "<p>Name of the house</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Description of the main container (house)</p>"
+            "description": "<p>Description of the house</p>"
           }
         ]
       }
@@ -428,17 +428,17 @@
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
     "groupTitle": "House",
-    "groupDescription": "<p>Endpoints for managing information about user's main containers.</p>"
+    "groupDescription": "<p>Endpoints for managing information about user's houses called houses. Every house has one owner that can change house info and add other users as collaborators.</p>"
   },
   {
     "type": "put",
     "url": "/houses/:id",
-    "title": "Modify main container (house) info.",
+    "title": "Modify house info",
     "name": "PutHouseInfo",
     "group": "House",
     "permission": [
       {
-        "name": "main container's owner"
+        "name": "house owner"
       }
     ],
     "parameter": {
@@ -449,14 +449,14 @@
             "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>New name of the main container (house)</p>"
+            "description": "<p>New name of the house</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>New description of the main container (house)</p>"
+            "description": "<p>New description of the house</p>"
           }
         ]
       }
@@ -484,7 +484,7 @@
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
     "groupTitle": "House",
-    "groupDescription": "<p>Endpoints for managing information about user's main containers.</p>"
+    "groupDescription": "<p>Endpoints for managing information about user's houses called houses. Every house has one owner that can change house info and add other users as collaborators.</p>"
   },
   {
     "type": "get",
