@@ -17,6 +17,15 @@ exports.modifyRoom = async function (req, res, next) {
 };
 
 // TODO: implementation
+exports.getRooms = async function (req, res, next) {
+  try {
+    return res.status(200).json({ message: 'Rooms array.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// TODO: implementation
 exports.getRoom = async function (req, res, next) {
   try {
     res.status(200).json({ message: 'Room created.' });

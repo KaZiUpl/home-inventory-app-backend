@@ -3,6 +3,7 @@ const router = express.Router();
 
 const checkAuthMiddleware = require('../middleware/checkAuth');
 const housesController = require('../controllers/houses');
+const roomsController = require('../controllers/rooms');
 
 router.use(checkAuthMiddleware);
 
@@ -25,6 +26,18 @@ router.use(checkAuthMiddleware);
  * }
  */
 router.post('/', housesController.createHouse);
+
+/**
+ * @api {post} /houses/:id/rooms Create a room
+ * @apiName PostRoom
+ * @apiGroup Room
+ * @apiDescription Creates a room in a house with provided id
+ * @apiPermission house owner
+ * @apiParam {String} id House id
+ * @apiParam {String} name Room's name
+ * @apiParam {String} description Room's description
+ */
+router.post('/:id/rooms', roomsController.createRoom);
 
 /**
  * @api {post} /houses/:id/collaborators Add a collaborator
@@ -68,7 +81,7 @@ router.get('/:id/collaborators', housesController.getCollaborators);
  * @apiPermission House owner or collaborator
  * @apiParam {String} id house id
  */
-router.get('/:id/rooms', housesController.getRooms);
+router.get('/:id/rooms', roomsController.getRooms);
 
 /**
  * @api {get} /houses Get the list of houses

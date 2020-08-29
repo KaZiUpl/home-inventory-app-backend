@@ -576,7 +576,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/rooms",
+    "url": "/house/:id/rooms",
     "title": "Create a room",
     "name": "PostRoom",
     "group": "Room",
@@ -614,7 +614,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "src/routes/rooms.js",
+    "filename": "src/routes/houses.js",
     "groupTitle": "Room",
     "groupDescription": "<p>Controller for managing rooms within houses. Each room has it's own items. Item can be added, modified and deleted within the room. A room can be created, modified or deleted by the house owner.</p>"
   },

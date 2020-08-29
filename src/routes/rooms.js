@@ -14,18 +14,6 @@ router.use(checkAuthMiddleware);
  */
 
 /**
- * @api {post} /rooms Create a room
- * @apiName PostRoom
- * @apiGroup Room
- * @apiDescription Creates a room in a house with provided id
- * @apiPermission house owner
- * @apiParam {String} id House id
- * @apiParam {String} name Room's name
- * @apiParam {String} description Room's description
- */
-router.post('/', roomsController.createRoom);
-
-/**
  * @api {get} /rooms/:id Get room info
  * @apiName GetRoom
  * @apiGroup Room
