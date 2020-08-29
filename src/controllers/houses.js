@@ -88,15 +88,6 @@ exports.getCollaborators = async function (req, res, next) {
   }
 };
 
-// TODO: implementation
-exports.getRooms = async function (req, res, next) {
-  try {
-    return res.status(200).json({ message: 'Rooms array.' });
-  } catch (error) {
-    next(error);
-  }
-};
-
 exports.getHouse = async function (req, res, next) {
   try {
     const houseId = req.params.id;
