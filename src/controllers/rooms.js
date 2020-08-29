@@ -65,6 +65,38 @@ exports.getRoom = async function (req, res, next) {
   try {
     const roomId = req.params.id;
 
+    let room = await Room.findById(roomId);
+    if (room == undefined) {
+      return res.status(404).json({ message: 'Room not found.' });
+    }
+
+    //check whether the user has access to this room info
+    let house = await House.findOne({
+      rooms: roomId,
+      $or: [{ owner: req.userData.id }, { collaborator: req.userData.id }]
+    });
+
+    if (house == undefined) {
+      return res
+        .status(403)
+        .json({ message: 'You do not have access to this resource.' });
+    }
+
+    res.status(200).json(room);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteRoom = async function (req, res, next) {
+  try {
+    const roomId = req.params.id;
+
+    let room = await Room.findById(roomId);
+    if (room == undefined) {
+      return res.status(404).json({ message: 'Room not found.' });
+    }
+
     //check whether the user has access to this room info
     let house = await House.findOne({
       rooms: roomId,
@@ -77,17 +109,9 @@ exports.getRoom = async function (req, res, next) {
         .json({ message: 'You do not have access to this resource.' });
     }
 
-    let room = await Room.findById(roomId);
+    await room.delete();
+    await house.update({ $pull: { rooms: room._id } });
 
-    res.status(200).json(room);
-  } catch (error) {
-    next(error);
-  }
-};
-
-// TODO: implementation
-exports.deleteRoom = async function (req, res, next) {
-  try {
     res.status(200).json({ message: 'Room deleted.' });
   } catch (error) {
     next(error);
