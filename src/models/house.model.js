@@ -18,6 +18,12 @@ const houseSchema = new Schema({
       ref: 'User'
     }
   ],
+  rooms: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Room'
+    }
+  ],
   description: {
     type: String
   }

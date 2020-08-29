@@ -12,6 +12,7 @@ const roomSchema = new Schema({
   },
   house: {
     type: mongoose.Types.ObjectId,
+    ref: 'House',
     required: true
   }
 });
