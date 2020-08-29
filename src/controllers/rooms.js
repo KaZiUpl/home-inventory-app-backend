@@ -39,19 +39,47 @@ exports.modifyRoom = async function (req, res, next) {
   }
 };
 
-// TODO: implementation
 exports.getRooms = async function (req, res, next) {
   try {
-    return res.status(200).json({ message: 'Rooms array.' });
+    const houseId = req.params.id;
+    //check if user is an owner or collaborator
+    let house = await House.findById(houseId);
+    if (
+      house.owner != req.userData.id &&
+      house.collaborators.filter((id) => id != req.userData.id) == undefined
+    ) {
+      return res.status(403).json({
+        message: 'You do not have permission to access this resource.'
+      });
+    }
+    //get rooms
+    let rooms = await Room.find({ house: houseId });
+
+    return res.status(200).json(rooms);
   } catch (error) {
     next(error);
   }
 };
 
-// TODO: implementation
 exports.getRoom = async function (req, res, next) {
   try {
-    res.status(200).json({ message: 'Room created.' });
+    const roomId = req.params.id;
+
+    //check whether the user has access to this room info
+    let house = await House.findOne({
+      rooms: roomId,
+      $or: [{ owner: req.userData.id }, { collaborator: req.userData.id }]
+    });
+
+    if (house.undefined) {
+      return res
+        .status(403)
+        .json({ message: 'You do not have access to this resource.' });
+    }
+
+    let room = await Room.findById(roomId);
+
+    res.status(200).json(room);
   } catch (error) {
     next(error);
   }
