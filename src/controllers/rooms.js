@@ -30,9 +30,27 @@ exports.createRoom = async function (req, res, next) {
   }
 };
 
-// TODO: implementation
 exports.modifyRoom = async function (req, res, next) {
   try {
+    const roomId = req.params.id;
+
+    let room = await Room.findById(roomId);
+    if (room == undefined) {
+      return res.status(404).json({ message: 'Room not found.' });
+    }
+
+    //check whether user is able to modify a room
+    let house = await House({ owner: req.userData.id, rooms: roomId });
+    if (house == undefined) {
+      return res
+        .status(403)
+        .json({ message: 'You do not have access to this resource.' });
+    }
+
+    room.name = req.body.name;
+    room.description = req.body.description;
+    await room.save();
+
     res.status(200).json({ message: 'Room modified.' });
   } catch (error) {
     next(error);
@@ -48,9 +66,9 @@ exports.getRooms = async function (req, res, next) {
       house.owner != req.userData.id &&
       house.collaborators.filter((id) => id != req.userData.id) == undefined
     ) {
-      return res.status(403).json({
-        message: 'You do not have permission to access this resource.'
-      });
+      return res
+        .status(403)
+        .json({ message: 'You do not have access to this resource.' });
     }
     //get rooms
     let rooms = await Room.find({ house: houseId });
