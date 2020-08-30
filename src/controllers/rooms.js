@@ -40,7 +40,7 @@ exports.modifyRoom = async function (req, res, next) {
     }
 
     //check whether user is able to modify a room
-    let house = await House({ owner: req.userData.id, rooms: roomId });
+    let house = await House.findOne({ owner: req.userData.id, rooms: roomId });
     if (house == undefined) {
       return res
         .status(403)
@@ -61,11 +61,12 @@ exports.getRooms = async function (req, res, next) {
   try {
     const houseId = req.params.id;
     //check if user is an owner or collaborator
-    let house = await House.findById(houseId);
-    if (
-      house.owner != req.userData.id &&
-      house.collaborators.filter((id) => id != req.userData.id) == undefined
-    ) {
+    let house = await House.findOne({
+      _id: houseId,
+      $or: [{ owner: req.userData.id }, { collaborators: req.userData.id }]
+    });
+
+    if (house == undefined) {
       return res
         .status(403)
         .json({ message: 'You do not have access to this resource.' });
@@ -91,7 +92,7 @@ exports.getRoom = async function (req, res, next) {
     //check whether the user has access to this room info
     let house = await House.findOne({
       rooms: roomId,
-      $or: [{ owner: req.userData.id }, { collaborator: req.userData.id }]
+      $or: [{ owner: req.userData.id }, { collaborators: req.userData.id }]
     });
 
     if (house == undefined) {
@@ -121,7 +122,7 @@ exports.deleteRoom = async function (req, res, next) {
       $or: [{ owner: req.userData.id }, { collaborator: req.userData.id }]
     });
 
-    if (house.undefined) {
+    if (house == undefined) {
       return res
         .status(403)
         .json({ message: 'You do not have access to this resource.' });
