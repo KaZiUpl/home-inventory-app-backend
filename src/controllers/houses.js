@@ -1,4 +1,5 @@
 const House = require('../models/house.model');
+const Room = require('../models/room.model');
 const User = require('../models/user.model');
 
 exports.createHouse = async function (req, res, next) {
@@ -156,6 +157,7 @@ exports.deleteHouse = async function (req, res, next) {
         .json({ message: 'You are not the owner owner of this house.' });
     }
 
+    await Room.deleteMany({ house: house._id });
     await house.delete();
 
     res.status(200).json({ message: 'House deleted.' });

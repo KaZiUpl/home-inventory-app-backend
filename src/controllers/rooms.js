@@ -129,7 +129,7 @@ exports.deleteRoom = async function (req, res, next) {
     }
 
     await room.delete();
-    await house.update({ $pull: { rooms: room._id } });
+    await house.updateOne({ $pull: { rooms: room._id } });
 
     res.status(200).json({ message: 'Room deleted.' });
   } catch (error) {
