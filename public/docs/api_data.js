@@ -576,7 +576,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/house/:id/rooms",
+    "url": "/houses/:id/rooms",
     "title": "Create a room",
     "name": "PostRoom",
     "group": "Room",

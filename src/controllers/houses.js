@@ -94,7 +94,8 @@ exports.getHouse = async function (req, res, next) {
     //get house
     let requestedHouse = await House.findById(houseId)
       .populate('owner', 'login')
-      .populate('collaborators', 'login');
+      .populate('collaborators', 'login')
+      .populate('rooms', 'name description');
 
     // if user is not an owner or collaborator of requested house
     if (
