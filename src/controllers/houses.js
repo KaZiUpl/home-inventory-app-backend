@@ -169,7 +169,7 @@ exports.deleteHouse = async function (req, res, next) {
 exports.deleteCollaborator = async function (req, res, next) {
   try {
     const houseId = req.params.id;
-    const collaboratorId = req.body.id;
+    const collaboratorId = req.params.userId;
     let house = await House.findById(houseId);
     if (house == null) {
       return res

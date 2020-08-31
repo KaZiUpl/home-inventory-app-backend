@@ -162,20 +162,6 @@ router.get('/:id', housesController.getHouse);
 router.put('/:id', housesController.editHouse);
 
 /**
- * @api {delete} /houses/:id Delete a house
- * @apiName DeleteHouse
- * @apiGroup House
- * @apiPermission house owner
- * @apiParam {String} id house id
- * @apiSuccess {String} message Response message
- * @apiSuccessExample {json} Success-Response:
- *     {
- *       "message": "House deleted."
- *     }
- */
-router.delete('/:id', housesController.deleteHouse);
-
-/**
  * @api {delete} /houses/:id/collaborators Remove a collaborator
  * @apiName DeleteCollaborator
  * @apiGroup House
@@ -189,6 +175,23 @@ router.delete('/:id', housesController.deleteHouse);
  *      "message": "Collaborator deleted."
  * }
  */
-router.delete('/:id/collaborators', housesController.deleteCollaborator);
+router.delete(
+  '/:id/collaborators/:userId',
+  housesController.deleteCollaborator
+);
+
+/**
+ * @api {delete} /houses/:id Delete a house
+ * @apiName DeleteHouse
+ * @apiGroup House
+ * @apiPermission house owner
+ * @apiParam {String} id house id
+ * @apiSuccess {String} message Response message
+ * @apiSuccessExample {json} Success-Response:
+ *     {
+ *       "message": "House deleted."
+ *     }
+ */
+router.delete('/:id', housesController.deleteHouse);
 
 module.exports = router;
