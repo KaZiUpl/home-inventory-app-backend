@@ -239,7 +239,7 @@ exports.changeLogin = async function (req, res, next) {
     // check whether new login is taken
     let newLogin = await User.findOne({ login: req.body.login });
     if (newLogin !== null) {
-      return res.status(400).json({ message: 'User login already in use.' });
+      return res.status(400).json({ message: 'Login already in use.' });
     }
 
     user.login = req.body.login;

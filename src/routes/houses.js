@@ -20,9 +20,11 @@ router.use(checkAuthMiddleware);
  * @apiParam {String} name Name of the house
  * @apiParam {String} description Description of the house
  * @apiSuccess (Success 200) {String} message Response message
+ * @apiSuccess (Success 200) {String} id id of created house
  * @apiSuccessExample {json} Response(example):
  * {
  *      "message": "House created."
+ *      "id": "5f576dedb9d20a30e02e81e6"
  * }
  */
 router.post('/', housesController.createHouse);
@@ -36,6 +38,13 @@ router.post('/', housesController.createHouse);
  * @apiParam {String} id House id
  * @apiParam {String} name Room's name
  * @apiParam {String} description Room's description
+ * @apiSuccess (Success 200) {String} message message
+ * @apiSuccess (Success 200) {String} id id of created room
+ * @apiSuccessExample {json} Response(example):
+ * {
+ *  "message": "Room created.",
+ * "id": "5f576dedb9d20a30e02e81e6"
+ *}
  */
 router.post('/:id/rooms', housesController.createRoom);
 
@@ -80,6 +89,21 @@ router.get('/:id/collaborators', housesController.getCollaborators);
  * @apiGroup House
  * @apiPermission House owner or collaborator
  * @apiParam {String} id house id
+ * @apiSuccess (Success 200) {Object[]} rooms Array of house rooms
+ * @apiSuccess (Success 200) {String} _id Room id
+ * @apiSuccess (Success 200) {String} name Room name
+ * @apiSuccess (Success 200) {String} description Room description
+ * @apiSuccess (Success 200) {String} house House id
+ * @apiSuccessExample {json} Response(example):
+ * [
+ * {
+ *   "_id": "5f5775f5e8b1493d3c82ebca",
+ *   "name": "room1",
+ *   "description": "description",
+ *   "house": "5f576dedb9d20a30e02e81e6",
+ *   "__v": 0
+ * }
+ *]
  */
 router.get('/:id/rooms', roomsController.getRooms);
 

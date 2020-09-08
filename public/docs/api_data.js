@@ -341,6 +341,54 @@ define({ "api": [
         ]
       }
     },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "rooms",
+            "description": "<p>Array of house rooms</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "_id",
+            "description": "<p>Room id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Room name</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Room description</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "house",
+            "description": "<p>House id</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response(example):",
+          "content": "[\n{\n  \"_id\": \"5f5775f5e8b1493d3c82ebca\",\n  \"name\": \"room1\",\n  \"description\": \"description\",\n  \"house\": \"5f576dedb9d20a30e02e81e6\",\n  \"__v\": 0\n}\n]",
+          "type": "json"
+        }
+      ]
+    },
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
     "groupTitle": "House",
@@ -443,13 +491,20 @@ define({ "api": [
             "optional": false,
             "field": "message",
             "description": "<p>Response message</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>id of created house</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Response(example):",
-          "content": "{\n     \"message\": \"House created.\"\n}",
+          "content": "{\n     \"message\": \"House created.\"\n     \"id\": \"5f576dedb9d20a30e02e81e6\"\n}",
           "type": "json"
         }
       ]
@@ -497,6 +552,33 @@ define({ "api": [
           }
         ]
       }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>message</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>id of created room</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response(example):",
+          "content": "{\n \"message\": \"Room created.\",\n\"id\": \"5f576dedb9d20a30e02e81e6\"\n}",
+          "type": "json"
+        }
+      ]
     },
     "version": "0.0.0",
     "filename": "src/routes/houses.js",
