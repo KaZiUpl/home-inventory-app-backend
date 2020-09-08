@@ -30,14 +30,14 @@ router.post('/', housesController.createHouse);
 /**
  * @api {post} /houses/:id/rooms Create a room
  * @apiName PostRoom
- * @apiGroup Room
+ * @apiGroup House
  * @apiDescription Creates a room in a house with provided id
  * @apiPermission house owner
  * @apiParam {String} id House id
  * @apiParam {String} name Room's name
  * @apiParam {String} description Room's description
  */
-router.post('/:id/rooms', roomsController.createRoom);
+router.post('/:id/rooms', housesController.createRoom);
 
 /**
  * @api {post} /houses/:id/collaborators Add a collaborator

@@ -460,6 +460,50 @@
     "groupDescription": "<p>Endpoints for managing information about user's houses called houses. Every house has one owner that can change house info and add other users as collaborators.</p>"
   },
   {
+    "type": "post",
+    "url": "/houses/:id/rooms",
+    "title": "Create a room",
+    "name": "PostRoom",
+    "group": "House",
+    "description": "<p>Creates a room in a house with provided id</p>",
+    "permission": [
+      {
+        "name": "house owner"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>House id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Room's name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Room's description</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/houses.js",
+    "groupTitle": "House",
+    "groupDescription": "<p>Endpoints for managing information about user's houses called houses. Every house has one owner that can change house info and add other users as collaborators.</p>"
+  },
+  {
     "type": "put",
     "url": "/houses/:id",
     "title": "Modify house info",
@@ -571,50 +615,6 @@
     },
     "version": "0.0.0",
     "filename": "src/routes/rooms.js",
-    "groupTitle": "Room",
-    "groupDescription": "<p>Controller for managing rooms within houses. Each room has it's own items. Item can be added, modified and deleted within the room. A room can be created, modified or deleted by the house owner.</p>"
-  },
-  {
-    "type": "post",
-    "url": "/houses/:id/rooms",
-    "title": "Create a room",
-    "name": "PostRoom",
-    "group": "Room",
-    "description": "<p>Creates a room in a house with provided id</p>",
-    "permission": [
-      {
-        "name": "house owner"
-      }
-    ],
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "id",
-            "description": "<p>House id</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "name",
-            "description": "<p>Room's name</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "description",
-            "description": "<p>Room's description</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "src/routes/houses.js",
     "groupTitle": "Room",
     "groupDescription": "<p>Controller for managing rooms within houses. Each room has it's own items. Item can be added, modified and deleted within the room. A room can be created, modified or deleted by the house owner.</p>"
   },
