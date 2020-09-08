@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const dotenv = require('./config/index');
+const { InternalServerError, NotFoundError } = require('./error/errors');
 
 // Routes
 const usersRoutes = require('./routes/users');
@@ -27,15 +28,16 @@ app.use('/users', usersRoutes);
 app.use('/houses', housesRoutes);
 app.use('/rooms', roomsRoutes);
 
-// Catching errors
 app.use((req, res, next) => {
-  const error = new Error('Not found');
-  error.status = 404;
-  next(error);
+  next(new NotFoundError());
 });
+// Catching errors
 app.use((error, req, res, next) => {
-  console.log(error);
-  res.sendStatus(error.status || 500);
+  console.error(error);
+  if (!error.status) {
+    error = new InternalServerError();
+  }
+  return res.status(error.status).json({ message: error.message });
 });
 
 mongoose
