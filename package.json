@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/app.js",
     "start": "node src/app.js",
-    "docs": "apidoc -i src/routes -o public/docs"
+    "docs": "apidoc -i src/routes -o public/docs",
+    "test": "mocha src/test"
   },
   "author": "Kacper Kaźmierkiewicz",
   "license": "ISC",
