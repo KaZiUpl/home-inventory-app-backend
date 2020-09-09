@@ -2,8 +2,8 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const jwt = require('jsonwebtoken');
 
-const checkAuthMiddleware = require('../middleware/checkAuth');
-const { UnauthorizedError } = require('../error/errors');
+const checkAuthMiddleware = require('../../middleware/checkAuth');
+const { UnauthorizedError } = require('../../error/errors');
 
 describe('CheckAuthMiddleware', function () {
   it('should throw UnauthorizedError if no Authorization header is present', function () {
