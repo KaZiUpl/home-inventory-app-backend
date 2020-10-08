@@ -18,7 +18,6 @@ const app = express();
 app.use(express.static(path.join(__dirname + '../public')));
 app.use('/docs', express.static('public/docs'));
 
-app.use(morgan('dev'));
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -45,16 +44,18 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
-  .then((result) => {
-    app.listen(dotenv.port, (err) => {
-      if (err) {
-        console.log('Server initialization failed');
-        console.log(err);
-      }
-      console.log(`Server started on port ${dotenv.port}!`);
-    });
-  })
+  .then((result) => {})
   .catch((error) => {
     console.log('Error on db connection');
-    console.log(error);
+    throw error;
   });
+
+app.listen(dotenv.port, (err) => {
+  if (err) {
+    console.log('Server initialization failed');
+    console.log(err);
+  }
+  console.log(`Server started on port ${dotenv.port}!`);
+});
+
+module.exports = app;

@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 
 const dotenv = require('../config/index');
 const User = require('../models/user.model');
+const { BadRequestError } = require('../error/errors');
 
 exports.createNewUser = async function (req, res, next) {
   try {
@@ -15,16 +16,12 @@ exports.createNewUser = async function (req, res, next) {
     //check for duplicate login
     let user = await User.findOne({ login: newUser.login });
     if (user !== null) {
-      return res
-        .status(400)
-        .json({ message: 'User with such login already exist.' });
+      throw new BadRequestError('User with such login already exist.');
     }
     //check for duplicate email
     user = await User.findOne({ email: newUser.email });
     if (user !== null) {
-      return res
-        .status(400)
-        .json({ message: 'User with such email already exist.' });
+      throw new BadRequestError('User with such email already exist.');
     }
     //add new user
     //set password
