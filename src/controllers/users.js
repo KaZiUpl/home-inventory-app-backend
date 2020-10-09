@@ -4,9 +4,13 @@ const bcrypt = require('bcrypt');
 
 const dotenv = require('../config/index');
 const User = require('../models/user.model');
-const { BadRequestError } = require('../error/errors');
+const {
+  BadRequestError,
+  ForbiddenError,
+  InternalServerError
+} = require('../error/errors');
 
-exports.createNewUser = async function (req, res, next) {
+exports.createNewUser = async function (req) {
   try {
     let newUser = new User({
       login: req.body.login,
@@ -31,24 +35,22 @@ exports.createNewUser = async function (req, res, next) {
     newUser.role = 'user';
     await newUser.save();
 
-    return res.status(201).json({ message: 'User created.' });
+    return { message: 'User created.' };
   } catch (error) {
-    next(error);
+    throw error;
   }
 };
 
-exports.modifyUser = async function (req, res, next) {
+exports.modifyUser = async function (req) {
   try {
     //check whether user is trying to change his data
     if (req.params.id != req.userData.id) {
-      return res
-        .status(403)
-        .json({ message: "You can't modify other user's profile" });
+      throw new ForbiddenError("You can't modify other user's profile");
     }
     // check for login duplicate
     let user = await User.findOne({ login: req.body.login });
     if (user !== null) {
-      return res.status(400).json({ message: 'Login is already in use.' });
+      throw new BadRequestError('Login is already in use.');
     }
     // change login
     await User.update(
@@ -56,35 +58,33 @@ exports.modifyUser = async function (req, res, next) {
       { $set: { login: req.body.login } }
     );
 
-    return res.status(200).json({ msg: 'User modified.' });
+    return { message: 'User modified.' };
   } catch (error) {
-    next(error);
+    throw error;
   }
 };
 
-exports.getUser = async function (req, res, next) {
+exports.getUser = async function (req) {
   try {
     //check whether user is requesting his info
     if (req.params.id != req.userData.id) {
-      return res
-        .status(403)
-        .json({ message: 'You do not have access to this resource.' });
+      throw new ForbiddenError('You do not have access to this resource.');
     }
     let user = await User.findById(req.params.id).select(
       '-refresh_token -password -_id'
     );
 
     if (user === null) {
-      return res.status(500).json({ message: 'Internal server error' });
+      throw new InternalServerError();
     }
 
-    return res.status(200).json(user);
+    return { user };
   } catch (error) {
-    next(error);
+    throw error;
   }
 };
 
-exports.login = async function (req, res, next) {
+exports.login = async function (req) {
   try {
     let credentials = new User({
       login: req.body.login,
@@ -103,7 +103,7 @@ exports.login = async function (req, res, next) {
 
     // user not found, wrong username
     if (user === null) {
-      return res.status(400).json({ message: 'Wrong credentials' });
+      throw new BadRequestError('Wrong credentials');
     }
     // user exists
     let passwordMatch = await bcrypt.compare(
@@ -112,7 +112,7 @@ exports.login = async function (req, res, next) {
     );
     // wrong password
     if (!passwordMatch) {
-      return res.status(400).json({ message: 'Wrong credentials' });
+      throw new BadRequestError('Wrong credentials');
     }
     // create access token
     const tokenTimestamp = Math.floor(Date.now() / 1000) + 15 * 60; // expires in 15 minutes
@@ -153,26 +153,26 @@ exports.login = async function (req, res, next) {
     await user.save();
 
     // return token output
-    return res.status(200).json({
+    return {
       access_token: token,
       refresh_token: refreshToken,
       expires: tokenExpDate,
       id: user._id,
       email: user.email,
       role: user.role
-    });
+    };
   } catch (error) {
-    next(error);
+    throw error;
   }
 };
 
-exports.refreshToken = async function (req, res, next) {
+exports.refreshToken = async function (req) {
   try {
     // get user with provided refresh token
     let user = await User.findOne({ refresh_token: req.body.token });
     // if user is not logged in
     if (user === null) {
-      return res.status(400).json({ message: 'User not logged in' });
+      throw new BadRequestError('User not logged in');
     }
 
     // create new access token
@@ -191,60 +191,58 @@ exports.refreshToken = async function (req, res, next) {
     );
 
     // return token output
-    return res.status(200).json({
+    return {
       access_token: token,
       refresh_token: user.refresh_token,
       expires: tokenExpDate,
       id: user._id,
       email: user.email,
       role: user.role
-    });
+    };
   } catch (error) {
-    next(error);
+    throw error;
   }
 };
 
-exports.logout = async function (req, res, next) {
+exports.logout = async function (req) {
   try {
     let user = await User.findOne({ refresh_token: req.body.token });
     // user with provided token does not exist
     if (user === null) {
-      return res.status(200).json({ message: 'User logged out.' });
+      return { message: 'User logged out.' };
     }
     // delete refresh token
     user.refresh_token = undefined;
     await user.save();
-    return res.status(200).json({ msg: 'User logged out.' });
+    return { message: 'User logged out.' };
   } catch (error) {
-    next(error);
+    throw error;
   }
 };
 
-exports.changeLogin = async function (req, res, next) {
+exports.changeLogin = async function (req) {
   try {
     //check whether user is requesting his info
     if (req.params.id != req.userData.id) {
-      return res
-        .status(403)
-        .json({ message: 'You do not have access to this resource.' });
+      throw new ForbiddenError('You do not have access to this resource.');
     }
     let user = await User.findOne({ email: req.userData.email });
     // if new login is the same
     if (user.login == req.body.login) {
-      return res.status(200).json({ message: 'Login changed successfully.' });
+      return { message: 'Login changed successfully.' };
     }
     // check whether new login is taken
     let newLogin = await User.findOne({ login: req.body.login });
     if (newLogin !== null) {
-      return res.status(400).json({ message: 'Login already in use.' });
+      throw new BadRequestError('Login already in use.');
     }
 
     user.login = req.body.login;
     await user.save();
 
-    return res.status(200).json({ message: 'Login changed successfully.' });
+    return { message: 'Login changed successfully.' };
   } catch (error) {
-    next(error);
+    throw error;
   }
 };
 
