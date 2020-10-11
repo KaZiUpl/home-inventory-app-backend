@@ -26,6 +26,13 @@ class NotFoundError extends Error {
   }
 }
 
+class UnprocessableEntityError extends Error {
+  constructor(message = 'Unprocessable entity') {
+    super(message);
+    this.status = 422;
+  }
+}
+
 class InternalServerError extends Error {
   constructor(message = 'Something went wrong.') {
     super(message);
@@ -38,5 +45,6 @@ module.exports = {
   UnauthorizedError,
   NotFoundError,
   ForbiddenError,
+  UnprocessableEntityError,
   InternalServerError
 };
