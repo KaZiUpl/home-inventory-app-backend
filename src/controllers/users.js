@@ -75,10 +75,10 @@ exports.getUser = async function (req) {
     );
 
     if (user === null) {
-      throw new InternalServerError();
+      throw new BadRequestError('User with that id does not exist.');
     }
 
-    return { user };
+    return user;
   } catch (error) {
     throw error;
   }
