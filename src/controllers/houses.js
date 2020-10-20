@@ -1,14 +1,22 @@
 const House = require('../models/house.model');
 const Room = require('../models/room.model');
 const User = require('../models/user.model');
+const mongoose = require('mongoose');
 
-exports.createHouse = async function (req, res, next) {
+const {
+  BadRequestError,
+  UnprocessableEntityError,
+  ForbiddenError,
+  NotFoundError
+} = require('../error/errors');
+
+exports.createHouse = async function (req) {
   try {
     const ownerId = req.userData.id;
     const newHouse = new House();
     // assign name and description
     if (req.body.name == undefined) {
-      return res.status(422).json({ message: 'Missing name' });
+      throw new UnprocessableEntityError('Missing name');
     }
     newHouse.name = req.body.name;
     newHouse.description = req.body.description;
@@ -16,9 +24,9 @@ exports.createHouse = async function (req, res, next) {
 
     let createdHouse = await newHouse.save();
 
-    res.status(201).json({ message: 'House created.', id: createdHouse._id });
+    return { message: 'House created.', id: createdHouse._id };
   } catch (error) {
-    next(error);
+    throw error;
   }
 };
 
@@ -80,7 +88,7 @@ exports.addCollaborator = async function (req, res, next) {
   }
 };
 
-exports.getHouseList = async function (req, res, next) {
+exports.getHouseList = async function (req) {
   try {
     const userId = req.userData.id;
 
@@ -89,9 +97,9 @@ exports.getHouseList = async function (req, res, next) {
       $or: [{ owner: userId }, { collaborators: userId }]
     }).populate('owner', 'login');
 
-    res.status(200).json(houseList);
+    return houseList;
   } catch (error) {
-    next(error);
+    throw error;
   }
 };
 
@@ -120,7 +128,7 @@ exports.getCollaborators = async function (req, res, next) {
   }
 };
 
-exports.getHouse = async function (req, res, next) {
+exports.getHouse = async function (req) {
   try {
     const houseId = req.params.id;
     //get house
@@ -128,72 +136,65 @@ exports.getHouse = async function (req, res, next) {
       .populate('owner', 'login')
       .populate('collaborators', 'login')
       .populate('rooms', 'name description');
-
     // if user is not an owner or collaborator of requested house
     if (
-      requestedHouse.owner._id != req.userData.id &&
-      requestedHouse.collaborators.filter(
-        (element) => element._id == req.userData.id
-      ) == undefined
+      !requestedHouse.owner._id.equals(req.userData.id) &&
+      requestedHouse.collaborators.filter((element) =>
+        element._id.equals(req.userData.id)
+      ).length == 0
     ) {
-      return res.status(403).json({
-        message:
-          'You are not an owner nor the collaborator of the requested house'
-      });
+      throw new ForbiddenError(
+        'You are not an owner nor the collaborator of the requested house'
+      );
     }
 
-    res.status(200).json(requestedHouse);
+    return requestedHouse;
   } catch (error) {
-    next(error);
+    throw error;
   }
 };
 
-exports.editHouse = async function (req, res, next) {
+exports.editHouse = async function (req) {
   try {
     const houseId = req.params.id;
 
     let house = await House.findOne({ _id: houseId });
     if (house == null) {
-      res.status(404).json({ message: 'The requested house does not exist' });
+      throw new NotFoundError('The requested house does not exist');
     }
 
-    if (house.owner != req.userData.id) {
-      return res
-        .status(403)
-        .json({ message: 'You are not an owner of the requested house' });
+    if (!house.owner.equals(req.userData.id)) {
+      throw new ForbiddenError('You are not an owner of the requested house');
     }
 
     house.name = req.body.name;
     house.description = req.body.description;
     await house.save();
 
-    res.status(200).json({ message: 'House info updated' });
+    return { message: 'House info updated' };
   } catch (error) {
-    next(error);
+    throw error;
   }
 };
 
-exports.deleteHouse = async function (req, res, next) {
+exports.deleteHouse = async function (req) {
   try {
     const houseId = req.params.id;
     // get house
     let house = await House.findOne({ _id: houseId });
     if (house == null) {
-      return res.status(200).json({ message: 'House deleted.' });
+      return { message: 'House deleted.' };
     }
-
-    if (req.userData.id != house.owner) {
-      return res
-        .status(403)
-        .json({ message: 'You are not the owner owner of this house.' });
+    if (!house.owner.equals(req.userData.id)) {
+      throw new ForbiddenError('You are not the owner owner of this house.');
     }
 
     await Room.deleteMany({ house: house._id });
     await house.delete();
 
-    res.status(200).json({ message: 'House deleted.' });
+    return { message: 'House deleted.' };
   } catch (error) {
-    next(error);
+    throw error;
   }
 };
 
