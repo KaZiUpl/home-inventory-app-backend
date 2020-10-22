@@ -18,15 +18,7 @@ const router = express.Router();
  *       "message": "User created."
  *     }
  */
-router.post('/', async (req, res, next) => {
-  try {
-    let response = await userController.createNewUser(req);
-
-    return res.status(201).json(response);
-  } catch (error) {
-    next(error);
-  }
-});
+router.post('/', userController.createUser);
 
 /**
  * @api {get} /users/:id Get user info
@@ -43,15 +35,7 @@ router.post('/', async (req, res, next) => {
  *     "role": "user",
  * }
  */
-router.get('/:id', checkAuthMiddleware, async (req, res, next) => {
-  try {
-    let result = await userController.getUser(req);
-
-    return res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+router.get('/:id', checkAuthMiddleware, userController.getUser);
 
 /**
  * @api {put} /users/:id/login Change user's login
@@ -77,15 +61,7 @@ router.put('/:id/login', checkAuthMiddleware, userController.changeLogin);
  *       "message": "User modified."
  *     }
  */
-router.put('/:id', checkAuthMiddleware, async (req, res, next) => {
-  try {
-    let result = userController.modifyUser(req);
-
-    return res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+router.put('/:id', checkAuthMiddleware, userController.putUser);
 
 /**
  * @api {post} /users/auth Login user
@@ -109,15 +85,7 @@ router.put('/:id', checkAuthMiddleware, async (req, res, next) => {
  *       "role": "user"
  *     }
  */
-router.post('/auth', async (req, res, next) => {
-  try {
-    let result = await userController.login(req);
-
-    return res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+router.post('/auth', userController.login);
 
 /**
  * @api {post} /users/auth/refresh Refresh access token
@@ -140,15 +108,7 @@ router.post('/auth', async (req, res, next) => {
  *       "role": "user"
  *     }
  */
-router.post('/auth/refresh', async (req, res, next) => {
-  try {
-    let result = await userController.refreshToken(req);
-
-    return res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+router.post('/auth/refresh', userController.refreshToken);
 
 /**
  * @api {post} /users/logout Logout user
@@ -161,14 +121,6 @@ router.post('/auth/refresh', async (req, res, next) => {
  *       "message": "User logged out."
  *     }
  */
-router.post('/logout', async (req, res, next) => {
-  try {
-    let result = await userController.logout(req);
-
-    return res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+router.post('/logout', userController.logout);
 
 module.exports = router;

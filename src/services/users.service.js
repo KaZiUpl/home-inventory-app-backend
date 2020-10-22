@@ -4,28 +4,23 @@ const bcrypt = require('bcrypt');
 
 const dotenv = require('../config/index');
 const User = require('../models/user.model');
-const {
-  BadRequestError,
-  ForbiddenError,
-  InternalServerError
-} = require('../error/errors');
 
-exports.createNewUser = async function (req) {
+exports.createUser = async function (login, email, password) {
   try {
     let newUser = new User({
-      login: req.body.login,
-      email: req.body.email,
-      password: req.body.password
+      login: login,
+      email: email,
+      password: password
     });
     //check for duplicate login
     let user = await User.findOne({ login: newUser.login });
     if (user !== null) {
-      throw new BadRequestError('User with such login already exist.');
+      throw new Error('User with such login already exist.');
     }
     //check for duplicate email
     user = await User.findOne({ email: newUser.email });
     if (user !== null) {
-      throw new BadRequestError('User with such email already exist.');
+      throw new Error('User with such email already exist.');
     }
     //add new user
     //set password
@@ -33,50 +28,28 @@ exports.createNewUser = async function (req) {
     newUser.password = passwordHash;
     //set role
     newUser.role = 'user';
-    await newUser.save();
+    newUser = await newUser.save();
 
-    return { message: 'User created.' };
+    return newUser._id;
   } catch (error) {
     throw error;
   }
 };
 
-exports.modifyUser = async function (req) {
+exports.modifyUser = async function (id, data) {
   try {
-    //check whether user is trying to change his data
-    if (req.params.id != req.userData.id) {
-      throw new ForbiddenError("You can't modify other user's profile");
-    }
-    // check for login duplicate
-    let user = await User.findOne({ login: req.body.login });
-    if (user !== null) {
-      throw new BadRequestError('Login is already in use.');
-    }
     // change login
-    await User.update(
-      { _id: req.userData.id },
-      { $set: { login: req.body.login } }
-    );
+    await User.update({ _id: id }, { $set: { login: data.login } });
 
-    return { message: 'User modified.' };
+    return;
   } catch (error) {
     throw error;
   }
 };
 
-exports.getUser = async function (req) {
+exports.getUser = async function (id) {
   try {
-    //check whether user is requesting his info
-    if (req.params.id != req.userData.id) {
-      throw new ForbiddenError('You do not have access to this resource.');
-    }
-    let user = await User.findById(req.params.id).select(
-      '-refresh_token -password -_id'
-    );
-
-    if (user === null) {
-      throw new BadRequestError('User with that id does not exist.');
-    }
+    let user = await User.findById(id).select('-refresh_token -password -_id');
 
     return user;
   } catch (error) {
@@ -84,11 +57,11 @@ exports.getUser = async function (req) {
   }
 };
 
-exports.login = async function (req) {
+exports.login = async function (login, password) {
   try {
     let credentials = new User({
-      login: req.body.login,
-      password: req.body.password
+      login: login,
+      password: password
     });
     let user;
     if (validateEmail(credentials.login)) {
@@ -103,7 +76,7 @@ exports.login = async function (req) {
 
     // user not found, wrong username
     if (user === null) {
-      throw new BadRequestError('Wrong credentials');
+      throw new Error('Wrong credentials');
     }
     // user exists
     let passwordMatch = await bcrypt.compare(
@@ -112,7 +85,7 @@ exports.login = async function (req) {
     );
     // wrong password
     if (!passwordMatch) {
-      throw new BadRequestError('Wrong credentials');
+      throw new Error('Wrong credentials');
     }
     // create access token
     const tokenTimestamp = Math.floor(Date.now() / 1000) + 15 * 60; // expires in 15 minutes
@@ -166,13 +139,13 @@ exports.login = async function (req) {
   }
 };
 
-exports.refreshToken = async function (req) {
+exports.refreshToken = async function (refresh_token) {
   try {
     // get user with provided refresh token
-    let user = await User.findOne({ refresh_token: req.body.token });
+    let user = await User.findOne({ refresh_token: refresh_token });
     // if user is not logged in
     if (user === null) {
-      throw new BadRequestError('User not logged in');
+      throw new Error('User not logged in');
     }
 
     // create new access token
@@ -204,43 +177,36 @@ exports.refreshToken = async function (req) {
   }
 };
 
-exports.logout = async function (req) {
+exports.logout = async function (refresh_token) {
   try {
-    let user = await User.findOne({ refresh_token: req.body.token });
+    let user = await User.findOne({ refresh_token: refresh_token });
     // user with provided token does not exist
     if (user === null) {
-      return { message: 'User logged out.' };
+      throw new Error('User not logged in or refresh token is invalid.');
     }
     // delete refresh token
     user.refresh_token = undefined;
     await user.save();
-    return { message: 'User logged out.' };
   } catch (error) {
     throw error;
   }
 };
 
-exports.changeLogin = async function (req) {
+exports.changeLogin = async function (userId, newLogin) {
   try {
-    //check whether user is requesting his info
-    if (req.params.id != req.userData.id) {
-      throw new ForbiddenError('You do not have access to this resource.');
-    }
-    let user = await User.findOne({ email: req.userData.email });
+    let user = await User.findOne(userId);
     // if new login is the same
-    if (user.login == req.body.login) {
-      return { message: 'Login changed successfully.' };
+    if (user.login == this.newLogin) {
+      return;
     }
     // check whether new login is taken
-    let newLogin = await User.findOne({ login: req.body.login });
-    if (newLogin !== null) {
-      throw new BadRequestError('Login already in use.');
+    let checkLogin = await User.findOne({ login: newLogin });
+    if (checkLogin !== null) {
+      throw new Error('Login already in use.');
     }
 
-    user.login = req.body.login;
+    user.login = newLogin;
     await user.save();
-
-    return { message: 'Login changed successfully.' };
   } catch (error) {
     throw error;
   }
