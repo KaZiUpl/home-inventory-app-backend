@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 const checkAuthMiddleware = require('../middleware/checkAuth');
-const housesController = require('../controllers/houses');
-const roomsController = require('../controllers/rooms');
+const housesController = require('../controllers/houses.controller');
+const roomsController = require('../controllers/rooms.controller');
 
 router.use(checkAuthMiddleware);
 
@@ -105,7 +105,7 @@ router.get('/:id/collaborators', housesController.getCollaborators);
  * }
  *]
  */
-router.get('/:id/rooms', roomsController.getRooms);
+router.get('/:id/rooms', housesController.getRooms);
 
 /**
  * @api {get} /houses Get the list of houses
@@ -186,7 +186,7 @@ router.get('/:id', housesController.getHouse);
 router.put('/:id', housesController.editHouse);
 
 /**
- * @api {delete} /houses/:id/collaborators Remove a collaborator
+ * @api {delete} /houses/:id/collaborators/:userId Remove a collaborator
  * @apiName DeleteCollaborator
  * @apiGroup House
  * @apiPermission house owner or collaborator
