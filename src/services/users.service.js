@@ -39,7 +39,7 @@ exports.createUser = async function (login, email, password) {
 exports.modifyUser = async function (id, data) {
   try {
     // change login
-    await User.update({ _id: id }, { $set: { login: data.login } });
+    await User.updateOne({ _id: id }, { $set: { login: data.login } });
 
     return;
   } catch (error) {
@@ -194,13 +194,13 @@ exports.logout = async function (refresh_token) {
 
 exports.changeLogin = async function (userId, newLogin) {
   try {
-    let user = await User.findOne(userId);
+    let user = await User.findById(userId);
     // if new login is the same
     if (user.login == this.newLogin) {
       return;
     }
     // check whether new login is taken
-    let checkLogin = await User.findOne({ login: newLogin });
+    let checkLogin = await User.findOne(User({ login: newLogin }));
     if (checkLogin !== null) {
       throw new Error('Login already in use.');
     }

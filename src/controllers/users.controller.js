@@ -1,7 +1,7 @@
 const express = require('express');
 
 const UsersService = require('../services/users.service');
-const { ForbiddenError } = require('../error/errors');
+const { ForbiddenError, BadRequestError } = require('../error/errors');
 
 exports.createUser = async function (req, res, next) {
   // validate input
@@ -46,7 +46,7 @@ exports.putUser = async function (req, res, next) {
 exports.getUser = async function (req, res, next) {
   try {
     //check whether user is requesting his info
-    if (req.params.id != req.userData.id) {
+    if (req.params.id !== req.userData.id) {
       throw new ForbiddenError();
     }
     let user = await UsersService.getUser(req.params.id);
@@ -94,7 +94,7 @@ exports.refreshToken = async function (req, res, next) {
 
 exports.logout = async function (req, res, next) {
   try {
-    await UsersService.logout(req.body.refresh_token);
+    await UsersService.logout(req.body.token);
 
     return res.status(200).json({ message: 'User logged out.' });
   } catch (error) {
@@ -113,7 +113,7 @@ exports.changeLogin = async function (req, res, next) {
       throw new ForbiddenError();
     }
 
-    await UserService.changeLogin(req.params.id, req.body.login);
+    await UsersService.changeLogin(req.params.id, req.body.login);
 
     return res.status(200).json({ message: 'Login changed successfully.' });
   } catch (error) {
