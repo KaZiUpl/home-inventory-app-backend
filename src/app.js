@@ -6,7 +6,11 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const dotenv = require('./config/index');
-const { InternalServerError, NotFoundError } = require('./error/errors');
+const {
+  InternalServerError,
+  NotFoundError,
+  BadRequestError
+} = require('./error/errors');
 
 // Routes
 const usersRoutes = require('./routes/users');
@@ -33,6 +37,9 @@ app.use((req, res, next) => {
 // Catching errors
 app.use((error, req, res, next) => {
   console.error(error);
+  if (error instanceof Error) {
+    error = new BadRequestError(error.message);
+  }
   if (!error.status) {
     error = new InternalServerError();
   }
@@ -42,7 +49,8 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(dotenv.mongodbUri, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: true
   })
   .then((result) => {})
   .catch((error) => {
