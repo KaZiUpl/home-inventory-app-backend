@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const checkAuthMiddleware = require('../middleware/checkAuth');
-const roomsController = require('../controllers/rooms');
+const roomsController = require('../controllers/rooms.controller');
 
 //restrict all routes to logged in users
 router.use(checkAuthMiddleware);
