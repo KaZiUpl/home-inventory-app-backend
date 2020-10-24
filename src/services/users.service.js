@@ -2,7 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
-const dotenv = require('../config/index');
+const dotenv = require('../config/dotenv');
 const User = require('../models/user.model');
 
 exports.createUser = async function (login, email, password) {
