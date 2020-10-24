@@ -2,7 +2,6 @@ const server = require('./config/express');
 const mongoose = require('mongoose');
 
 const dotenv = require('./config/dotenv');
-const morgan = require('morgan');
 
 mongoose
   .connect(dotenv.mongodbUri, {

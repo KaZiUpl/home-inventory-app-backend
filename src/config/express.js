@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const morgan = require('morgan');
 const path = require('path');
 
 const {
@@ -16,6 +17,7 @@ const roomsRoutes = require('../routes/rooms');
 
 const app = express();
 
+app.use(morgan('dev'));
 //set static documentation files
 app.use(express.static(path.join(__dirname + '../public')));
 app.use('/docs', express.static('public/docs'));
@@ -35,7 +37,6 @@ app.use((req, res, next) => {
 });
 //handle errors
 app.use((error, req, res, next) => {
-  console.error(error);
   if (error instanceof Error) {
     error = new BadRequestError(error.message);
   }
