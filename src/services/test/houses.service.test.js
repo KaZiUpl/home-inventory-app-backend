@@ -6,17 +6,13 @@ chai.use(chaiAsPromised);
 
 const expect = chai.expect;
 
-const {
-  UnprocessableEntityError,
-  ForbiddenError,
-  NotFoundError
-} = require('../../error/errors');
-const HousesController = require('../houses');
+const HousesService = require('../houses.service');
 
 const User = require('../../models/user.model');
 const House = require('../../models/house.model');
+const Room = require('../../models/room.model');
 
-describe('Houses Controller', function () {
+describe('Houses Service', function () {
   var user1, user2;
   before(async function () {
     // connect to test db
@@ -59,34 +55,65 @@ describe('Houses Controller', function () {
     });
 
     it('should create a house', async function () {
-      const req = {
-        body: {
-          name: 'house',
-          description: 'description'
-        },
-        userData: {
-          id: user1._id
-        }
+      const body = {
+        name: 'house',
+        description: 'description'
       };
-      let response = await HousesController.createHouse(req);
+
+      await expect(
+        HousesService.createHouse(user1._id, body.name, body.description)
+      ).to.be.fulfilled;
+
       let house = await House.findOne({});
+
       expect(house).to.exist;
       expect(house).to.have.property('name', 'house');
       expect(house).to.have.property('description', 'description');
-      expect(house).to.have.property('owner');
+      expect(house).to.have.deep.property('owner', user1._id);
     });
-    it('should throw UnprocessableEntityError if house name is not present', async function () {
-      const req = {
-        body: {
-          description: 'description'
-        },
-        userData: {
-          id: user1._id
-        }
-      };
-      await expect(HousesController.createHouse(req)).to.be.rejectedWith(
-        UnprocessableEntityError
-      );
+  });
+  describe('Create a room', function () {
+    let house;
+    beforeEach(async function () {
+      await House.deleteMany({});
+      house = await House.create({
+        name: 'house',
+        description: 'description',
+        owner: user1._id
+      });
+    });
+    afterEach(async function () {
+      await House.deleteMany({});
+    });
+    it('should create a room', async function () {
+      const body = { name: 'room', description: 'description' };
+
+      await expect(
+        HousesService.createRoom(house._id, body.name, body.description)
+      ).to.be.fulfilled;
+
+      let updatedHouse = await House.findById(house._id);
+      let room = await Room.findOne({ house: house._id });
+
+      expect(updatedHouse.rooms).to.exist.and.to.have.lengthOf(1);
+      expect(updatedHouse.rooms).to.have.deep.members([room._id]);
+
+      expect(room).to.exist;
+      expect(room).to.have.property('name', 'room');
+      expect(room).to.have.property('description', 'description');
+      expect(room).to.have.deep.property('house', house._id);
+    });
+    it('should throw if houseId is invalid', async function () {
+      const body = { name: 'room', description: 'description' };
+
+      await expect(HousesService.createRoom('asd', body.name, body.description))
+        .to.be.rejected;
+    });
+    it('should throw if houseId is null', async function () {
+      const body = { name: 'room', description: 'description' };
+
+      await expect(HousesService.createRoom(null, body.name, body.description))
+        .to.be.rejected;
     });
   });
   describe('Get house list', function () {
@@ -103,13 +130,8 @@ describe('Houses Controller', function () {
       //create houses
       await House.create({ name: 'asd', description: 'asd', owner: user1._id });
       await House.create({ name: 'sdf', owner: user1._id });
-      const req = {
-        userData: {
-          id: user1._id
-        }
-      };
 
-      let response = await HousesController.getHouseList(req);
+      let response = await HousesService.getHouseList(user1._id);
 
       expect(response).to.be.a('array');
       expect(response.length).to.be.equal(2);
@@ -127,80 +149,66 @@ describe('Houses Controller', function () {
       //clear House collection
       await House.deleteMany({});
     });
-    it('should return house info to owner', async function () {
+    it('should return house info', async function () {
       let house = await House.create({
-        owner: user1.id,
+        owner: user1._id,
         name: 'asd',
         description: 'asd'
       });
 
-      const req = {
-        params: { id: house._id },
-        userData: { id: user1._id }
-      };
-
-      let response = await HousesController.getHouse(req);
+      let response = await HousesService.getHouse(house._id);
 
       expect(response).to.be.a('object');
       expect(response).to.have.property('name', 'asd');
       expect(response).to.have.property('description', 'asd');
       expect(response).to.have.property('owner');
     });
-    it('should return house info to collaborator', async function () {
-      let house = await House.create({
-        owner: user1.id,
-        name: 'asd',
-        description: 'asd',
-        collaborators: [user2._id]
+    it('should throw when trying to access non-existent house', async function () {
+      let id = mongoose.Types.ObjectId();
+
+      await expect(HousesService.getHouse(id)).to.be.rejected;
+    });
+    it('should throw when provided house id is invalid', async function () {
+      const id = 'asd';
+
+      await expect(HousesService.getHouse(id)).to.be.rejected;
+    });
+  });
+  describe('Get rooms list', function () {
+    let house;
+    beforeEach(async function () {
+      await House.deleteMany({});
+      house = await House.create({
+        name: 'house',
+        description: 'description',
+        owner: user1._id
+      });
+      let room = await Room.create({
+        name: 'room',
+        description: 'room description',
+        house: house._id
       });
 
-      const req = {
-        params: { id: house._id },
-        userData: { id: user2._id }
-      };
-
-      let response = await HousesController.getHouse(req);
-
-      expect(response).to.be.a('object');
-      expect(response).to.have.property('name', 'asd');
-      expect(response).to.have.property('description', 'asd');
-      expect(response).to.have.property('owner');
-      expect(response).to.have.property('collaborators');
+      house.rooms = [room._id];
+      house = await house.save();
     });
-    it("should throw ForbiddenError when trying to access other user's house", async function () {
-      let house = await House.create({
-        owner: user1.id,
-        name: 'asd',
-        description: 'asd'
-      });
-      const req = {
-        params: { id: house._id },
-        userData: { id: user2._id }
-      };
-
-      await expect(HousesController.getHouse(req)).to.be.rejectedWith(
-        ForbiddenError
-      );
+    afterEach(async function () {
+      await House.deleteMany({});
     });
-    it('should throw NotFoundError when trying to access non-existent house', async function () {
-      const req = {
-        params: { id: mongoose.Types.ObjectId() },
-        userData: { id: user1._id }
-      };
 
-      await expect(HousesController.getHouse(id)).to.be.rejectedWith(
-        NotFoundError
-      );
+    it('should return rooms list', async function () {
+      let rooms = await HousesService.getRooms(house._id);
+
+      expect(rooms).to.exist.and.be.a('array').of.length(1);
+      expect(rooms[0]).to.have.property('name', 'room');
+      expect(rooms[0]).to.have.property('description', 'room description');
+      expect(rooms[0]).to.have.deep.property('house', house._id);
     });
-    it('should throw UnprocessableEntityError when provided house id is invalid', async function () {
-      const req = {
-        params: { id: 'asd' },
-        userData: { id: user1._id }
-      };
-
-      await expect(HousesController.getHouse(id)).to.be.rejectedWith(
-        UnprocessableEntityError
-      );
+    it('should throw if houseId is invalid', async function () {
+      await expect(HousesService.getRooms('asd')).to.be.rejected;
+    });
+    it('should throw if houseId is null', async function () {
+      await expect(HousesService.getRooms(null)).to.be.rejected;
     });
   });
   describe('Modify house info', function () {
@@ -212,128 +220,53 @@ describe('Houses Controller', function () {
       //clear House collection
       await House.deleteMany({});
     });
-
-    context('when an owner', function () {
-      it('should modify house info', async function () {
-        let house = await House.create({
-          name: 'asd',
-          description: 'asd',
-          owner: user1._id
-        });
-
-        const req = {
-          body: { name: 'sdf', description: 'sdf' },
-          params: { id: house._id },
-          userData: { id: user1._id }
-        };
-
-        let response = await HousesController.editHouse(req);
-
-        let updatedHouse = await (await House.findById(house._id)).toJSON();
-
-        expect(updatedHouse).to.exist;
-        expect(updatedHouse).to.have.property('name', 'sdf');
-        expect(updatedHouse).to.have.property('description', 'sdf');
-      });
-      it('should not modify house owner', async function () {
-        let house = await House.create({
-          name: 'asd',
-          description: 'asd',
-          owner: user1._id
-        });
-
-        const req = {
-          body: { name: 'sdf', description: 'sdf', owner: user2._id },
-          params: { id: house._id },
-          userData: { id: user1._id }
-        };
-
-        let response = await HousesController.editHouse(req);
-
-        let updatedHouse = await await House.findById(house._id);
-
-        expect(updatedHouse).to.exist;
-        expect(updatedHouse).to.have.property('name', 'sdf');
-        expect(updatedHouse).to.have.property('description', 'sdf');
-        expect(updatedHouse).to.have.property('owner');
-        expect(updatedHouse.owner).to.deep.equal(user1._id);
-      });
-      it('should not modify house collaborators', async function () {
-        let house = await House.create({
-          name: 'asd',
-          description: 'asd',
-          owner: user1._id,
-          collaborators: [user2._id]
-        });
-
-        const req = {
-          body: { name: 'sdf', description: 'sdf', collaborators: [] },
-          params: { id: house._id },
-          userData: { id: user1._id }
-        };
-
-        let response = await HousesController.editHouse(req);
-
-        let updatedHouse = await await House.findById(house._id);
-
-        expect(updatedHouse).to.exist;
-        expect(updatedHouse).to.have.property('name', 'sdf');
-        expect(updatedHouse).to.have.property('description', 'sdf');
-        expect(updatedHouse.collaborators).to.deep.equal(house.collaborators);
-      });
-    });
-    context('when not an owner', function () {
-      it('should throw ForbiddenError', async function () {
-        let house = await House.create({
-          name: 'asd',
-          description: 'asd',
-          owner: user1._id
-        });
-
-        const req = {
-          params: { id: house._id },
-          body: { name: 'sdf', description: 'sdf' },
-          userData: { id: user2._id }
-        };
-
-        await expect(HousesController.editHouse(req)).to.be.rejectedWith(
-          ForbiddenError
-        );
-      });
-    });
-    it('should throw UnprocessableEntityError when provided house id is invalid', async function () {
+    it('should modify house info', async function () {
       let house = await House.create({
         name: 'asd',
         description: 'asd',
         owner: user1._id
       });
 
-      const req = {
-        params: { id: 'asdfghjkl' },
-        body: { name: 'sdf', description: 'sdf' },
-        userData: { id: user2._id }
-      };
+      const body = { name: 'sdf', description: 'sdf' };
 
-      await expect(HousesController.editHouse(req)).to.be.rejectedWith(
-        UnprocessableEntityError
-      );
+      await expect(
+        HousesService.editHouse(house._id, body.name, body.description)
+      ).to.be.fulfilled;
+
+      let updatedHouse = await (await House.findById(house._id)).toJSON();
+
+      expect(updatedHouse).to.exist;
+      expect(updatedHouse).to.have.property('name', 'sdf');
+      expect(updatedHouse).to.have.property('description', 'sdf');
     });
-    it('should throw NotFoundError when provided house id does not exist', async function () {
+    it('should throw if provided house id is invalid', async function () {
       let house = await House.create({
         name: 'asd',
         description: 'asd',
         owner: user1._id
       });
 
-      const req = {
-        params: { id: mongoose.Types.ObjectId() },
-        body: { name: 'sdf', description: 'sdf' },
-        userData: { id: user2._id }
+      const body = { name: 'sdf', description: 'sdf' };
+
+      await expect(HousesService.editHouse('asd', body.name, body.description))
+        .to.be.rejected;
+    });
+    it('should throw if provided house id does not exist', async function () {
+      let house = await House.create({
+        name: 'asd',
+        description: 'asd',
+        owner: user1._id
+      });
+
+      const body = {
+        id: mongoose.Types.ObjectId(),
+        name: 'sdf',
+        description: 'sdf'
       };
 
-      await expect(HousesController.editHouse(req)).to.be.rejectedWith(
-        NotFoundError
-      );
+      await expect(
+        HousesService.editHouse(body.id, body.name, body.description)
+      ).to.be.rejected;
     });
   });
   describe('Delete house', function () {
@@ -346,129 +279,182 @@ describe('Houses Controller', function () {
       await House.deleteMany({});
     });
 
-    context('when an owner', async function () {
-      it('should delete house', async function () {
-        let house = await House.create({
-          name: 'asd',
-          description: 'asd',
-          owner: user1._id
-        });
-
-        const req = {
-          params: { id: house._id },
-          userData: { id: user1._id }
-        };
-
-        let response = await HousesController.deleteHouse(req);
-        let dbHouse = await House.findById(house._id);
-
-        expect(dbHouse).to.not.exist;
-      });
-    });
-
-    context('when not an owner', function () {
-      it('should throw ForbiddenError', async function () {
-        let house = await House.create({
-          name: 'asd',
-          description: 'asd',
-          owner: user1._id
-        });
-
-        const req = {
-          params: { id: house._id },
-          userData: { id: user2._id }
-        };
-
-        await expect(HousesController.deleteHouse(req)).to.be.rejectedWith(
-          ForbiddenError
-        );
-      });
-    });
-    it('should throw NotFoundError if house does not exist', async function () {
+    it('should delete house', async function () {
       let house = await House.create({
         name: 'asd',
         description: 'asd',
         owner: user1._id
       });
 
-      const req = {
-        params: { id: mongoose.Types.ObjectId() },
-        userData: { id: user1._id }
-      };
+      await expect(HousesService.deleteHouse(house._id)).to.be.fulfilled;
 
-      await expect(HousesController.deleteHouse(req)).to.be.rejectedWith(
-        NotFoundError
-      );
+      let dbHouse = await House.findById(house._id);
+
+      expect(dbHouse).to.not.exist;
     });
-    it('should throw UnprocessableEntityError when provided house id is invalid', async function () {
+    it('should throw if house does not exist', async function () {
       let house = await House.create({
         name: 'asd',
         description: 'asd',
         owner: user1._id
       });
 
-      const req = {
-        params: { id: 'asdas' },
-        userData: { id: user1._id }
-      };
+      const id = mongoose.Types.ObjectId();
 
-      await expect(HousesController.deleteHouse(req)).to.be.rejectedWith(
-        UnprocessableEntityError
-      );
+      await expect(HousesService.deleteHouse(id)).to.be.rejected;
+    });
+    it('should throw if provided house id is invalid', async function () {
+      let house = await House.create({
+        name: 'asd',
+        description: 'asd',
+        owner: user1._id
+      });
+
+      await expect(HousesService.deleteHouse('asd')).to.be.rejected;
     });
   });
   describe('Add a collaborator', function () {
+    let house;
     beforeEach(async function () {
       //clear House collection
       await House.deleteMany({});
+      house = await House.create({
+        name: 'house',
+        description: 'description',
+        owner: user1._id
+      });
     });
     afterEach(async function () {
       //clear House collection
       await House.deleteMany({});
     });
+    it('should add a collaborator', async function () {
+      await expect(HousesService.addCollaborator(house._id, user2.login)).to.be
+        .fulfilled;
 
-    context('when an owner', function () {
-      it('should add a collaborator', async function () {});
-      it('should throw UnprocessableEntityError if provided house id is invalid', async function () {});
-      it('should throw UnprocessableEntityError if provided collaborator id is invalid', async function () {});
+      let modifiedHouse = await (await House.findById(house._id)).toJSON();
+
+      expect(modifiedHouse).to.have.property('collaborators');
+      expect(modifiedHouse.collaborators).to.be.a('array');
+      expect(modifiedHouse.collaborators).to.have.deep.members([user2._id]);
     });
-    context('when not an owner', function () {
-      it('should throw BadRequestError', async function () {});
+    it('should throw if user is a collaborator', async function () {
+      //add user as a collaborator
+      house.collaborators = [user2._id];
+      await house.save();
+
+      await expect(HousesService.addCollaborator(house._id, user2.login)).to.be
+        .rejected;
     });
-    it('should throw UnprocessableEntityError when provided house id is invalid', async function () {});
-    it('should throw NotFoundError when provided house id does not exist', async function () {});
+    it('should throw if trying to add an owner as a collaborator', async function () {
+      await expect(HousesService.addCollaborator(house._id, user1.login)).to.be
+        .rejected;
+    });
+    it('should throw if house id is invalid', async function () {
+      await expect(HousesService.addCollaborator('asd', user2._id)).to.be
+        .rejected;
+    });
+    it('should throw if provided user with provided login or email does not exist', async function () {
+      const login = 'nonexistentLogin';
+
+      await expect(HousesService.addCollaborator(house._id, login)).to.be
+        .rejected;
+    });
+    it('should throw if provided house id does not exist', async function () {
+      const id = mongoose.Types.ObjectId();
+
+      await expect(HousesService.addCollaborator(id, user2._id)).to.be.rejected;
+    });
+    it('should throw if house id is null', async function () {
+      await expect(HousesService.addCollaborator(null, user2.login)).to.be
+        .rejected;
+    });
+    it('should throw if collaborator login is null', async function () {
+      await expect(HousesService.addCollaborator(house.id, null)).to.be
+        .rejected;
+    });
   });
   describe('Get collaborator list', function () {
+    let house;
     beforeEach(async function () {
       //clear House collection
       await House.deleteMany({});
+      house = await House.create({
+        name: 'house',
+        description: 'description',
+        owner: user1._id
+      });
     });
     afterEach(async function () {
       //clear House collection
       await House.deleteMany({});
     });
 
-    it('should return an array of collaborators', async function () {});
-    it('should throw UnprocessableEntityError when provided house id is invalid', async function () {});
-    it('should throw NotFoundError when provided house id does not exist', async function () {});
+    it('should return an array of collaborators', async function () {
+      //add collaborator
+      house.collaborators = [user2._id];
+      await house.save();
+
+      let collaborators = await HousesService.getCollaborators(house._id);
+
+      expect(collaborators).to.be.a('array');
+      expect(collaborators.length).to.be.equal(1);
+      expect(collaborators[0]).to.have.property('_id');
+      expect(collaborators[0]).to.have.property('login');
+    });
+    it('should throw if provided house id is invalid', async function () {
+      await expect(HousesService.getCollaborators('asd')).to.be.rejected;
+    });
+    it('should throw provided house id does not exist', async function () {
+      const id = mongoose.Types.ObjectId();
+
+      await expect(HousesService.getCollaborators(id)).to.be.rejected;
+    });
+    it('should throw if house id is null', async function () {
+      await expect(HousesService.getCollaborators(null)).to.be.rejected;
+    });
   });
   describe('Delete a collaborator', function () {
+    let house;
     beforeEach(async function () {
       //clear House collection
       await House.deleteMany({});
+      house = await House.create({
+        name: 'house',
+        description: 'description',
+        owner: user1._id,
+        collaborator: [user2._id]
+      });
     });
     afterEach(async function () {
       //clear House collection
       await House.deleteMany({});
     });
+    it('should delete a collaborator', async function () {
+      await expect(HousesService.deleteCollaborator(house._id, user2._id)).to.be
+        .fulfilled;
 
-    context('when an owner', function () {
-      it('should delete a collaborator', async function () {});
+      let updatedHouse = await House.findById(house._id);
+
+      expect(updatedHouse.collaborators).to.be.empty;
     });
-    context('when not an owner', function () {
-      it('should throw ForbiddenError', async function () {});
+    it('should throw if house id is invalid', async function () {
+      await expect(HousesService.deleteCollaborator('asd', user2._id)).to.be
+        .rejected;
     });
-    it('should throw UnprocessableEntityError when provided house id is invalid', async function () {});
-    it('should throw NotFoundError when provided house id does not exist', async function () {});
+    it('should throw if house id does not exist', async function () {
+      const houseId = mongoose.Types.ObjectId();
+
+      await expect(HousesService.deleteCollaborator(houseId, user2._id)).to.be
+        .rejected;
+    });
+    it('should throw if house id is null', async function () {
+      await expect(HousesService.deleteCollaborator(null, user2._id)).to.be
+        .rejected;
+    });
+    it('should throw if collaborator id is null', async function () {
+      await expect(HousesService.deleteCollaborator(house._id, null)).to.be
+        .rejected;
+    });
   });
 });
