@@ -7,7 +7,9 @@ const path = require('path');
 const {
   InternalServerError,
   NotFoundError,
-  BadRequestError
+  BadRequestError,
+  ForbiddenError,
+  UnauthorizedError
 } = require('../error/errors');
 
 // Routes
@@ -17,7 +19,10 @@ const roomsRoutes = require('../routes/rooms');
 
 const app = express();
 
-app.use(morgan('dev'));
+if (process.env.NODE_ENV.toLowerCase() !== 'test') {
+  app.use(morgan('dev'));
+}
+
 //set static documentation files
 app.use(express.static(path.join(__dirname + '../public')));
 app.use('/docs', express.static('public/docs'));
@@ -37,7 +42,7 @@ app.use((req, res, next) => {
 });
 //handle errors
 app.use((error, req, res, next) => {
-  if (error instanceof Error) {
+  if (error.constructor.name == 'Error') {
     error = new BadRequestError(error.message);
   }
   if (!error.status) {

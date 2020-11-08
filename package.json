@@ -7,7 +7,7 @@
     "dev": "nodemon src/app.js",
     "start": "node src/app.js",
     "docs": "apidoc -i src/routes -o public/docs",
-    "test": "mocha src/**/*.test.js --require src/config/index.js"
+    "test": "set NODE_ENV=test&& mocha src/**/*.test.js --require src/config/dotenv.js"
   },
   "author": "Kacper Kaźmierkiewicz",
   "license": "ISC",
