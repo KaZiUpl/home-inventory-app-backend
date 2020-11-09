@@ -170,4 +170,112 @@ describe('Rooms Service', function () {
         .to.be.rejected;
     });
   });
+  describe('Check room ownership', function () {
+    let user1, user2, house1, house2, room1, room2;
+    beforeEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+
+      user1 = await User.create({
+        login: 'user1',
+        email: 'user1@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+      user2 = await User.create({
+        login: 'user2',
+        email: 'user2@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+
+      house1 = await House.create({
+        name: 'house1',
+        owner: user1._id,
+        collaborators: [user2._id]
+      });
+      house2 = await House.create({ name: 'house2', owner: user1._id });
+
+      room1 = await Room.create({ name: 'room1', house: house1._id });
+      house1.rooms = [room1._id];
+      await house1.save();
+
+      room2 = await Room.create({ name: 'room2', house: house2._id });
+      house2.rooms = [room2._id];
+      await house2.save();
+    });
+    afterEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+    });
+
+    it('should be fulfilled if user is a house owner', async function () {
+      await expect(RoomsService.checkRoomOwnership(room1._id, user1._id)).to.be
+        .fulfilled;
+    });
+    it('should throw if user if user is a house collaborator', async function () {
+      await expect(RoomsService.checkRoomOwnership(room1._id, user2._id)).to.be
+        .rejected;
+    });
+    it('should throw is user is not a house owner nor a house collaborator', async function () {
+      await expect(RoomsService.checkRoomOwnership(room2._id, user2._id)).to.be
+        .rejected;
+    });
+  });
+  describe('Check room access', function () {
+    let user1, user2, house1, house2, room1, room2;
+    beforeEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+
+      user1 = await User.create({
+        login: 'user1',
+        email: 'user1@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+      user2 = await User.create({
+        login: 'user2',
+        email: 'user2@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+
+      house1 = await House.create({
+        name: 'house1',
+        owner: user1._id,
+        collaborators: [user2._id]
+      });
+      house2 = await House.create({ name: 'house2', owner: user1._id });
+
+      room1 = await Room.create({ name: 'room1', house: house1._id });
+      house1.rooms = [room1._id];
+      await house1.save();
+
+      room2 = await Room.create({ name: 'room2', house: house2._id });
+      house2.rooms = [room2._id];
+      await house2.save();
+    });
+    afterEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+    });
+
+    it('should be fulfilled if user is a house owner', async function () {
+      await expect(RoomsService.checkRoomAccess(room1._id, user1._id)).to.be
+        .fulfilled;
+    });
+    it('should be fulfilled if user is a house collaborator', async function () {
+      await expect(RoomsService.checkRoomAccess(room1._id, user2._id)).to.be
+        .fulfilled;
+    });
+    it('should throw if user is not a house owner nor a house collaborator', async function () {
+      await expect(RoomsService.checkRoomAccess(room2._id, user2._id)).to.be
+        .rejected;
+    });
+  });
 });

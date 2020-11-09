@@ -457,4 +457,72 @@ describe('Houses Service', function () {
         .rejected;
     });
   });
+  describe('Check house ownership', function () {
+    let house, house2;
+    beforeEach(async function () {
+      //clear House collection
+      await House.deleteMany({});
+      house = await House.create({
+        name: 'house',
+        description: 'description',
+        owner: user1._id,
+        collaborator: [user2._id]
+      });
+      house2 = await House.create({
+        name: 'house',
+        description: 'description',
+        owner: user1._id
+      });
+    });
+    afterEach(async function () {
+      await House.deleteMany({});
+    });
+
+    it('should be fulfilled if user is the house owner', async function () {
+      await expect(HousesService.checkHouseOwnership(house._id, user1._id)).to
+        .be.fulfilled;
+    });
+    it('should throw if user is a house collaborator', async function () {
+      await expect(HousesService.checkHouseOwnership(house._id, user2._id)).to
+        .be.rejected;
+    });
+    it('should throw if user is not a house owner nor a house collaborator', async function () {
+      await expect(HousesService.checkHouseOwnership(house2._id, user2._id)).to
+        .be.rejected;
+    });
+  });
+  describe('Check house access', function () {
+    let house, house2;
+    beforeEach(async function () {
+      //clear House collection
+      await House.deleteMany({});
+      house = await House.create({
+        name: 'house',
+        description: 'description',
+        owner: user1._id,
+        collaborator: [user2._id]
+      });
+      house2 = await House.create({
+        name: 'house',
+        description: 'description',
+        owner: user1._id
+      });
+    });
+    afterEach(async function () {
+      await House.deleteMany({});
+    });
+
+    it('should be fulfilled if user is a house owner', async function () {
+      await expect(HousesService.checkHouseAccess(house._id, user1._id)).to.be
+        .fulfilled;
+    });
+    it('should be fulfilled if user is a house collaborator', async function () {
+      await expect(HousesService.checkHouseAccess(house._id, user2._id)).to.be
+        .rejected;
+    });
+    it('should throw if user is not a house owner nor a house collaborator', async function () {
+      await expect(HousesService.checkHouseAccess(house2._id, user2._id)).to.be
+        .rejected;
+    });
+  });
 });
