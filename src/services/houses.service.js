@@ -191,10 +191,11 @@ exports.checkHouseOwnership = async function (houseId, userId) {
 
 exports.checkHouseAccess = async function (houseId, userId) {
   try {
-    let house = await House.find({
+    let house = await House.findOne({
+      _id: houseId,
       $or: [{ owner: userId }, { collaborators: userId }]
     });
-    if (house.length == 0) {
+    if (house == undefined) {
       throw new ForbiddenError();
     }
   } catch (error) {

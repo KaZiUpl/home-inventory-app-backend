@@ -528,7 +528,7 @@ describe('Houses Service', function () {
         name: 'house',
         description: 'description',
         owner: user1._id,
-        collaborator: [user2._id]
+        collaborators: [user2._id]
       });
       house2 = await House.create({
         name: 'house',
@@ -546,7 +546,7 @@ describe('Houses Service', function () {
     });
     it('should be fulfilled if user is a house collaborator', async function () {
       await expect(HousesService.checkHouseAccess(house._id, user2._id)).to.be
-        .rejected;
+        .fulfilled;
     });
     it('should throw if user is not a house owner nor a house collaborator', async function () {
       await expect(HousesService.checkHouseAccess(house2._id, user2._id)).to.be
