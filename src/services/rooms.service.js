@@ -61,7 +61,7 @@ exports.checkRoomAccess = async function (roomId, userId) {
 
 exports.checkRoomOwnership = async function (roomId, userId) {
   try {
-    let house = House.find({ owner: userId, rooms: roomId });
+    let house = await House.find({ owner: userId, rooms: roomId });
     if (house.length == 0) {
       throw new ForbiddenError();
     }
