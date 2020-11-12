@@ -13,7 +13,7 @@ const User = require('../../models/user.model');
 const House = require('../../models/house.model');
 const Room = require('../../models/room.model');
 
-describe('/rooms', function () {
+describe('Rooms Endpoints', function () {
   let user1, user2;
   let accessToken, accessToken2; //access tokens for user 1 and 2
   let refreshToken;

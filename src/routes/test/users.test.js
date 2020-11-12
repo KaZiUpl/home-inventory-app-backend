@@ -10,7 +10,7 @@ chai.use(chaiAsPromised);
 const server = require('../../config/express');
 const User = require('../../models/user.model');
 
-describe('Users Routes', function () {
+describe('Users Endpoints', function () {
   before(async function () {
     // connect to test db
     await mongoose.connect(process.env.MONGO_TEST_URI, {

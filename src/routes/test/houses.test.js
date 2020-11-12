@@ -13,7 +13,7 @@ const User = require('../../models/user.model');
 const House = require('../../models/house.model');
 const Room = require('../../models/room.model');
 
-describe('/houses', function () {
+describe('Houses Endpoints', function () {
   before(async function () {
     // connect to test db
     await mongoose.connect(process.env.MONGO_TEST_URI, {
