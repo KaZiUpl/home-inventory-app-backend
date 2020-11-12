@@ -80,7 +80,7 @@ exports.login = async function (req, res, next) {
 
 exports.refreshToken = async function (req, res, next) {
   try {
-    let tokenOutput = await UsersService.refreshToken(req.body.refresh_token);
+    let tokenOutput = await UsersService.refreshToken(req.body.token);
 
     return res.status(200).json(tokenOutput);
   } catch (error) {
