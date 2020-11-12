@@ -3,7 +3,7 @@ const Room = require('../models/room.model');
 const User = require('../models/user.model');
 const mongoose = require('mongoose');
 
-const { ForbiddenError } = require('../error/errors');
+const { ForbiddenError, NotFoundError } = require('../error/errors');
 
 exports.createHouse = async function (userId, name, description) {
   try {
@@ -160,6 +160,18 @@ exports.deleteCollaborator = async function (houseId, collaboratorId) {
       (element) => element != collaboratorId
     );
     await house.save();
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.checkHouseExistence = async function (houseId) {
+  try {
+    let house = await House.findById(houseId);
+
+    if (house == undefined) {
+      throw new NotFoundError();
+    }
   } catch (error) {
     throw error;
   }

@@ -170,6 +170,43 @@ describe('Rooms Service', function () {
         .to.be.rejected;
     });
   });
+  describe('Check room existence', function () {
+    let user, house, room;
+    beforeEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+
+      user = await User.create({
+        login: 'user1',
+        email: 'user1@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+
+      house = await House.create({
+        name: 'house1',
+        owner: user._id
+      });
+
+      room = await Room.create({ name: 'room1', house: house._id });
+      house.rooms = [room._id];
+      await house.save();
+    });
+    afterEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+    });
+
+    it('should be fulfilled if room exists', async function () {
+      await expect(RoomsService.checkRoomExistence(room._id)).to.be.fulfilled;
+    });
+    it('should throw if room does not exist', async function () {
+      await expect(RoomsService.checkRoomExistence(mongoose.Types.ObjectId()))
+        .to.be.rejected;
+    });
+  });
   describe('Check room ownership', function () {
     let user1, user2, house1, house2, room1, room2;
     beforeEach(async function () {

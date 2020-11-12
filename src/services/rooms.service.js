@@ -1,7 +1,7 @@
 const Room = require('../models/room.model');
 const House = require('../models/house.model');
 
-const { ForbiddenError } = require('../error/errors');
+const { ForbiddenError, NotFoundError } = require('../error/errors');
 
 exports.modifyRoom = async function (roomId, name, description) {
   try {
@@ -40,6 +40,17 @@ exports.deleteRoom = async function (id) {
     }
 
     await room.delete();
+  } catch (error) {
+    throw error;
+  }
+};
+exports.checkRoomExistence = async function (roomId) {
+  try {
+    let room = await Room.findById(roomId);
+
+    if (room == undefined) {
+      throw new NotFoundError('Room not found.');
+    }
   } catch (error) {
     throw error;
   }

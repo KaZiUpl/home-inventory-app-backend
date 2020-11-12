@@ -220,6 +220,7 @@ describe('Houses Service', function () {
       //clear House collection
       await House.deleteMany({});
     });
+
     it('should modify house info', async function () {
       let house = await House.create({
         name: 'asd',
@@ -328,6 +329,7 @@ describe('Houses Service', function () {
       //clear House collection
       await House.deleteMany({});
     });
+
     it('should add a collaborator', async function () {
       await expect(HousesService.addCollaborator(house._id, user2.login)).to.be
         .fulfilled;
@@ -430,6 +432,7 @@ describe('Houses Service', function () {
       //clear House collection
       await House.deleteMany({});
     });
+
     it('should delete a collaborator', async function () {
       await expect(HousesService.deleteCollaborator(house._id, user2._id)).to.be
         .fulfilled;
@@ -455,6 +458,31 @@ describe('Houses Service', function () {
     it('should throw if collaborator id is null', async function () {
       await expect(HousesService.deleteCollaborator(house._id, null)).to.be
         .rejected;
+    });
+  });
+  describe('Check house existence', function () {
+    let house;
+    beforeEach(async function () {
+      //clear House collection
+      await House.deleteMany({});
+      house = await House.create({
+        name: 'house',
+        description: 'description',
+        owner: user1._id,
+        collaborator: [user2._id]
+      });
+    });
+    afterEach(async function () {
+      await House.deleteMany({});
+    });
+
+    it('should be fulfilled if house with provided id exist', async function () {
+      await expect(HousesService.checkHouseExistence(house._id)).to.be
+        .fulfilled;
+    });
+    it('should throw if house with provided id does not exist', async function () {
+      await expect(HousesService.checkHouseExistence(mongoose.Types.ObjectId()))
+        .to.be.rejected;
     });
   });
   describe('Check house ownership', function () {
