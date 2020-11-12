@@ -94,9 +94,10 @@ exports.getHouseList = async function (userId) {
 
 exports.getCollaborators = async function (houseId) {
   try {
-    let house = await await await House.findOne({ _id: houseId })
-      .populate('owner', 'login')
-      .populate('collaborators', 'login');
+    let house = await House.findById(houseId).populate(
+      'collaborators',
+      'login'
+    );
 
     return house.collaborators;
   } catch (error) {
@@ -141,7 +142,7 @@ exports.deleteHouse = async function (houseId) {
     }
 
     await Room.deleteMany({ house: house._id });
-    await house.deleteMany({ id: house._id });
+    await house.deleteOne();
   } catch (error) {
     throw error;
   }
@@ -150,7 +151,7 @@ exports.deleteHouse = async function (houseId) {
 exports.deleteCollaborator = async function (houseId, collaboratorId) {
   try {
     let house = await House.findById(houseId);
-    console.log(houseId);
+
     if (house == null) {
       throw new Error('The requested house does not exist');
     }
