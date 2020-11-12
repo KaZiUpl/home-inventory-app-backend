@@ -185,6 +185,17 @@ describe('Rooms Endpoints', function () {
           expect(res.body).to.have.property('message');
         });
     });
+    it('should throw 404 if no room with provided id was found', async function () {
+      await request(server)
+        .put(`/rooms/${mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${accessToken2}`)
+        .send({ name: 'new room1 name', description: 'new room1 description' })
+        .expect(404)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.have.property('message');
+        });
+    });
     it('should throw 422 if no name nor description is provided', async function () {
       await request(server)
         .put(`/rooms/${room._id}`)

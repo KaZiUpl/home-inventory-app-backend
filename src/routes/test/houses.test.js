@@ -399,7 +399,7 @@ describe('Houses Endpoints', function () {
       await request(server)
         .put(`/houses/${house._id}`)
         .set('Authorization', `Bearer ${accessToken}`)
-        .send({ name: 'new house name' })
+        .send({ name: 'new house name', description: 'new house description' })
         .expect(401)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
@@ -412,7 +412,7 @@ describe('Houses Endpoints', function () {
     it('should return 401 if no Authorization header is present', async function () {
       await request(server)
         .put(`/houses/${house._id}`)
-        .send({ name: 'new house name' })
+        .send({ name: 'new house name', description: 'new house description' })
         .expect(401)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
@@ -423,7 +423,7 @@ describe('Houses Endpoints', function () {
       await request(server)
         .put(`/houses/${house._id}`)
         .set('Authorization', `Bearer ${accessToken2}`)
-        .send({ name: 'new house name' })
+        .send({ name: 'new house name', description: 'new house description' })
         .expect(403)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
@@ -434,7 +434,7 @@ describe('Houses Endpoints', function () {
       await request(server)
         .put(`/houses/${mongoose.Types.ObjectId()}`)
         .set('Authorization', `Bearer ${accessToken}`)
-        .send({ name: 'new house name' })
+        .send({ name: 'new house name', description: 'new house description' })
         .expect(404)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {

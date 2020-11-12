@@ -26,6 +26,8 @@ exports.createRoom = async function (req, res, next) {
     next(new UnprocessableEntityError());
   }
   try {
+    await HousesService.checkHouseExistence(req.params.id);
+
     await HousesService.checkHouseOwnership(req.params.id, req.userData.id);
 
     let roomId = await HousesService.createRoom(
@@ -42,6 +44,8 @@ exports.createRoom = async function (req, res, next) {
 
 exports.getRooms = async function (req, res, next) {
   try {
+    await HousesService.checkHouseExistence(req.params.id);
+
     await HousesService.checkHouseAccess(req.params.id, req.userData.id);
 
     let rooms = await HousesService.getRooms(req.params.id);
@@ -57,6 +61,8 @@ exports.addCollaborator = async function (req, res, next) {
     next(new UnprocessableEntityError());
   }
   try {
+    await HousesService.checkHouseExistence(req.params.id);
+
     await HousesService.checkHouseOwnership(req.params.id, req.userData.id);
 
     await HousesService.addCollaborator(req.params.id, req.body.name);
@@ -79,6 +85,8 @@ exports.getHouseList = async function (req, res, next) {
 
 exports.getCollaborators = async function (req, res, next) {
   try {
+    await HousesService.checkHouseExistence(req.params.id);
+
     await HousesService.checkHouseAccess(req.params.id, req.userData.id);
 
     let collaboratorsList = await HousesService.getCollaborators(req.params.id);
@@ -91,6 +99,8 @@ exports.getCollaborators = async function (req, res, next) {
 
 exports.getHouse = async function (req, res, next) {
   try {
+    await HousesService.checkHouseExistence(req.params.id);
+
     await HousesService.checkHouseAccess(req.params.id, req.userData.id);
 
     let house = await HousesService.getHouse(req.params.id);
@@ -106,6 +116,8 @@ exports.editHouse = async function (req, res, next) {
     next(new UnprocessableEntityError());
   }
   try {
+    await HousesService.checkHouseExistence(req.params.id);
+
     await HousesService.checkHouseOwnership(req.params.id, req.userData.id);
 
     await HousesService.editHouse(
@@ -122,6 +134,8 @@ exports.editHouse = async function (req, res, next) {
 
 exports.deleteHouse = async function (req, res, next) {
   try {
+    await HousesService.checkHouseExistence(req.params.id);
+
     await HousesService.checkHouseOwnership(req.params.id, req.userData.id);
 
     await HousesService.deleteHouse(req.params.id);
@@ -134,6 +148,8 @@ exports.deleteHouse = async function (req, res, next) {
 
 exports.deleteCollaborator = async function (req, res, next) {
   try {
+    await HousesService.checkHouseExistence(req.params.id);
+
     await HousesService.checkHouseOwnership(req.params.id, req.userData.id);
 
     await HousesService.deleteCollaborator(req.params.id, req.params.userId);

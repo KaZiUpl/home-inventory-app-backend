@@ -11,6 +11,8 @@ exports.modifyRoom = async function (req, res, next) {
     next(new UnprocessableEntityError());
   }
   try {
+    await RoomsService.checkRoomExistence(req.params.id);
+
     await RoomsService.checkRoomOwnership(req.params.id, req.userData.id);
 
     await RoomsService.modifyRoom(
@@ -27,6 +29,8 @@ exports.modifyRoom = async function (req, res, next) {
 
 exports.getRoom = async function (req, res, next) {
   try {
+    await RoomsService.checkRoomExistence(req.params.id);
+
     await RoomsService.checkRoomAccess(req.params.id, req.userData.id);
 
     let room = await RoomsService.getRoom(req.params.id);
@@ -39,6 +43,8 @@ exports.getRoom = async function (req, res, next) {
 
 exports.deleteRoom = async function (req, res, next) {
   try {
+    await RoomsService.checkRoomExistence(req.params.id);
+
     await RoomsService.checkRoomOwnership(req.params.id, req.userData.id);
 
     await RoomsService.deleteRoom(req.params.id);
