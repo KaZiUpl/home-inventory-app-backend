@@ -384,7 +384,7 @@ describe('Houses Endpoints', function () {
       await request(server)
         .put(`/houses/${house._id}`)
         .set('Authorization', `Bearer ${accessToken}`)
-        .send({ name: 'new house name' })
+        .send({ name: 'new house name', description: 'new house description' })
         .expect(200)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {

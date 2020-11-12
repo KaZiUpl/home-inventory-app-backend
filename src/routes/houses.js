@@ -1,4 +1,5 @@
 const express = require('express');
+const { body } = require('express-validator');
 const router = express.Router();
 
 const checkAuthMiddleware = require('../middleware/checkAuth');
@@ -27,7 +28,7 @@ router.use(checkAuthMiddleware);
  *      "id": "5f576dedb9d20a30e02e81e6"
  * }
  */
-router.post('/', housesController.createHouse);
+router.post('/', [body('name').exists()], housesController.createHouse);
 
 /**
  * @api {post} /houses/:id/rooms Create a room
@@ -46,7 +47,7 @@ router.post('/', housesController.createHouse);
  * "id": "5f576dedb9d20a30e02e81e6"
  *}
  */
-router.post('/:id/rooms', housesController.createRoom);
+router.post('/:id/rooms', [body('name').exists()], housesController.createRoom);
 
 /**
  * @api {post} /houses/:id/collaborators Add a collaborator
@@ -62,7 +63,11 @@ router.post('/:id/rooms', housesController.createRoom);
  *      "message": "Collaborator added."
  * }
  */
-router.post('/:id/collaborators', housesController.addCollaborator);
+router.post(
+  '/:id/collaborators',
+  [body('name').exists()],
+  housesController.addCollaborator
+);
 
 /**
  * @api {get} /houses/:id/collaborators Get the list of collaborators
@@ -183,7 +188,11 @@ router.get('/:id', housesController.getHouse);
  *       "message": "House info updated."
  *     }
  */
-router.put('/:id', housesController.editHouse);
+router.put(
+  '/:id',
+  [body('name').exists(), body('description').exists()],
+  housesController.editHouse
+);
 
 /**
  * @api {delete} /houses/:id/collaborators/:userId Remove a collaborator

@@ -1,6 +1,13 @@
+const { validationResult } = require('express-validator');
+
 const HousesService = require('../services/houses.service');
 
+const { UnprocessableEntityError } = require('../error/errors');
+
 exports.createHouse = async function (req, res, next) {
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
     let houseId = await HousesService.createHouse(
       req.userData.id,
@@ -15,6 +22,9 @@ exports.createHouse = async function (req, res, next) {
 };
 
 exports.createRoom = async function (req, res, next) {
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
     await HousesService.checkHouseOwnership(req.params.id, req.userData.id);
 
@@ -43,6 +53,9 @@ exports.getRooms = async function (req, res, next) {
 };
 
 exports.addCollaborator = async function (req, res, next) {
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
     await HousesService.checkHouseOwnership(req.params.id, req.userData.id);
 
@@ -89,6 +102,9 @@ exports.getHouse = async function (req, res, next) {
 };
 
 exports.editHouse = async function (req, res, next) {
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
     await HousesService.checkHouseOwnership(req.params.id, req.userData.id);
 

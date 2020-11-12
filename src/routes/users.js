@@ -1,4 +1,5 @@
 const express = require('express');
+const { body } = require('express-validator');
 
 const userController = require('../controllers/users.controller');
 const checkAuthMiddleware = require('../middleware/checkAuth');
@@ -18,7 +19,11 @@ const router = express.Router();
  *       "message": "User created."
  *     }
  */
-router.post('/', userController.createUser);
+router.post(
+  '/',
+  [body('login').exists(), body('email').exists(), body('password').exists()],
+  userController.createUser
+);
 
 /**
  * @api {get} /users/:id Get user info
@@ -48,7 +53,12 @@ router.get('/:id', checkAuthMiddleware, userController.getUser);
  *       "message": "Login changed."
  *     }
  */
-router.put('/:id/login', checkAuthMiddleware, userController.changeLogin);
+router.put(
+  '/:id/login',
+  checkAuthMiddleware,
+  [body('login').exists()],
+  userController.changeLogin
+);
 
 /**
  * @api {put} /users/:id Update user info
@@ -61,7 +71,12 @@ router.put('/:id/login', checkAuthMiddleware, userController.changeLogin);
  *       "message": "User modified."
  *     }
  */
-router.put('/:id', checkAuthMiddleware, userController.putUser);
+router.put(
+  '/:id',
+  checkAuthMiddleware,
+  [body('login').exists()],
+  userController.putUser
+);
 
 /**
  * @api {post} /users/auth Login user
@@ -85,7 +100,11 @@ router.put('/:id', checkAuthMiddleware, userController.putUser);
  *       "role": "user"
  *     }
  */
-router.post('/auth', userController.login);
+router.post(
+  '/auth',
+  [body('login').exists(), body('password').exists()],
+  userController.login
+);
 
 /**
  * @api {post} /users/auth/refresh Refresh access token
@@ -108,7 +127,11 @@ router.post('/auth', userController.login);
  *       "role": "user"
  *     }
  */
-router.post('/auth/refresh', userController.refreshToken);
+router.post(
+  '/auth/refresh',
+  [body('token').exists()],
+  userController.refreshToken
+);
 
 /**
  * @api {post} /users/logout Logout user
@@ -121,6 +144,6 @@ router.post('/auth/refresh', userController.refreshToken);
  *       "message": "User logged out."
  *     }
  */
-router.post('/logout', userController.logout);
+router.post('/logout', [body('token').exists()], userController.logout);
 
 module.exports = router;

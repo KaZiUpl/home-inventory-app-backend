@@ -1,4 +1,5 @@
 const express = require('express');
+const { body } = require('express-validator');
 
 const router = express.Router();
 
@@ -32,7 +33,11 @@ router.get('/:id', roomsController.getRoom);
  * @apiParam {String} name Room's name
  * @apiParam {String} description Room's description
  */
-router.put('/:id', roomsController.modifyRoom);
+router.put(
+  '/:id',
+  [body('name').exists(), body('description').exists()],
+  roomsController.modifyRoom
+);
 
 /**
  * @api {delete} /rooms/:id Delete a room

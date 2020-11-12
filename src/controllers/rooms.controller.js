@@ -1,9 +1,15 @@
+const { validationResult } = require('express-validator');
+
 const Room = require('../models/room.model');
 const House = require('../models/house.model');
 
 const RoomsService = require('../services/rooms.service');
+const { UnprocessableEntityError } = require('../error/errors');
 
 exports.modifyRoom = async function (req, res, next) {
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
     await RoomsService.checkRoomOwnership(req.params.id, req.userData.id);
 

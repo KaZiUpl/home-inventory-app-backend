@@ -1,10 +1,17 @@
 const express = require('express');
+const { validationResult } = require('express-validator');
 
 const UsersService = require('../services/users.service');
-const { ForbiddenError, BadRequestError } = require('../error/errors');
+const {
+  ForbiddenError,
+  BadRequestError,
+  UnprocessableEntityError
+} = require('../error/errors');
 
 exports.createUser = async function (req, res, next) {
-  // validate input
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
     let newUserId = await UsersService.createUser(
       req.body.login,
@@ -25,6 +32,9 @@ exports.createUser = async function (req, res, next) {
 };
 
 exports.putUser = async function (req, res, next) {
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
     //check whether user is trying to change his data
     if (req.params.id != req.userData.id) {
@@ -62,6 +72,9 @@ exports.getUser = async function (req, res, next) {
 };
 
 exports.login = async function (req, res, next) {
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
     let tokenOutput = await UsersService.login(
       req.body.login,
@@ -79,6 +92,9 @@ exports.login = async function (req, res, next) {
 };
 
 exports.refreshToken = async function (req, res, next) {
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
     let tokenOutput = await UsersService.refreshToken(req.body.token);
 
@@ -93,6 +109,9 @@ exports.refreshToken = async function (req, res, next) {
 };
 
 exports.logout = async function (req, res, next) {
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
     await UsersService.logout(req.body.token);
 
@@ -107,6 +126,9 @@ exports.logout = async function (req, res, next) {
 };
 
 exports.changeLogin = async function (req, res, next) {
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
     //check whether user is requesting his info
     if (req.params.id != req.userData.id) {
