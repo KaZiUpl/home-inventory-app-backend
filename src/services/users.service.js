@@ -38,6 +38,10 @@ exports.createUser = async function (login, email, password) {
 
 exports.modifyUser = async function (id, data) {
   try {
+    let user = await User.findOne({ login: data.login });
+    if (user != undefined) {
+      throw new Error('Login is taken');
+    }
     // change login
     await User.updateOne({ _id: id }, { $set: { login: data.login } });
 
@@ -49,7 +53,14 @@ exports.modifyUser = async function (id, data) {
 
 exports.getUser = async function (id) {
   try {
+    if (id == null) {
+      throw new Error();
+    }
     let user = await User.findById(id).select('-refresh_token -password -_id');
+
+    if (user == undefined) {
+      throw new Error('User not found');
+    }
 
     return user;
   } catch (error) {
@@ -141,6 +152,9 @@ exports.login = async function (login, password) {
 
 exports.refreshToken = async function (refresh_token) {
   try {
+    if (refresh_token == null) {
+      throw new Error('');
+    }
     // get user with provided refresh token
     let user = await User.findOne({ refresh_token: refresh_token });
     // if user is not logged in
@@ -194,6 +208,10 @@ exports.logout = async function (refresh_token) {
 
 exports.changeLogin = async function (userId, newLogin) {
   try {
+    let existingUser = await User.findOne({ login: newLogin });
+    if (existingUser != undefined) {
+      throw new Error('Login is taken');
+    }
     let user = await User.findById(userId);
     // if new login is the same
     if (user.login == this.newLogin) {

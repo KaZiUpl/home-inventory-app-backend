@@ -42,6 +42,9 @@ app.use((req, res, next) => {
 });
 //handle errors
 app.use((error, req, res, next) => {
+  if (error.constructor.name == 'CastError') {
+    error = new BadRequestError();
+  }
   if (error.constructor.name == 'Error') {
     error = new BadRequestError(error.message);
   }

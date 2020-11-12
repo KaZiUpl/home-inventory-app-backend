@@ -40,6 +40,9 @@ exports.deleteRoom = async function (id) {
     }
 
     await room.delete();
+
+    //update connected House
+    await House.updateOne({ _id: room.house, $pull: { rooms: room._id } });
   } catch (error) {
     throw error;
   }

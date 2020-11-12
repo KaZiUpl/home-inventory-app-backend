@@ -112,7 +112,9 @@ exports.getHouse = async function (houseId) {
       .populate('owner', 'login')
       .populate('collaborators', 'login')
       .populate('rooms', 'name description');
-
+    if (requestedHouse == null) {
+      throw new Error('The requested house does not exist');
+    }
     return requestedHouse;
   } catch (error) {
     throw error;
@@ -150,6 +152,9 @@ exports.deleteHouse = async function (houseId) {
 
 exports.deleteCollaborator = async function (houseId, collaboratorId) {
   try {
+    if (collaboratorId == null) {
+      throw new Error();
+    }
     let house = await House.findById(houseId);
 
     if (house == null) {

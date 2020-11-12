@@ -607,13 +607,18 @@ describe('Houses Endpoints', function () {
     });
   });
   describe('GET /houses/:id/collaborators', function () {
-    let house;
+    let house, house2;
     beforeEach(async function () {
       house = await House.create({
         name: 'house',
         description: 'house description',
         owner: user1._id,
         collaborators: [user2._id]
+      });
+      house2 = await House.create({
+        name: 'house',
+        description: 'house description',
+        owner: user1._id
       });
     });
     afterEach(async function () {
@@ -674,8 +679,8 @@ describe('Houses Endpoints', function () {
     });
     it('should return 403 if user is not an owner nor a collaborator', async function () {
       await request(server)
-        .get(`/houses/${house._id}/collaborators`)
-        .set('Authorization', `Bearer ${accessToken}`)
+        .get(`/houses/${house2._id}/collaborators`)
+        .set('Authorization', `Bearer ${accessToken2}`)
         .send()
         .expect(403)
         .expect('Content-Type', new RegExp('application/json;'))
@@ -910,28 +915,6 @@ describe('Houses Endpoints', function () {
     it('should return 400 if house id is invalid', async function () {
       await request(server)
         .delete(`/houses/asd/collaborators/${collaboratorId}`)
-        .set('Authorization', `Bearer ${accessToken}`)
-        .send()
-        .expect(400)
-        .expect('Content-Type', new RegExp('application/json;'))
-        .then((res) => {
-          expect(res.body).to.have.property('message');
-        });
-    });
-    it('should return 400 if user id is invalid', async function () {
-      await request(server)
-        .delete(`/houses/${house._id}/collaborators/asd`)
-        .set('Authorization', `Bearer ${accessToken}`)
-        .send()
-        .expect(400)
-        .expect('Content-Type', new RegExp('application/json;'))
-        .then((res) => {
-          expect(res.body).to.have.property('message');
-        });
-    });
-    it('should return 400 if user is not a collaborator', async function () {
-      await request(server)
-        .delete(`/houses/${house._id}/collaborators/${user1._id}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .send()
         .expect(400)
