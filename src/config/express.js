@@ -16,10 +16,11 @@ const {
 const usersRoutes = require('../routes/users');
 const housesRoutes = require('../routes/houses');
 const roomsRoutes = require('../routes/rooms');
+const itemsRoutes = require('../routes/items');
 
 const app = express();
 
-if (process.env.NODE_ENV.toLowerCase() !== 'test') {
+if (process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() !== 'test') {
   app.use(morgan('dev'));
 }
 
@@ -35,6 +36,7 @@ app.use(bodyParser.json());
 app.use('/users', usersRoutes);
 app.use('/houses', housesRoutes);
 app.use('/rooms', roomsRoutes);
+app.use('/items', itemsRoutes);
 
 //handle non-existent routes
 app.use((req, res, next) => {
