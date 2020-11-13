@@ -1,10 +1,50 @@
 const ItemsService = require('../services/items.service');
 
-exports.test = async function (req, res, next) {
+exports.createItem = async function (req, res, next) {
   try {
-    let item = await ItemsService.test();
+    await ItemsService.createItem();
 
-    res.status(200).json(item);
+    res.json();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getItem = async function (req, res, next) {
+  try {
+    await ItemsService.getItem();
+
+    res.json();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getItems = async function (req, res, next) {
+  try {
+    await ItemsService.getItems();
+
+    res.json();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.putItem = async function (req, res, next) {
+  try {
+    await ItemsService.putItem();
+
+    res.json();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteItem = async function (req, res, next) {
+  try {
+    await ItemsService.deleteItem();
+
+    res.json();
   } catch (error) {
     next(error);
   }
