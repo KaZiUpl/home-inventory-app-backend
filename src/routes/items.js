@@ -5,6 +5,8 @@ const router = express.Router();
 const checkAuthMiddleware = require('../middleware/checkAuth');
 const ItemsController = require('../controllers/items.controller');
 
+router.use(checkAuthMiddleware);
+
 /**
  * @apiDefine Item Item
  * This controller controls user's items as well as publicly available items. Each user adds items to their database that can be added later as a storage items within rooms.
@@ -20,7 +22,7 @@ const ItemsController = require('../controllers/items.controller');
  * @apiParam {String} manufacturer item's manufacturer name
  * @apiParam {String} photo image data base64 encoded
  */
-router.post('/', ItemsController.createItem);
+router.post('/', [body('name').exists()], ItemsController.createItem);
 
 /**
  * @api {get} /items/:id Get item info

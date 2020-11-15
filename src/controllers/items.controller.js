@@ -1,10 +1,16 @@
+const { validationResult } = require('express-validator');
+
 const ItemsService = require('../services/items.service');
+const { UnprocessableEntityError } = require('../error/errors');
 
 exports.createItem = async function (req, res, next) {
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
-    await ItemsService.createItem();
+    let itemId = await ItemsService.createItem(req.userData.id, req.body);
 
-    res.json();
+    res.status(201).json({ message: 'Item created.', id: itemId });
   } catch (error) {
     next(error);
   }

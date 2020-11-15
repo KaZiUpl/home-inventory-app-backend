@@ -10,6 +10,10 @@ const itemSchema = new Schema({
   description: {
     type: String
   },
+  owner: {
+    type: mongoose.Types.ObjectId,
+    ref: 'User'
+  },
   manufacturer: {
     type: String
   },
