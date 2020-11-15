@@ -18,9 +18,11 @@ exports.createItem = async function (req, res, next) {
 
 exports.getItem = async function (req, res, next) {
   try {
-    await ItemsService.getItem();
+    await ItemsService.checkItemAccess(req.userData.id, req.params.id);
 
-    res.json();
+    const requestedItem = await ItemsService.getItem(req.params.id);
+
+    res.status(200).json(requestedItem);
   } catch (error) {
     next(error);
   }

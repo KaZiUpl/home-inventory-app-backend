@@ -126,7 +126,125 @@ describe('Items Endpoints', function () {
         });
     });
   });
-  describe('GET /items/:id', function () {});
+  describe('GET /items/:id', function () {
+    let globalItem, userItem, otherUserItem;
+    beforeEach(async function () {
+      globalItem = await Item.create({
+        name: 'global item',
+        description: 'global item description',
+        manufacturer: 'manufacturer'
+      });
+      userItem = await Item.create({
+        name: 'user item',
+        description: 'user item description',
+        manufacturer: 'manufacturer',
+        owner: user._id
+      });
+      otherUserItem = await Item.create({
+        name: 'user item',
+        description: 'user item description',
+        manufacturer: 'manufacturer',
+        owner: mongoose.Types.ObjectId()
+      });
+    });
+    afterEach(async function () {
+      await Item.deleteMany({});
+    });
+
+    it("should return 200 and user's item", async function () {
+      await request(server)
+        .get(`/items/${userItem._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist;
+          expect(res.body).to.have.property('name', 'user item');
+          expect(res.body).to.have.property(
+            'description',
+            'user item description'
+          );
+          expect(res.body).to.have.property('manufacturer', 'manufacturer');
+        });
+    });
+    it('should return 200 and global item', async function () {
+      await request(server)
+        .get(`/items/${globalItem._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist;
+          expect(res.body).to.have.property('name', 'global item');
+          expect(res.body).to.have.property(
+            'description',
+            'global item description'
+          );
+          expect(res.body).to.have.property('manufacturer', 'manufacturer');
+        });
+    });
+    it('should throw 400 if item id is invalid', async function () {
+      await request(server)
+        .get(`/items/asd`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(400)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist;
+          expect(res.body).to.have.property('message');
+        });
+    });
+    it('should throw 401 if user is not logged in', async function () {
+      let refreshToken = user.refresh_token;
+      user.refresh_token = null;
+      await user.save();
+
+      await request(server)
+        .get(`/items/${userItem._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist;
+          expect(res.body).to.have.property('message');
+        });
+
+      user.refresh_token = refreshToken;
+      await user.save();
+    });
+    it('should throw 401 if no Authorization header is present', async function () {
+      await request(server)
+        .get(`/items/${userItem._id}`)
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist;
+          expect(res.body).to.have.property('message');
+        });
+    });
+    it("should throw 403 if trying to access other user's item", async function () {
+      await request(server)
+        .get(`/items/${otherUserItem._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(403)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist;
+          expect(res.body).to.have.property('message');
+        });
+    });
+    it('should throw 404 if item does not exist', async function () {
+      await request(server)
+        .get(`/items/${mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(404)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist;
+          expect(res.body).to.have.property('message');
+        });
+    });
+  });
   describe('GET /items', function () {});
   describe('PUT /items/:id', function () {});
   describe('DELETE /items/:id', function () {});

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const Item = require('../models/item.model');
 const User = require('../models/user.model');
+const { NotFoundError, ForbiddenError } = require('../error/errors');
 
 exports.createItem = async function (userId, itemBody) {
   try {
@@ -21,6 +22,12 @@ exports.createItem = async function (userId, itemBody) {
 
 exports.getItem = async function (itemId) {
   try {
+    const item = await Item.findById(itemId);
+    if (item == undefined) {
+      throw new NotFoundError('No such item');
+    }
+
+    return item;
   } catch (error) {
     throw error;
   }
@@ -42,6 +49,21 @@ exports.putItem = async function (itemId, itemBody) {
 
 exports.deleteItem = async function (itemId) {
   try {
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.checkItemAccess = async function (userId, itemId) {
+  try {
+    let item = await Item.findById(itemId);
+    if (item == undefined) {
+      throw new NotFoundError('Item not found');
+    }
+
+    if (item.owner && !item.owner.equals(userId)) {
+      throw new ForbiddenError();
+    }
   } catch (error) {
     throw error;
   }
