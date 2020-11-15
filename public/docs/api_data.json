@@ -1,7 +1,7 @@
 [
   {
     "type": "delete",
-    "url": "/houses/:id/collaborators",
+    "url": "/houses/:id/collaborators/:userId",
     "title": "Remove a collaborator",
     "name": "DeleteCollaborator",
     "group": "House",
@@ -640,6 +640,159 @@
     "filename": "src/routes/houses.js",
     "groupTitle": "House",
     "groupDescription": "<p>Endpoints for managing information about user's houses called houses. Every house has one owner that can change house info and add other users as collaborators.</p>"
+  },
+  {
+    "type": "delete",
+    "url": "/items/:id",
+    "title": "Delete item",
+    "name": "DeleteItem",
+    "group": "Item",
+    "permission": [
+      {
+        "name": "item's owner"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>item's id</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/items.js",
+    "groupTitle": "Item",
+    "groupDescription": "<p>This controller controls user's items as well as publicly available items. Each user adds items to their database that can be added later as a storage items within rooms.</p>"
+  },
+  {
+    "type": "get",
+    "url": "/items/:id",
+    "title": "Get item info",
+    "name": "GetItem",
+    "group": "Item",
+    "permission": [
+      {
+        "name": "item's owner or logged in user"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>item's id</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/items.js",
+    "groupTitle": "Item",
+    "groupDescription": "<p>This controller controls user's items as well as publicly available items. Each user adds items to their database that can be added later as a storage items within rooms.</p>"
+  },
+  {
+    "type": "get",
+    "url": "/items/",
+    "title": "Get item list",
+    "name": "GetItems",
+    "group": "Item",
+    "permission": [
+      {
+        "name": "logged in user"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "src/routes/items.js",
+    "groupTitle": "Item",
+    "groupDescription": "<p>This controller controls user's items as well as publicly available items. Each user adds items to their database that can be added later as a storage items within rooms.</p>"
+  },
+  {
+    "type": "post",
+    "url": "/items",
+    "title": "Create new item",
+    "name": "PostItem",
+    "group": "Item",
+    "permission": [
+      {
+        "name": "everyone"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>item name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>item description</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "manufacturer",
+            "description": "<p>item's manufacturer name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "photo",
+            "description": "<p>image data base64 encoded</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/items.js",
+    "groupTitle": "Item",
+    "groupDescription": "<p>This controller controls user's items as well as publicly available items. Each user adds items to their database that can be added later as a storage items within rooms.</p>"
+  },
+  {
+    "type": "put",
+    "url": "/items/:id",
+    "title": "Update item info",
+    "name": "PutItem",
+    "group": "Item",
+    "permission": [
+      {
+        "name": "item's owner"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>item's id</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/items.js",
+    "groupTitle": "Item",
+    "groupDescription": "<p>This controller controls user's items as well as publicly available items. Each user adds items to their database that can be added later as a storage items within rooms.</p>"
   },
   {
     "type": "delete",
