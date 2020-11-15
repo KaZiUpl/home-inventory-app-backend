@@ -33,8 +33,14 @@ exports.getItem = async function (itemId) {
   }
 };
 
-exports.getItems = async function () {
+exports.getItems = async function (userId) {
   try {
+    if (userId == null) {
+      throw new Error();
+    }
+    let items = await Item.find({ $or: [{ owner: userId }, { owner: null }] });
+
+    return items;
   } catch (error) {
     throw error;
   }

@@ -111,7 +111,43 @@ describe('Items Service', function () {
       await expect(ItemsService.getItem(id)).to.be.rejected;
     });
   });
-  describe('Get items list', function () {});
+  describe('Get items list', function () {
+    let globalItem, userItem, otherUserItem;
+    beforeEach(async function () {
+      globalItem = await Item.create({
+        name: 'global item',
+        description: 'global item description',
+        manufacturer: 'manufacturer'
+      });
+      userItem = await Item.create({
+        name: 'user item',
+        description: 'user item description',
+        manufacturer: 'manufacturer',
+        owner: user._id
+      });
+      otherUserItem = await Item.create({
+        name: 'user item',
+        description: 'user item description',
+        manufacturer: 'manufacturer',
+        owner: mongoose.Types.ObjectId()
+      });
+    });
+    afterEach(async function () {
+      await Item.deleteMany({});
+    });
+
+    it('should return items array', async function () {
+      let items = await ItemsService.getItems(user._id);
+
+      expect(items).to.exist.and.be.a('array').of.length(2);
+    });
+    it('should throw if user id is invalid', async function () {
+      await expect(ItemsService.getItems('asd')).to.be.rejected;
+    });
+    it('should throw if user id is null', async function () {
+      await expect(ItemsService.getItems(null)).to.be.rejected;
+    });
+  });
   describe('Update item info', function () {});
   describe('Delete an item', function () {});
   describe('Check item access', function () {

@@ -30,9 +30,9 @@ exports.getItem = async function (req, res, next) {
 
 exports.getItems = async function (req, res, next) {
   try {
-    await ItemsService.getItems();
+    let items = await ItemsService.getItems(req.userData.id);
 
-    res.json();
+    res.status(200).json(items);
   } catch (error) {
     next(error);
   }

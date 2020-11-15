@@ -245,7 +245,74 @@ describe('Items Endpoints', function () {
         });
     });
   });
-  describe('GET /items', function () {});
+  describe('GET /items', function () {
+    let globalItem, userItem, otherUserItem;
+    beforeEach(async function () {
+      globalItem = await Item.create({
+        name: 'global item',
+        description: 'global item description',
+        manufacturer: 'manufacturer'
+      });
+      userItem = await Item.create({
+        name: 'user item',
+        description: 'user item description',
+        manufacturer: 'manufacturer',
+        owner: user._id
+      });
+      otherUserItem = await Item.create({
+        name: 'user item',
+        description: 'user item description',
+        manufacturer: 'manufacturer',
+        owner: mongoose.Types.ObjectId()
+      });
+    });
+    afterEach(async function () {
+      await Item.deleteMany({});
+    });
+
+    it("should return 200 and array of user's and global items", async function () {
+      await request(server)
+        .get(`/items`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.be.a('array').of.length(2);
+          expect(res.body[0]).to.have.property('_id');
+          expect(res.body[0]).to.have.property('name');
+          expect(res.body[0]).to.have.property('description');
+          expect(res.body[0]).to.have.property('manufacturer');
+        });
+    });
+    it('should throw 401 if user is not logged in', async function () {
+      let refreshToken = user.refresh_token;
+      user.refresh_token = null;
+      await user.save();
+
+      await request(server)
+        .get(`/items`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist;
+          expect(res.body).to.have.property('message');
+        });
+
+      user.refresh_token = refreshToken;
+      await user.save();
+    });
+    it('should throw 401 if no Authorization header is present', async function () {
+      await request(server)
+        .get(`/items`)
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist;
+          expect(res.body).to.have.property('message');
+        });
+    });
+  });
   describe('PUT /items/:id', function () {});
   describe('DELETE /items/:id', function () {});
 });
