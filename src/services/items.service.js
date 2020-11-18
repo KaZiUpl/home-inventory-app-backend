@@ -48,6 +48,17 @@ exports.getItems = async function (userId) {
 
 exports.putItem = async function (itemId, itemBody) {
   try {
+    let item = await Item.findById(itemId);
+    if (item == undefined) {
+      throw new Error();
+    }
+    if (itemBody.name == null) {
+      throw new Error();
+    }
+    //exclude owner and photo from itemBody
+    let { owner, photo, ...newItemBody } = itemBody;
+
+    await Item.updateOne({ _id: itemId }, { $set: newItemBody });
   } catch (error) {
     throw error;
   }

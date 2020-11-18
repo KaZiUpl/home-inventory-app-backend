@@ -313,6 +313,150 @@ describe('Items Endpoints', function () {
         });
     });
   });
-  describe('PUT /items/:id', function () {});
+  describe('PUT /items/:id', function () {
+    let item, item2;
+    beforeEach(async function () {
+      await Item.deleteMany({});
+      item = await Item.create({
+        name: 'item name',
+        description: 'item description',
+        manufacturer: 'manufacturer',
+        owner: user._id
+      });
+      item2 = await Item.create({
+        name: 'item name',
+        description: 'item description',
+        manufacturer: 'manufacturer',
+        owner: mongoose.Types.ObjectId()
+      });
+    });
+    afterEach(async function () {
+      await Item.deleteMany({});
+    });
+
+    it('should return 200 on success', async function () {
+      await request(server)
+        .put(`/items/${item._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          name: 'new item name',
+          description: 'new item description',
+          manufacturer: 'new manufacturer'
+        })
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 401 if user is not logged in', async function () {
+      let refreshToken = user.refresh_token;
+      user.refresh_token = null;
+      await user.save();
+
+      await request(server)
+        .put(`/items/${item._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          name: 'new item name',
+          description: 'new item description',
+          manufacturer: 'new manufacturer'
+        })
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+
+      user.refresh_token = refreshToken;
+      await user.save();
+    });
+    it('should throw 401 if no Authorization header is present', async function () {
+      await request(server)
+        .put(`/items/${item._id}`)
+        .send({
+          name: 'new item name',
+          description: 'new item description',
+          manufacturer: 'new manufacturer'
+        })
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 403 if user is not an owner of the item', async function () {
+      await request(server)
+        .put(`/items/${item2._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          name: 'new item name',
+          description: 'new item description',
+          manufacturer: 'new manufacturer'
+        })
+        .expect(403)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 404 if item does not exist', async function () {
+      await request(server)
+        .put(`/items/${mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          name: 'new item name',
+          description: 'new item description',
+          manufacturer: 'new manufacturer'
+        })
+        .expect(404)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 422 if no name is in the request body', async function () {
+      await request(server)
+        .put(`/items/${item._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          description: 'new item description',
+          manufacturer: 'new manufacturer'
+        })
+        .expect(422)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 422 if no description is in the request body', async function () {
+      await request(server)
+        .put(`/items/${item._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          name: 'new item name',
+          manufacturer: 'new manufacturer'
+        })
+        .expect(422)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 422 if no manufacturer is in the request body', async function () {
+      await request(server)
+        .put(`/items/${item._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          name: 'new item name',
+          description: 'new item description'
+        })
+        .expect(422)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+  });
   describe('DELETE /items/:id', function () {});
 });

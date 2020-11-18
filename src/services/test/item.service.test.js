@@ -148,7 +148,78 @@ describe('Items Service', function () {
       await expect(ItemsService.getItems(null)).to.be.rejected;
     });
   });
-  describe('Update item info', function () {});
+  describe('Update item info', function () {
+    let item;
+    beforeEach(async function () {
+      await Item.deleteMany({});
+      item = await Item.create({
+        name: 'item name',
+        description: 'item description',
+        manufacturer: 'manufacturer',
+        owner: user._id,
+        photo: 'asd'
+      });
+    });
+    afterEach(async function () {
+      await Item.deleteMany({});
+    });
+
+    it('should update item info', async function () {
+      const itemBody = {
+        name: 'new item name',
+        description: 'new item description',
+        manufacturer: 'new manufacturer'
+      };
+
+      await expect(ItemsService.putItem(item._id, itemBody)).to.be.fulfilled;
+
+      let updatedItem = await Item.findById(item._id);
+
+      expect(updatedItem).to.have.property('name', 'new item name');
+      expect(updatedItem).to.have.property(
+        'description',
+        'new item description'
+      );
+      expect(updatedItem).to.have.property('manufacturer', 'new manufacturer');
+    });
+    it('should throw if item name is null', async function () {
+      const itemBody = {
+        description: 'new item description',
+        manufacturer: 'new manufacturer'
+      };
+
+      await expect(ItemsService.putItem(item._id, itemBody)).to.be.rejected;
+    });
+    it('should not update owner id', async function () {
+      const itemBody = {
+        name: 'new item name',
+        description: 'new item description',
+        manufacturer: 'new manufacturer',
+        owner: mongoose.Types.ObjectId()
+      };
+
+      await expect(ItemsService.putItem(item._id, itemBody)).to.be.fulfilled;
+
+      let updatedItem = await Item.findById(item._id);
+
+      expect(updatedItem).to.have.deep.property('owner', user._id);
+    });
+    it('should not update photo', async function () {
+      const itemBody = {
+        name: 'new item name',
+        description: 'new item description',
+        manufacturer: 'new manufacturer',
+        owner: mongoose.Types.ObjectId(),
+        photo: 'sdf'
+      };
+
+      await expect(ItemsService.putItem(item._id, itemBody)).to.be.fulfilled;
+
+      let updatedItem = await Item.findById(item._id);
+
+      expect(updatedItem).to.have.deep.property('photo', 'asd');
+    });
+  });
   describe('Delete an item', function () {});
   describe('Check item access', function () {
     let userItem, otherUserItem, globalItem;

@@ -39,10 +39,15 @@ exports.getItems = async function (req, res, next) {
 };
 
 exports.putItem = async function (req, res, next) {
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
-    await ItemsService.putItem();
+    await ItemsService.checkItemAccess(req.userData.id, req.params.id);
 
-    res.json();
+    await ItemsService.putItem(req.params.id, req.body);
+
+    res.status(200).json({ message: 'Item updated!' });
   } catch (error) {
     next(error);
   }

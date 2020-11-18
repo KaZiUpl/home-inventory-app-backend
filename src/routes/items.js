@@ -48,7 +48,15 @@ router.get('/', ItemsController.getItems);
  * @apiPermission item's owner
  * @apiParam {String} id item's id
  */
-router.put('/:id', ItemsController.putItem);
+router.put(
+  '/:id',
+  [
+    body('name').exists(),
+    body('description').exists(),
+    body('manufacturer').exists()
+  ],
+  ItemsController.putItem
+);
 
 /**
  * @api {delete} /items/:id Delete item
