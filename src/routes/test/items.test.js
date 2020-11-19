@@ -458,5 +458,82 @@ describe('Items Endpoints', function () {
         });
     });
   });
-  describe('DELETE /items/:id', function () {});
+  describe('DELETE /items/:id', function () {
+    let item, item2;
+    beforeEach(async function () {
+      await Item.deleteMany({});
+      item = await Item.create({
+        name: 'item name',
+        description: 'item description',
+        manufacturer: 'item manufacturer',
+        owner: user._id
+      });
+      item2 = await Item.create({
+        name: 'item name',
+        description: 'item description',
+        manufacturer: 'item manufacturer',
+        owner: mongoose.Types.ObjectId()
+      });
+    });
+    afterEach(async function () {
+      await Item.deleteMany({});
+    });
+
+    it('should return 200 on success', async function () {
+      await request(server)
+        .delete(`/items/${item._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 401 if user is not logged in', async function () {
+      let refreshToken = user.refresh_token;
+      user.refresh_token = null;
+      await user.save();
+
+      await request(server)
+        .delete(`/items/${item._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+
+      user.refresh_token = refreshToken;
+      await user.save();
+    });
+    it('should throw 401 if no Authorization header is present', async function () {
+      await request(server)
+        .delete(`/items/${item._id}`)
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it("should throw 403 if trying to delete other user's items", async function () {
+      await request(server)
+        .delete(`/items/${item2._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(403)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 404 if no item with provided id was found', async function () {
+      await request(server)
+        .delete(`/items/${mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(404)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+  });
 });

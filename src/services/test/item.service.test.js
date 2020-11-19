@@ -9,6 +9,7 @@ const expect = chai.expect;
 const ItemsService = require('../items.service');
 const User = require('../../models/user.model');
 const Item = require('../../models/item.model');
+const { request } = require('express');
 
 describe('Items Service', function () {
   let user;
@@ -220,7 +221,37 @@ describe('Items Service', function () {
       expect(updatedItem).to.have.deep.property('photo', 'asd');
     });
   });
-  describe('Delete an item', function () {});
+  describe('Delete an item', function () {
+    let item;
+    beforeEach(async function () {
+      await Item.deleteMany({});
+      item = await Item.create({
+        name: 'item name',
+        description: 'item description',
+        manufacturer: 'item manufacturer',
+        owner: user._id
+      });
+    });
+    afterEach(async function () {
+      await Item.deleteMany({});
+    });
+
+    it('should delete an item', async function () {
+      await expect(ItemsService.deleteItem(item._id)).to.be.fulfilled;
+
+      let deletedItem = await Item.findById(item._id);
+
+      expect(deletedItem).to.not.exist;
+    });
+    it('should throw if item id is invalid', async function () {
+      await expect(ItemsService.deleteItem('asd')).to.be.rejected;
+    });
+    it('should throw if no item with provided id is found', async function () {
+      await expect(ItemsService.deleteItem(mongoose.Types.ObjectId())).to.be.rejected;});
+    it('should throw if item id is null', async function () {
+      await expect(ItemsService.deleteItem(null)).to.be.rejected;
+    });
+  });
   describe('Check item access', function () {
     let userItem, otherUserItem, globalItem;
     beforeEach(async function () {

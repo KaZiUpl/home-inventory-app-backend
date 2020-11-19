@@ -55,9 +55,11 @@ exports.putItem = async function (req, res, next) {
 
 exports.deleteItem = async function (req, res, next) {
   try {
-    await ItemsService.deleteItem();
+    await ItemsService.checkItemAccess(req.userData.id, req.params.id);
 
-    res.json();
+    await ItemsService.deleteItem(req.params.id);
+
+    res.status(200).json({ message: 'Item deleted.' });
   } catch (error) {
     next(error);
   }

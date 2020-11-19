@@ -66,6 +66,14 @@ exports.putItem = async function (itemId, itemBody) {
 
 exports.deleteItem = async function (itemId) {
   try {
+    if (!mongoose.Types.ObjectId.isValid(itemId)) {
+      throw new Error('Invalid id');
+    }
+    let item = await Item.findById(itemId);
+    if (item == undefined) {
+      throw new Error('Item not found');
+    }
+    await item.delete();
   } catch (error) {
     throw error;
   }
