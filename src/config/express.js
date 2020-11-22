@@ -27,10 +27,11 @@ if (process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() !== 'test') {
 //set static documentation files
 app.use(express.static(path.join(__dirname + '../public')));
 app.use('/docs', express.static('public/docs'));
+app.use('/img', express.static('public/img'));
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '5mb' }));
 
 //add routes
 app.use('/users', usersRoutes);
@@ -44,6 +45,7 @@ app.use((req, res, next) => {
 });
 //handle errors
 app.use((error, req, res, next) => {
+  //console.log(error.stack);
   if (error.constructor.name == 'CastError') {
     error = new BadRequestError();
   }

@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/app.js",
   "scripts": {
-    "dev": "nodemon src/app.js",
+    "dev": "set NODE_ENV=dev&& nodemon src/app.js",
     "start": "node src/app.js",
     "docs": "apidoc -i src/routes -o public/docs",
     "test": "set NODE_ENV=test&& mocha src/**/*.test.js --require src/config/dotenv.js"
@@ -27,6 +27,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-validator": "^6.6.1",
+    "formidable": "^1.2.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.27",
     "morgan": "^1.10.0"

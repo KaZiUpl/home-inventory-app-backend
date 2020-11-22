@@ -67,4 +67,6 @@ router.put(
  */
 router.delete('/:id', ItemsController.deleteItem);
 
+router.post('/:id/photo', ItemsController.uploadItemImage);
+
 module.exports = router;

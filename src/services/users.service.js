@@ -1,6 +1,8 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
+const path = require('path');
 
 const dotenv = require('../config/dotenv');
 const User = require('../models/user.model');
@@ -29,6 +31,12 @@ exports.createUser = async function (login, email, password) {
     //set role
     newUser.role = 'user';
     newUser = await newUser.save();
+
+    //create user image directory
+    await fs.promises.mkdir(
+      path.resolve(__dirname, `../../public/img/${newUser._id}`),
+      { recursive: true }
+    );
 
     return newUser._id;
   } catch (error) {

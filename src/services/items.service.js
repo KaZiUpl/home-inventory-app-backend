@@ -1,8 +1,14 @@
 const mongoose = require('mongoose');
+const fs = require('fs').promises;
+const path = require('path');
 
 const Item = require('../models/item.model');
 const User = require('../models/user.model');
-const { NotFoundError, ForbiddenError } = require('../error/errors');
+const {
+  NotFoundError,
+  ForbiddenError,
+  BadRequestError
+} = require('../error/errors');
 
 exports.createItem = async function (userId, itemBody) {
   try {
@@ -89,6 +95,28 @@ exports.checkItemAccess = async function (userId, itemId) {
     if (item.owner && !item.owner.equals(userId)) {
       throw new ForbiddenError();
     }
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.uploadItemImage = async function (itemId, file) {
+  try {
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      throw new BadRequestError('Wrong file type. User png or jpg');
+    }
+    let item = await Item.findById(itemId);
+
+    const dir = path.resolve(__dirname, `../../public/img/${item.owner}`);
+    const rawData = await fs.readFile(file.path);
+    const fileExtension = file.type.split('/')[1];
+    const filename = `${itemId}.${fileExtension}`;
+
+    //write file
+    await fs.writeFile(`${dir}${path.sep}${filename}`, rawData);
+    //update item
+    item.photo = `localhost:3000/img/${item.owner}/${item._id}.png`;
+    await item.save();
   } catch (error) {
     throw error;
   }

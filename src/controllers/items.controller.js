@@ -1,7 +1,11 @@
 const { validationResult } = require('express-validator');
+const formidable = require('formidable');
 
 const ItemsService = require('../services/items.service');
-const { UnprocessableEntityError } = require('../error/errors');
+const {
+  UnprocessableEntityError,
+  BadRequestError
+} = require('../error/errors');
 
 exports.createItem = async function (req, res, next) {
   if (!validationResult(req).isEmpty()) {
@@ -60,6 +64,40 @@ exports.deleteItem = async function (req, res, next) {
     await ItemsService.deleteItem(req.params.id);
 
     res.status(200).json({ message: 'Item deleted.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.uploadItemImage = async function (req, res, next) {
+  try {
+    await ItemsService.checkItemAccess(req.userData.id, req.params.id);
+
+    const form = formidable();
+
+    const file = await new Promise((resolve, reject) => {
+      form.parse(req, function (err, fields, files) {
+        if (err) {
+          reject(err);
+          return;
+        }
+        if (Object.values(files).length > 1) {
+          reject(new BadRequestError('Submit only one file'));
+          return;
+        }
+        if (!files.image) {
+          reject(new UnprocessableEntityError('Image is missing'));
+          return;
+        }
+        resolve(files.image);
+      });
+    }).catch((err) => {
+      throw err;
+    });
+
+    await ItemsService.uploadItemImage(req.params.id, file);
+
+    res.status(200).json({ message: 'Item image added.' });
   } catch (error) {
     next(error);
   }

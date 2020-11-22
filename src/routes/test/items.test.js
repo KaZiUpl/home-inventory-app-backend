@@ -3,6 +3,8 @@ const chaiAsPromised = require('chai-as-promised');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const request = require('supertest');
+const path = require('path');
+const fs = require('fs').promises;
 const expect = chai.expect;
 
 chai.use(chaiAsPromised);
@@ -451,6 +453,133 @@ describe('Items Endpoints', function () {
           name: 'new item name',
           description: 'new item description'
         })
+        .expect(422)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+  });
+  describe('POST /items/:id/photo', function () {
+    let item, item2, imagePath, filePath;
+    before(async function () {
+      //create user directory
+      await fs.mkdir(
+        path.resolve(__dirname, `../../../public/img/${user._id}`),
+        { recursive: true }
+      );
+      //create paths
+      imagePath = path.resolve(
+        __dirname,
+        '../../../public/img/test/test_image.png'
+      );
+      filePath = path.resolve(
+        __dirname,
+        '../../../public/img/test/test_file.txt'
+      );
+    });
+    after(async function () {
+      //delete user directory
+      await fs.rmdir(
+        path.resolve(__dirname, `../../../public/img/${user._id}`),
+        { recursive: true }
+      );
+    });
+    beforeEach(async function () {
+      await Item.deleteMany({});
+      item = await Item.create({
+        name: 'item name',
+        description: 'item description',
+        owner: user._id
+      });
+      item2 = await Item.create({
+        name: 'item name',
+        description: 'item description',
+        owner: mongoose.Types.ObjectId()
+      });
+    });
+    afterEach(async function () {
+      await Item.deleteMany({});
+    });
+
+    it('should return 200 on success', async function () {
+      await request(server)
+        .post(`/items/${item._id}/photo`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .attach('image', imagePath)
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 400 if file is not an image', async function () {
+      await request(server)
+        .post(`/items/${item._id}/photo`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .attach('image', filePath)
+        .expect(400)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 401 if user is not logged in', async function () {
+      let refreshToken = user.refresh_token;
+      user.refresh_token = null;
+      await user.save();
+
+      await request(server)
+        .post(`/items/${item._id}/photo`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .attach('image', imagePath)
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+
+      user.refresh_token = refreshToken;
+      await user.save();
+    });
+    it('should throw 401 if no Authorization header is present', async function () {
+      await request(server)
+        .post(`/items/${item._id}/photo`)
+        .set('Connection', 'keep-alive') // https://stackoverflow.com/questions/61096108/sending-binary-file-in-express-leads-to-econnaborted
+        .attach('image', imagePath)
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 403 if user is not an item owner', async function () {
+      await request(server)
+        .post(`/items/${item2._id}/photo`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .attach('image', imagePath)
+        .expect(403)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 404 if item does not exist', async function () {
+      await request(server)
+        .post(`/items/${mongoose.Types.ObjectId()}/photo`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .attach('image', imagePath)
+        .expect(404)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 422 if no image is provided', async function () {
+      await request(server)
+        .post(`/items/${item._id}/photo`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .attach('file', imagePath)
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {

@@ -2,6 +2,8 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
+const path = require('path');
+const fs = require('fs');
 
 chai.use(chaiAsPromised);
 
@@ -36,6 +38,16 @@ describe('Users Service', function () {
       await User.deleteMany({});
     });
     afterEach(async function () {
+      //delete all users' image directories
+      let users = await User.find({});
+      users.forEach(async function (user) {
+        await fs.promises.rmdir(
+          path.resolve(__dirname, `../../../public/img/${user._id}`),
+          {
+            recursive: true
+          }
+        );
+      });
       //clear Users collection
       await User.deleteMany({});
     });
@@ -56,6 +68,26 @@ describe('Users Service', function () {
 
       expect(response).to.be.instanceOf(mongoose.Types.ObjectId);
       expect(users.length).to.equal(1);
+    });
+    it('should create user image directory', async function () {
+      const body = {
+        login: 'kacperkaz',
+        email: 'kacperkaz@example.com',
+        password: 'asd'
+      };
+
+      let response = await UsersService.createUser(
+        body.login,
+        body.email,
+        body.password
+      );
+
+      const dirPath = path.resolve(
+        __dirname,
+        `../../../public/img/${response}`
+      );
+
+      expect(fs.existsSync(dirPath)).to.be.true;
     });
     it('should throw if user with login already exist', async function () {
       //create test user

@@ -1,6 +1,8 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const mongoose = require('mongoose');
+const fs = require('fs');
+const path = require('path');
 
 chai.use(chaiAsPromised);
 
@@ -221,6 +223,92 @@ describe('Items Service', function () {
       expect(updatedItem).to.have.deep.property('photo', 'asd');
     });
   });
+  describe('Update item image', function () {
+    let item, imageFile, textFile;
+    before(function () {
+      //create user directory
+      fs.mkdir(
+        path.resolve(__dirname, `../../../public/img/${user._id}`),
+        { recursive: true },
+        (err) => {
+          if (err) throw err;
+        }
+      );
+      //prepare files
+      imageFile = {
+        name: 'test_image.png',
+        type: 'image/png',
+        path: path.resolve(__dirname, '../../../public/img/test/test_image.png')
+      };
+      textFile = {
+        name: 'test_file.txt',
+        type: 'text/plain',
+        path: path.resolve(__dirname, '../../../public/img/test/test_file.txt')
+      };
+    });
+    after(function () {
+      //delete user directory
+      fs.rmdir(
+        path.resolve(__dirname, `../../../public/img/${user._id}`),
+        { recursive: true },
+        (err) => {
+          if (err) throw err;
+        }
+      );
+    });
+    beforeEach(async function () {
+      await Item.deleteMany({});
+      item = await Item.create({
+        name: 'item name',
+        description: 'item description',
+        owner: user._id
+      });
+    });
+    afterEach(async function () {
+      await Item.deleteMany({});
+    });
+
+    it('should create new image in /public/img/user_id', async function () {
+      await expect(ItemsService.uploadItemImage(item._id, imageFile)).to.be
+        .fulfilled;
+
+      const imagePath = path.resolve(
+        __dirname,
+        `../../../public/img/${user._id}`
+      );
+      expect(fs.existsSync(imagePath + `/${item._id}.png`)).to.be.true;
+    });
+    it('should add image link to item', async function () {
+      await expect(ItemsService.uploadItemImage(item._id, imageFile)).to.be
+        .fulfilled;
+
+      const imagePath = path.resolve(
+        __dirname,
+        `../../../public/img/${user._id}/${item._id}.png`
+      );
+
+      let updatedItem = await Item.findById(item._id);
+
+      expect(updatedItem).to.have.property(
+        'photo',
+        `localhost:3000/img/${user._id}/${item._id}.png`
+      );
+    });
+    it('should throw if file is not an image', async function () {
+      await expect(ItemsService.uploadItemImage(item._id, textFile)).to.be
+        .rejected;
+    });
+    it('should throw if file is null', async function () {
+      await expect(ItemsService.uploadItemImage(item._id, null)).to.be.rejected;
+    });
+    it('should throw if itemId is invalid', async function () {
+      await expect(ItemsService.uploadItemImage('asd', textFile)).to.be
+        .rejected;
+    });
+    it('should throw if itemId is null', async function () {
+      await expect(ItemsService.uploadItemImage(null, textFile)).to.be.rejected;
+    });
+  });
   describe('Delete an item', function () {
     let item;
     beforeEach(async function () {
@@ -247,7 +335,9 @@ describe('Items Service', function () {
       await expect(ItemsService.deleteItem('asd')).to.be.rejected;
     });
     it('should throw if no item with provided id is found', async function () {
-      await expect(ItemsService.deleteItem(mongoose.Types.ObjectId())).to.be.rejected;});
+      await expect(ItemsService.deleteItem(mongoose.Types.ObjectId())).to.be
+        .rejected;
+    });
     it('should throw if item id is null', async function () {
       await expect(ItemsService.deleteItem(null)).to.be.rejected;
     });
