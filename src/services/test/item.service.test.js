@@ -224,7 +224,7 @@ describe('Items Service', function () {
     });
   });
   describe('Update item image', function () {
-    let item, imageFile, textFile;
+    let item, imageFilePNG, imageFileJPG, textFile;
     before(function () {
       //create user directory
       fs.mkdir(
@@ -235,10 +235,15 @@ describe('Items Service', function () {
         }
       );
       //prepare files
-      imageFile = {
+      imageFilePNG = {
         name: 'test_image.png',
         type: 'image/png',
         path: path.resolve(__dirname, '../../../public/img/test/test_image.png')
+      };
+      imageFileJPG = {
+        name: 'test_image.jpg',
+        type: 'image/jpeg',
+        path: path.resolve(__dirname, '../../../public/img/test/test_image.jpg')
       };
       textFile = {
         name: 'test_file.txt',
@@ -269,7 +274,7 @@ describe('Items Service', function () {
     });
 
     it('should create new image in /public/img/user_id', async function () {
-      await expect(ItemsService.uploadItemImage(item._id, imageFile)).to.be
+      await expect(ItemsService.uploadItemImage(item._id, imageFilePNG)).to.be
         .fulfilled;
 
       const imagePath = path.resolve(
@@ -279,20 +284,37 @@ describe('Items Service', function () {
       expect(fs.existsSync(imagePath + `/${item._id}.png`)).to.be.true;
     });
     it('should add image link to item', async function () {
-      await expect(ItemsService.uploadItemImage(item._id, imageFile)).to.be
+      await expect(ItemsService.uploadItemImage(item._id, imageFilePNG)).to.be
         .fulfilled;
 
+      const fileExtension = imageFilePNG.type.split('/')[1];
       const imagePath = path.resolve(
         __dirname,
-        `../../../public/img/${user._id}/${item._id}.png`
+        `../../../public/img/${user._id}/${item._id}.${fileExtension}`
       );
 
       let updatedItem = await Item.findById(item._id);
 
       expect(updatedItem).to.have.property(
         'photo',
-        `localhost:3000/img/${user._id}/${item._id}.png`
+        `localhost:3000/img/${user._id}/${item._id}.${fileExtension}`
       );
+    });
+    it('should delete old item image and create new one', async function () {
+      await expect(ItemsService.uploadItemImage(item._id, imageFilePNG)).to.be
+        .fulfilled;
+
+      const imagePath = path.resolve(
+        __dirname,
+        `../../../public/img/${user._id}`
+      );
+      expect(fs.existsSync(imagePath + `/${item._id}.png`)).to.be.true;
+
+      await expect(ItemsService.uploadItemImage(item._id, imageFileJPG)).to.be
+        .fulfilled;
+
+      expect(fs.existsSync(imagePath + `/${item._id}.jpeg`)).to.be.true;
+      expect(fs.existsSync(imagePath + `/${item._id}.png`)).to.be.false;
     });
     it('should throw if file is not an image', async function () {
       await expect(ItemsService.uploadItemImage(item._id, textFile)).to.be

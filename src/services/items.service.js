@@ -114,8 +114,14 @@ exports.uploadItemImage = async function (itemId, file) {
 
     //write file
     await fs.writeFile(`${dir}${path.sep}${filename}`, rawData);
+    if (item.photo) {
+      let oldImagePath = `${dir}${path.sep}${
+        item.photo.split('/')[item.photo.split('/').length - 1]
+      }`;
+      await fs.unlink(oldImagePath);
+    }
     //update item
-    item.photo = `localhost:3000/img/${item.owner}/${item._id}.png`;
+    item.photo = `localhost:3000/img/${item.owner}/${item._id}.${fileExtension}`;
     await item.save();
   } catch (error) {
     throw error;

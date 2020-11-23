@@ -67,6 +67,14 @@ router.put(
  */
 router.delete('/:id', ItemsController.deleteItem);
 
+/**
+ * @api {post} /items/:id/photo Upload item's photo
+ * @apiDescription Uploads a photo of the item. Request is required to be on Content-Type: multipart/form-data. Allowed file types are jpg and png.
+ * @apiName PostItemImage
+ * @apiGroup Item
+ * @apiPermission item's owner
+ * @apiParam {File} image item's image
+ */
 router.post('/:id/photo', ItemsController.uploadItemImage);
 
 module.exports = router;
