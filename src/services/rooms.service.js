@@ -47,6 +47,48 @@ exports.deleteRoom = async function (id) {
     throw error;
   }
 };
+
+exports.addStorageItem = async function (
+  roomId,
+  itemId,
+  quantity,
+  expiration = null,
+  description = null
+) {
+  try {
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getRoomStorage = async function (roomId) {
+  try {
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getStorageItem = async function (roomId, itemId) {
+  try {
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.updateStorageItem = async function (roomId, itemId, newItemData) {
+  try {
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.deleteStorageItem = async function (roomId, itemId) {
+  try {
+  } catch (error) {
+    throw error;
+  }
+};
+
 exports.checkRoomExistence = async function (roomId) {
   try {
     let room = await Room.findById(roomId);

@@ -10,6 +10,7 @@ const RoomsService = require('../rooms.service');
 const Room = require('../../models/room.model');
 const House = require('../../models/house.model');
 const User = require('../../models/user.model');
+const Item = require('../../models/item.model');
 
 describe('Rooms Service', function () {
   before(async function () {
@@ -41,6 +42,11 @@ describe('Rooms Service', function () {
       room = await Room.create({ name: 'room name', house: house._id });
       house.rooms = [room._id];
       await house.save();
+    });
+    afterEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
     });
 
     it('should return room info on success', async function () {
@@ -83,6 +89,11 @@ describe('Rooms Service', function () {
       house.rooms = [room._id];
       await house.save();
     });
+    afterEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+    });
 
     it('should delete a room', async function () {
       await expect(RoomsService.deleteRoom(room._id)).to.be.fulfilled;
@@ -120,6 +131,11 @@ describe('Rooms Service', function () {
       room = await Room.create({ name: 'room name', house: house._id });
       house.rooms = [room._id];
       await house.save();
+    });
+    afterEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
     });
 
     it('should modify room name and/or description', async function () {
@@ -168,6 +184,136 @@ describe('Rooms Service', function () {
 
       await expect(RoomsService.modifyRoom(null, body.name, body.description))
         .to.be.rejected;
+    });
+  });
+  describe('Create storage item', function () {
+    let user, house, room, item;
+    beforeEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+      await Item.deleteMany({});
+      user = await User.create({
+        login: 'user',
+        email: 'user@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+      house = await House.create({ name: 'house name', owner: user._id });
+      room = await Room.create({ name: 'room name', house: house._id });
+      house.rooms = [room._id];
+      await house.save();
+      item = await Item.create({ name: 'item name', owner: user._id });
+    });
+    afterEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+      await Item.deleteMany({});
+    });
+  });
+  describe('Get room storage', function () {
+    let user, house, room, item;
+    beforeEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+      await Item.deleteMany({});
+      user = await User.create({
+        login: 'user',
+        email: 'user@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+      house = await House.create({ name: 'house name', owner: user._id });
+      room = await Room.create({ name: 'room name', house: house._id });
+      house.rooms = [room._id];
+      await house.save();
+      item = await Item.create({ name: 'item name', owner: user._id });
+    });
+    afterEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+      await Item.deleteMany({});
+    });
+  });
+  describe('Get storage item', function () {
+    let user, house, room, item;
+    beforeEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+      await Item.deleteMany({});
+      user = await User.create({
+        login: 'user',
+        email: 'user@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+      house = await House.create({ name: 'house name', owner: user._id });
+      room = await Room.create({ name: 'room name', house: house._id });
+      house.rooms = [room._id];
+      await house.save();
+      item = await Item.create({ name: 'item name', owner: user._id });
+    });
+    afterEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+      await Item.deleteMany({});
+    });
+  });
+  describe('Update storage item', function () {
+    let user, house, room, item;
+    beforeEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+      await Item.deleteMany({});
+      user = await User.create({
+        login: 'user',
+        email: 'user@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+      house = await House.create({ name: 'house name', owner: user._id });
+      room = await Room.create({ name: 'room name', house: house._id });
+      house.rooms = [room._id];
+      await house.save();
+      item = await Item.create({ name: 'item name', owner: user._id });
+    });
+    afterEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+      await Item.deleteMany({});
+    });
+  });
+  describe('Delete storage item', function () {
+    let user, house, room, item;
+    beforeEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+      await Item.deleteMany({});
+      user = await User.create({
+        login: 'user',
+        email: 'user@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+      house = await House.create({ name: 'house name', owner: user._id });
+      room = await Room.create({ name: 'room name', house: house._id });
+      house.rooms = [room._id];
+      await house.save();
+      item = await Item.create({ name: 'item name', owner: user._id });
+    });
+    afterEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+      await Item.deleteMany({});
     });
   });
   describe('Check room existence', function () {

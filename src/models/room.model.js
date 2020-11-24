@@ -14,7 +14,23 @@ const roomSchema = new Schema({
     type: mongoose.Types.ObjectId,
     ref: 'House',
     required: true
-  }
+  },
+  storage: [
+    new Schema({
+      item_id: {
+        type: mongoose.Types.ObjectId,
+        ref: 'Item',
+        required: true
+      },
+      quantity: {
+        type: Number,
+        required: true
+      },
+      expiration: {
+        type: Date
+      }
+    })
+  ]
 });
 
 module.exports = mongoose.model('Room', roomSchema);

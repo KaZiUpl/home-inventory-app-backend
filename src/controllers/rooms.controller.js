@@ -54,3 +54,43 @@ exports.deleteRoom = async function (req, res, next) {
     next(error);
   }
 };
+
+exports.addStorageItem = async function (req, res, next) {
+  try {
+    res.json();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getRoomStorage = async function (req, res, next) {
+  try {
+    res.json();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getStorageItem = async function (req, res, next) {
+  try {
+    res.json();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateStorageItem = async function (req, res, next) {
+  try {
+    res.json();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteStorageItem = async function (req, res, next) {
+  try {
+    res.json();
+  } catch (error) {
+    next(error);
+  }
+};

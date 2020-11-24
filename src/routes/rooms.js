@@ -15,6 +15,37 @@ router.use(checkAuthMiddleware);
  */
 
 /**
+ * @api {delete} /rooms/:roomId/storage Add item to room's storage
+ * @apiName DostStorageItem
+ * @apiGroup Room
+ * @apiPermission house owner or collaborator
+ * @apiParam {String} roomId Room id
+ * @apiParam {String} itemId Item id
+ * @apiParam {Number} quantity Quantity of item (optional, default=1)
+ * @apiParam {Date} expiration Expiration date (optional)
+ */
+router.post('/:id/storage', roomsController.addStorageItem);
+
+/**
+ * @api {get} /rooms/:roomId/storage Get room's item storage
+ * @apiName GetRoomStorage
+ * @apiGroup Room
+ * @apiPermission house owner or collaborator
+ * @apiParam {String} roomId Room id
+ */
+router.get('/:roomId/storage', roomsController.getRoomStorage);
+
+/**
+ * @api {get} /rooms/:roomId/storage/:itemId Get storage item info
+ * @apiName GetStorageItem
+ * @apiGroup Room
+ * @apiPermission house owner or collaborator
+ * @apiParam {String} roomId Room id
+ * @apiParam {String} itemId Item id
+ */
+router.get('/:roomId/storage/:itemId', roomsController.getStorageItem);
+
+/**
  * @api {get} /rooms/:id Get room info
  * @apiName GetRoom
  * @apiGroup Room
@@ -22,6 +53,16 @@ router.use(checkAuthMiddleware);
  * @apiParam {String} id Room id
  */
 router.get('/:id', roomsController.getRoom);
+
+/**
+ * @api {put} /rooms/:roomId/storage/:itemId Update storage item info
+ * @apiName DutStorageItem
+ * @apiGroup Room
+ * @apiPermission house owner or collaborator
+ * @apiParam {String} roomId Room id
+ * @apiParam {String} itemId Item id
+ */
+router.put('/:roomId/storage/:itemId', roomsController.updateStorageItem);
 
 /**
  * @api {put} /rooms/:id Modify a room
@@ -38,6 +79,16 @@ router.put(
   [body('name').exists(), body('description').exists()],
   roomsController.modifyRoom
 );
+
+/**
+ * @api {delete} /rooms/:roomId/storage/:itemId Delete an item from a room's storage
+ * @apiName DeleteStorageItem
+ * @apiGroup Room
+ * @apiPermission house owner or collaborator
+ * @apiParam {String} roomId Room id
+ * @apiParam {String} itemId Item id
+ */
+router.delete('/:roomId/storage/:itemId', roomsController.deleteStorageItem);
 
 /**
  * @api {delete} /rooms/:id Delete a room
