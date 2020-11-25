@@ -20,24 +20,25 @@ router.use(checkAuthMiddleware);
  * @apiGroup Room
  * @apiPermission house owner or collaborator
  * @apiParam {String} roomId Room id
- * @apiParam {String} itemId Item id
+ * @apiParam {String} item Item id
  * @apiParam {Number} quantity Quantity of item (optional, default=1)
  * @apiParam {Date} expiration Expiration date (optional)
+ * @apiParam {String} description Storage item description (optional)
  */
 router.post(
   '/:id/storage',
-  [body('item_id').exists(), body('quantity').exists()],
+  [body('item').exists(), body('quantity').exists()],
   roomsController.addStorageItem
 );
 
 /**
- * @api {get} /rooms/:roomId/storage Get room's item storage
+ * @api {get} /rooms/:roomId/storage Get room's storage
  * @apiName GetRoomStorage
  * @apiGroup Room
  * @apiPermission house owner or collaborator
- * @apiParam {String} roomId Room id
+ * @apiParam {String} id Room id
  */
-router.get('/:roomId/storage', roomsController.getRoomStorage);
+router.get('/:id/storage', roomsController.getRoomStorage);
 
 /**
  * @api {get} /rooms/:roomId/storage/:itemId Get storage item info

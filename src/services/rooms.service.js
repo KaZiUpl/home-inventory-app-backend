@@ -73,7 +73,7 @@ exports.addStorageItem = async function (
     }
 
     const storageItem = {
-      item_id: itemId,
+      item: itemId,
       quantity: quantity,
       expiration: expiration,
       description: description
@@ -92,6 +92,16 @@ exports.addStorageItem = async function (
 
 exports.getRoomStorage = async function (roomId) {
   try {
+    let room = await Room.findById(roomId).populate({
+      path: 'storage',
+      populate: { path: 'item' }
+    });
+
+    if (room == undefined) {
+      throw new NotFoundError('Room not found.');
+    }
+
+    return room.storage;
   } catch (error) {
     throw error;
   }

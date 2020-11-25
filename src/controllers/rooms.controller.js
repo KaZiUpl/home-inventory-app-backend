@@ -66,7 +66,7 @@ exports.addStorageItem = async function (req, res, next) {
 
     let storageItemId = await RoomsService.addStorageItem(
       req.params.id,
-      req.body.item_id,
+      req.body.item,
       req.body.quantity,
       req.body.expiration ? req.body.expiration : undefined,
       req.body.description ? req.body.description : undefined
@@ -82,7 +82,13 @@ exports.addStorageItem = async function (req, res, next) {
 
 exports.getRoomStorage = async function (req, res, next) {
   try {
-    res.json();
+    await RoomsService.checkRoomExistence(req.params.id);
+
+    await RoomsService.checkRoomAccess(req.params.id, req.userData.id);
+
+    let storage = await RoomsService.getRoomStorage(req.params.id);
+
+    res.status(200).json(storage);
   } catch (error) {
     next(error);
   }

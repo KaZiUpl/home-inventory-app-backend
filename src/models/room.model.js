@@ -17,7 +17,7 @@ const roomSchema = new Schema({
   },
   storage: [
     new Schema({
-      item_id: {
+      item: {
         type: mongoose.Types.ObjectId,
         ref: 'Item',
         required: true

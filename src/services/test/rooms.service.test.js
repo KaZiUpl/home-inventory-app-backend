@@ -230,7 +230,7 @@ describe('Rooms Service', function () {
         '_id',
         storageItemId
       );
-      expect(updatedRoom.storage[0]).to.have.deep.property('item_id', item._id);
+      expect(updatedRoom.storage[0]).to.have.deep.property('item', item._id);
       expect(updatedRoom.storage[0]).to.have.property('quantity', 1);
       expect(updatedRoom.storage[0]).to.have.deep.property(
         'expiration',
@@ -271,6 +271,7 @@ describe('Rooms Service', function () {
   });
   describe('Get room storage', function () {
     let user, house, room, item;
+    let epoch, storageItem, storageItem2;
     beforeEach(async function () {
       await Room.deleteMany({});
       await House.deleteMany({});
@@ -287,12 +288,53 @@ describe('Rooms Service', function () {
       house.rooms = [room._id];
       await house.save();
       item = await Item.create({ name: 'item name', owner: user._id });
+
+      epoch = Date.now();
+      storageItem = await room.storage.create({
+        item: item._id,
+        quantity: 1
+      });
+      storageItem2 = await room.storage.create({
+        item: item._id,
+        quantity: 12,
+        expiration: epoch,
+        description: 'desc2'
+      });
+      room.storage.push(storageItem);
+      room.storage.push(storageItem2);
+
+      await room.save();
     });
     afterEach(async function () {
       await Room.deleteMany({});
       await House.deleteMany({});
       await User.deleteMany({});
       await Item.deleteMany({});
+    });
+
+    it('should return array of storage items', async function () {
+      let storageItemArray = await RoomsService.getRoomStorage(room._id);
+
+      expect(storageItemArray).to.exist.and.be.a('array').of.length(2);
+
+      let output = storageItem.toJSON();
+      output.item = item.toJSON();
+
+      let output2 = storageItem2.toJSON();
+      output2.item = item.toJSON();
+
+      expect(storageItemArray[0].toJSON()).to.deep.equal(output);
+      expect(storageItemArray[1].toJSON()).to.deep.equal(output2);
+    });
+    it('should throw if room does not exist', async function () {
+      await expect(RoomsService.getRoomStorage(mongoose.Types.ObjectId())).to.be
+        .rejected;
+    });
+    it('should throw if room id is invalid', async function () {
+      await expect(RoomsService.getRoomStorage('asd')).to.be.rejected;
+    });
+    it('should throw if room id is null', async function () {
+      await expect(RoomsService.getRoomStorage(null)).to.be.rejected;
     });
   });
   describe('Get storage item', function () {
