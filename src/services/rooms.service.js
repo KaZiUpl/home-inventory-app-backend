@@ -1,5 +1,6 @@
 const Room = require('../models/room.model');
 const House = require('../models/house.model');
+const Item = require('../models/item.model');
 
 const { ForbiddenError, NotFoundError } = require('../error/errors');
 
@@ -52,10 +53,38 @@ exports.addStorageItem = async function (
   roomId,
   itemId,
   quantity,
-  expiration = null,
-  description = null
+  expiration = undefined,
+  description = undefined
 ) {
   try {
+    let room = await Room.findById(roomId);
+    let item = await Item.findById(itemId);
+    if (room == null) {
+      throw new NotFoundError('Room not found');
+    }
+    if (item == null) {
+      throw new NotFoundError('Item not found');
+    }
+    if (quantity < 1) {
+      throw new Error('Item quantity must be greater than or equal to 1');
+    }
+    if (expiration && typeof expiration !== 'number') {
+      throw new Error('Expiration muse be a timestamp');
+    }
+
+    const storageItem = {
+      item_id: itemId,
+      quantity: quantity,
+      expiration: expiration,
+      description: description
+    };
+
+    let response = await room.storage.create(storageItem);
+    room.storage.push(response);
+
+    await room.save();
+
+    return response._id;
   } catch (error) {
     throw error;
   }

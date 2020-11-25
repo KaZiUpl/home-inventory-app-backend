@@ -24,7 +24,11 @@ router.use(checkAuthMiddleware);
  * @apiParam {Number} quantity Quantity of item (optional, default=1)
  * @apiParam {Date} expiration Expiration date (optional)
  */
-router.post('/:id/storage', roomsController.addStorageItem);
+router.post(
+  '/:id/storage',
+  [body('item_id').exists(), body('quantity').exists()],
+  roomsController.addStorageItem
+);
 
 /**
  * @api {get} /rooms/:roomId/storage Get room's item storage

@@ -28,6 +28,9 @@ const roomSchema = new Schema({
       },
       expiration: {
         type: Date
+      },
+      description: {
+        type: String
       }
     })
   ]

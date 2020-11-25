@@ -12,6 +12,7 @@ const server = require('../../config/express');
 const User = require('../../models/user.model');
 const House = require('../../models/house.model');
 const Room = require('../../models/room.model');
+const Item = require('../../models/item.model');
 
 describe('Rooms Endpoints', function () {
   let user1, user2;
@@ -134,6 +135,216 @@ describe('Rooms Endpoints', function () {
     await Room.deleteMany({});
   });
 
+  describe('POST /rooms/:id/storage', function () {
+    let item, item2;
+    beforeEach(async function () {
+      await Item.deleteMany({});
+      item = await Item.create({ name: 'item', owner: user1._id });
+      item2 = await Item.create({ name: 'item 2', owner: user2._id });
+    });
+    afterEach(async function () {
+      await Item.deleteMany({});
+    });
+
+    it('should return 200 if house owner is adding new storage item', async function () {
+      await request(server)
+        .post(`/rooms/${room.id}/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          item_id: item._id,
+          quantity: 1,
+          expiration: Date.now(),
+          description: 'desc'
+        })
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+          expect(res.body).to.exist.and.to.have.property('id');
+        });
+    });
+    it('should return 200 if house collaborator is adding new storage item', async function () {
+      await request(server)
+        .post(`/rooms/${room.id}/storage`)
+        .set('Authorization', `Bearer ${accessToken2}`)
+        .send({
+          item_id: item2._id,
+          quantity: 1,
+          expiration: Date.now(),
+          description: 'desc'
+        })
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+          expect(res.body).to.exist.and.to.have.property('id');
+        });
+    });
+    it('should throw 400 if room id is invalid', async function () {
+      await request(server)
+        .post(`/rooms/asd/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          item_id: item._id,
+          quantity: 1,
+          expiration: Date.now(),
+          description: 'desc'
+        })
+        .expect(400)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 400 if item id is invalid', async function () {
+      await request(server)
+        .post(`/rooms/${room.id}/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          item_id: 'asd',
+          quantity: 1,
+          expiration: Date.now(),
+          description: 'desc'
+        })
+        .expect(400)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 400 if quantity is less than 1', async function () {
+      await request(server)
+        .post(`/rooms/${room.id}/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          item_id: item._id,
+          quantity: -1,
+          expiration: Date.now(),
+          description: 'desc'
+        })
+        .expect(400)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 400 if expiration is not a timestamp', async function () {
+      await request(server)
+        .post(`/rooms/${room.id}/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          item_id: item._id,
+          quantity: 1,
+          expiration: 'asd',
+          description: 'desc'
+        })
+        .expect(400)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 401 if user is not logged in', async function () {
+      let refreshToken = user1.refresh_token;
+      user1.refresh_token = null;
+      await user1.save();
+
+      await request(server)
+        .post(`/rooms/${room.id}/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          item_id: item._id,
+          quantity: 1,
+          expiration: Date.now(),
+          description: 'desc'
+        })
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+
+      user1.refresh_token = refreshToken;
+      await user1.save();
+    });
+    it('should throw 401 if no Authorization header is present', async function () {
+      await request(server)
+        .post(`/rooms/${room.id}/storage`)
+        .send({
+          item_id: item._id,
+          quantity: 1,
+          expiration: Date.now(),
+          description: 'desc'
+        })
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 403 if user is not a house owner nor a collaborator', async function () {
+      await request(server)
+        .post(`/rooms/${room2.id}/storage`)
+        .set('Authorization', `Bearer ${accessToken2}`)
+        .send({
+          item_id: item2._id,
+          quantity: 1,
+          expiration: Date.now(),
+          description: 'desc'
+        })
+        .expect(403)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 404 if room does not exist', async function () {
+      await request(server)
+        .post(`/rooms/${mongoose.Types.ObjectId()}/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          item_id: item._id,
+          quantity: 1,
+          expiration: Date.now(),
+          description: 'desc'
+        })
+        .expect(404)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 404 if item does not exist', async function () {
+      await request(server)
+        .post(`/rooms/${room.id}/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          item_id: mongoose.Types.ObjectId(),
+          quantity: 1,
+          expiration: Date.now(),
+          description: 'desc'
+        })
+        .expect(404)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 422 if item id or quantity is not provided', async function () {
+      await request(server)
+        .post(`/rooms/${room.id}/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          expiration: Date.now(),
+          description: 'desc'
+        })
+        .expect(422)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+  });
   describe('PUT /rooms/:id', function () {
     it('should return 200 on success', async function () {
       await request(server)

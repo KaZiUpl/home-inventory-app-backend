@@ -211,6 +211,63 @@ describe('Rooms Service', function () {
       await User.deleteMany({});
       await Item.deleteMany({});
     });
+
+    it('should create new storage item', async function () {
+      let epoch = Date.now();
+      let storageItemId = await RoomsService.addStorageItem(
+        room._id,
+        item._id,
+        1,
+        epoch,
+        'desc'
+      );
+      expect(storageItemId).to.exist.and.be.a('object');
+
+      let updatedRoom = await Room.findById(room._id);
+
+      expect(updatedRoom.storage).to.exist.and.be.a('array').of.length(1);
+      expect(updatedRoom.storage[0]).to.have.deep.property(
+        '_id',
+        storageItemId
+      );
+      expect(updatedRoom.storage[0]).to.have.deep.property('item_id', item._id);
+      expect(updatedRoom.storage[0]).to.have.property('quantity', 1);
+      expect(updatedRoom.storage[0]).to.have.deep.property(
+        'expiration',
+        new Date(epoch)
+      );
+      expect(updatedRoom.storage[0]).to.have.property('description', 'desc');
+    });
+    it('should throw if roomId is invalid', async function () {
+      await expect(RoomsService.addStorageItem('asd', item._id, 1)).to.be
+        .rejected;
+    });
+    it('should throw if roomId is null', async function () {
+      await expect(RoomsService.addStorageItem(null, item._id, 1)).to.be
+        .rejected;
+    });
+    it('should throw if room was not found', async function () {
+      await expect(
+        RoomsService.addStorageItem(mongoose.Types.ObjectId(), item._id, 1)
+      ).to.be.rejected;
+    });
+    it('should throw if itemId is invalid', async function () {
+      await expect(RoomsService.addStorageItem(room._id, 'asd', 1)).to.be
+        .rejected;
+    });
+    it('should throw if itemId is null', async function () {
+      await expect(RoomsService.addStorageItem(room._id, null, 1)).to.be
+        .rejected;
+    });
+    it('should throw if item was not found', async function () {
+      await expect(
+        RoomsService.addStorageItem(room._id, mongoose.Types.ObjectId(), 1)
+      ).to.be.rejected;
+    });
+    it('should throw if quantity is lower than 1', async function () {
+      await expect(RoomsService.addStorageItem(room._id, item._id, -1)).to.be
+        .rejected;
+    });
   });
   describe('Get room storage', function () {
     let user, house, room, item;

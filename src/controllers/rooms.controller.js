@@ -56,8 +56,25 @@ exports.deleteRoom = async function (req, res, next) {
 };
 
 exports.addStorageItem = async function (req, res, next) {
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
-    res.json();
+    await RoomsService.checkRoomExistence(req.params.id);
+
+    await RoomsService.checkRoomAccess(req.params.id, req.userData.id);
+
+    let storageItemId = await RoomsService.addStorageItem(
+      req.params.id,
+      req.body.item_id,
+      req.body.quantity,
+      req.body.expiration ? req.body.expiration : undefined,
+      req.body.description ? req.body.description : undefined
+    );
+
+    res
+      .status(200)
+      .json({ message: 'Storage item added to the room.', id: storageItemId });
   } catch (error) {
     next(error);
   }
