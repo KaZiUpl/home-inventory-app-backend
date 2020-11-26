@@ -339,6 +339,7 @@ describe('Rooms Service', function () {
   });
   describe('Get storage item', function () {
     let user, house, room, item;
+    let epoch, storageItem;
     beforeEach(async function () {
       await Room.deleteMany({});
       await House.deleteMany({});
@@ -355,12 +356,65 @@ describe('Rooms Service', function () {
       house.rooms = [room._id];
       await house.save();
       item = await Item.create({ name: 'item name', owner: user._id });
+
+      epoch = Date.now();
+      storageItem = await room.storage.create({
+        item: item._id,
+        quantity: 1
+      });
+      room.storage.push(storageItem);
+      room.storage.push(
+        await room.storage.create({
+          item: item._id,
+          quantity: 5
+        })
+      );
+
+      await room.save();
     });
     afterEach(async function () {
       await Room.deleteMany({});
       await House.deleteMany({});
       await User.deleteMany({});
       await Item.deleteMany({});
+    });
+
+    it('should return storage item', async function () {
+      let response = await RoomsService.getStorageItem(
+        room._id,
+        storageItem._id
+      );
+
+      expect(response).to.exist.and.be.a('object');
+
+      let _tmp = storageItem.toJSON();
+      _tmp.item = item.toJSON();
+
+      expect(response).to.be.deep.equal(_tmp);
+    });
+    it('should throw if room is not found', async function () {
+      await expect(
+        RoomsService.getStorageItem(mongoose.Types.ObjectId(), storageItem._id)
+      ).to.be.rejected;
+    });
+    it('should throw if storage item is not found', async function () {
+      await expect(
+        RoomsService.getStorageItem(room._id, mongoose.Types.ObjectId())
+      ).to.be.rejected;
+    });
+    it('should throw if room id is invalid', async function () {
+      await expect(RoomsService.getStorageItem('asd', storageItem._id)).to.be
+        .rejected;
+    });
+    it('should throw if storage item id is invalid', async function () {
+      await expect(RoomsService.getStorageItem(room._id, 'asd')).to.be.rejected;
+    });
+    it('should throw if room id is null', async function () {
+      await expect(RoomsService.getStorageItem(null, storageItem._id)).to.be
+        .rejected;
+    });
+    it('should throw if storage item id is null', async function () {
+      await expect(RoomsService.getStorageItem(room._id, null)).to.be.rejected;
     });
   });
   describe('Update storage item', function () {

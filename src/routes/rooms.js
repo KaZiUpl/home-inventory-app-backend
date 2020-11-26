@@ -46,9 +46,9 @@ router.get('/:id/storage', roomsController.getRoomStorage);
  * @apiGroup Room
  * @apiPermission house owner or collaborator
  * @apiParam {String} roomId Room id
- * @apiParam {String} itemId Item id
+ * @apiParam {String} storageId Storage item id
  */
-router.get('/:roomId/storage/:itemId', roomsController.getStorageItem);
+router.get('/:roomId/storage/:storageId', roomsController.getStorageItem);
 
 /**
  * @api {get} /rooms/:id Get room info

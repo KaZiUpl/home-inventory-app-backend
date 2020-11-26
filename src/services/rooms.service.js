@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const Room = require('../models/room.model');
 const House = require('../models/house.model');
 const Item = require('../models/item.model');
@@ -109,6 +111,46 @@ exports.getRoomStorage = async function (roomId) {
 
 exports.getStorageItem = async function (roomId, itemId) {
   try {
+    roomId = mongoose.Types.ObjectId(roomId);
+    itemId = mongoose.Types.ObjectId(itemId);
+
+    let room = await Room.findOne({
+      _id: roomId
+    }).populate('item');
+
+    if (room == undefined) {
+      throw new Error('Room not found.');
+    }
+
+    let storageItem = await Room.aggregate([
+      { $match: { _id: roomId } },
+      {
+        $project: {
+          storage: {
+            $filter: {
+              input: '$storage',
+              as: 'storageItem',
+              cond: { $eq: ['$$storageItem._id', itemId] }
+            }
+          }
+        }
+      },
+      { $unwind: '$storage' },
+      {
+        $lookup: {
+          from: 'items',
+          localField: 'storage.item',
+          foreignField: '_id',
+          as: 'storage.item'
+        }
+      },
+      { $unwind: '$storage.item' }
+    ]);
+
+    if (storageItem[0] == undefined) {
+      throw new NotFoundError('Item not found');
+    }
+    return storageItem[0].storage;
   } catch (error) {
     throw error;
   }

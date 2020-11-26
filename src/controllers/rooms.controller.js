@@ -96,7 +96,15 @@ exports.getRoomStorage = async function (req, res, next) {
 
 exports.getStorageItem = async function (req, res, next) {
   try {
-    res.json();
+    await RoomsService.checkRoomExistence(req.params.roomId);
+
+    await RoomsService.checkRoomAccess(req.params.roomId, req.userData.id);
+
+    let storageItem = await RoomsService.getStorageItem(
+      req.params.roomId,
+      req.params.storageId
+    );
+    res.status(200).json(storageItem);
   } catch (error) {
     next(error);
   }
