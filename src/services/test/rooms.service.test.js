@@ -419,6 +419,7 @@ describe('Rooms Service', function () {
   });
   describe('Update storage item', function () {
     let user, house, room, item;
+    let epoch, storageItem, storageItem2;
     beforeEach(async function () {
       await Room.deleteMany({});
       await House.deleteMany({});
@@ -435,12 +436,167 @@ describe('Rooms Service', function () {
       house.rooms = [room._id];
       await house.save();
       item = await Item.create({ name: 'item name', owner: user._id });
+
+      epoch = Date.now();
+      storageItem = await room.storage.create({
+        item: item._id,
+        quantity: 1,
+        expiration: epoch,
+        description: 'storage item'
+      });
+      room.storage.push(storageItem);
+
+      storageItem2 = await room.storage.create({
+        item: item._id,
+        quantity: 5,
+        expiration: epoch,
+        description: 'storage item 2'
+      });
+      room.storage.push(storageItem2);
+
+      await room.save();
     });
     afterEach(async function () {
       await Room.deleteMany({});
       await House.deleteMany({});
       await User.deleteMany({});
       await Item.deleteMany({});
+    });
+
+    it('should update storage item', async function () {
+      let newEpoch = Date.now();
+      const newStorageItemData = {
+        quantity: 2,
+        expiration: newEpoch,
+        description: 'new storage item description'
+      };
+      await expect(
+        RoomsService.updateStorageItem(
+          room._id,
+          storageItem._id,
+          newStorageItemData
+        )
+      ).to.be.fulfilled;
+
+      let updatedRoom = await Room.findOne({ _id: room._id });
+      let updatedStorageItem = updatedRoom.storage.filter((elem) =>
+        elem._id.equals(storageItem._id)
+      )[0];
+
+      expect(updatedStorageItem).to.have.deep.property('_id', storageItem._id);
+      expect(updatedStorageItem).to.have.deep.property(
+        'item',
+        storageItem.item
+      );
+      expect(updatedStorageItem).to.have.property(
+        'quantity',
+        newStorageItemData.quantity
+      );
+      expect(updatedStorageItem).to.have.property(
+        'description',
+        newStorageItemData.description
+      );
+      expect(updatedStorageItem).to.have.deep.property(
+        'expiration',
+        new Date(newStorageItemData.expiration)
+      );
+    });
+    it('should throw if room id is invalid', async function () {
+      let newEpoch = Date.now();
+      const newStorageItemData = {
+        quantity: 2,
+        expiration: newEpoch,
+        description: 'new storage item description'
+      };
+      await expect(
+        RoomsService.updateStorageItem(
+          'asd',
+          storageItem._id,
+          newStorageItemData
+        )
+      ).to.be.rejected;
+    });
+    it('should throw if storage item id is invalid', async function () {
+      let newEpoch = Date.now();
+      const newStorageItemData = {
+        quantity: 2,
+        expiration: newEpoch,
+        description: 'new storage item description'
+      };
+      await expect(
+        RoomsService.updateStorageItem(room._id, 'asd', newStorageItemData)
+      ).to.be.rejected;
+    });
+    it('should throw if room is not found', async function () {
+      let newEpoch = Date.now();
+      const newStorageItemData = {
+        quantity: 2,
+        expiration: newEpoch,
+        description: 'new storage item description'
+      };
+      await expect(
+        RoomsService.updateStorageItem(
+          mongoose.Types.ObjectId(),
+          storageItem._id,
+          newStorageItemData
+        )
+      ).to.be.rejected;
+    });
+    it('should throw if storage item is not found', async function () {
+      let newEpoch = Date.now();
+      const newStorageItemData = {
+        quantity: 2,
+        expiration: newEpoch,
+        description: 'new storage item description'
+      };
+      await expect(
+        RoomsService.updateStorageItem(
+          room._id,
+          mongoose.Types.ObjectId(),
+          newStorageItemData
+        )
+      ).to.be.rejected;
+    });
+    it('should throw if room id is null', async function () {
+      let newEpoch = Date.now();
+      const newStorageItemData = {
+        quantity: 2,
+        expiration: newEpoch,
+        description: 'new storage item description'
+      };
+      await expect(
+        RoomsService.updateStorageItem(
+          null,
+          storageItem._id,
+          newStorageItemData
+        )
+      ).to.be.rejected;
+    });
+    it('should throw if storage item id is null', async function () {
+      let newEpoch = Date.now();
+      const newStorageItemData = {
+        quantity: 2,
+        expiration: newEpoch,
+        description: 'new storage item description'
+      };
+      await expect(
+        RoomsService.updateStorageItem(room._id, null, newStorageItemData)
+      ).to.be.rejected;
+    });
+    it('should throw if quantity is less than 1', async function () {
+      let newEpoch = Date.now();
+      const newStorageItemData = {
+        quantity: 0,
+        expiration: newEpoch,
+        description: 'new storage item description'
+      };
+      await expect(
+        RoomsService.updateStorageItem(
+          room._id,
+          storageItem._id,
+          newStorageItemData
+        )
+      ).to.be.rejected;
     });
   });
   describe('Delete storage item', function () {

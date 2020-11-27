@@ -65,9 +65,13 @@ router.get('/:id', roomsController.getRoom);
  * @apiGroup Room
  * @apiPermission house owner or collaborator
  * @apiParam {String} roomId Room id
- * @apiParam {String} itemId Item id
+ * @apiParam {String} storageId Storage item id
  */
-router.put('/:roomId/storage/:itemId', roomsController.updateStorageItem);
+router.put(
+  '/:roomId/storage/:storageId',
+  [body('quantity').exists()],
+  roomsController.updateStorageItem
+);
 
 /**
  * @api {put} /rooms/:id Modify a room

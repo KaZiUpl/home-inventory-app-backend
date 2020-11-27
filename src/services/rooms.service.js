@@ -119,7 +119,7 @@ exports.getStorageItem = async function (roomId, itemId) {
     }).populate('item');
 
     if (room == undefined) {
-      throw new Error('Room not found.');
+      throw new NotFoundError('Room not found.');
     }
 
     let storageItem = await Room.aggregate([
@@ -158,6 +158,29 @@ exports.getStorageItem = async function (roomId, itemId) {
 
 exports.updateStorageItem = async function (roomId, itemId, newItemData) {
   try {
+    if (newItemData.quantity < 1) {
+      throw new Error('Quantity must be greater or equal to 1.');
+    }
+    let room = await Room.findById(roomId);
+    if (room == undefined) {
+      throw new NotFoundError('Room not found.');
+    }
+    const updateBody = {
+      'storage.$.quantity': newItemData.quantity
+    };
+    if (newItemData.expiration)
+      updateBody['storage.$.expiration'] = newItemData.expiration;
+    if (newItemData.description)
+      updateBody['storage.$.description'] = newItemData.description;
+
+    room = await Room.findOneAndUpdate(
+      { _id: roomId, 'storage._id': itemId },
+      updateBody
+    );
+
+    if (room == undefined) {
+      throw new NotFoundError('Storage item not found.');
+    }
   } catch (error) {
     throw error;
   }

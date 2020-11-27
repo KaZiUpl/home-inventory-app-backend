@@ -111,8 +111,21 @@ exports.getStorageItem = async function (req, res, next) {
 };
 
 exports.updateStorageItem = async function (req, res, next) {
+  if (!validationResult(req).isEmpty()) {
+    next(new UnprocessableEntityError());
+  }
   try {
-    res.json();
+    await RoomsService.checkRoomExistence(req.params.roomId);
+
+    await RoomsService.checkRoomAccess(req.params.roomId, req.userData.id);
+
+    await RoomsService.updateStorageItem(
+      req.params.roomId,
+      req.params.storageId,
+      req.body
+    );
+
+    res.status(200).json({ message: 'Storage item updated successfully!' });
   } catch (error) {
     next(error);
   }
