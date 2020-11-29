@@ -21,9 +21,16 @@ router.use(checkAuthMiddleware);
  * @apiPermission house owner or collaborator
  * @apiParam {String} roomId Room id
  * @apiParam {String} item Item id
- * @apiParam {Number} quantity Quantity of item (optional, default=1)
+ * @apiParam {Number} quantity Quantity of item (optional, default=1, min. value = 1)
  * @apiParam {Date} expiration Expiration date (optional)
  * @apiParam {String} description Storage item description (optional)
+ * @apiSuccess (Success 201) {String} message message
+ * @apiSuccess (Success 201) {String} id created storage item id
+ * @apiSuccessExample {json} Response(example):
+ * {
+ *   "message": "Storage item added to the room.",
+ *   "id": "5fc3f6d386d62d154079952a"
+ * }
  */
 router.post(
   '/:id/storage',
@@ -37,6 +44,37 @@ router.post(
  * @apiGroup Room
  * @apiPermission house owner or collaborator
  * @apiParam {String} id Room id
+ * @apiSuccess (Success 200) {Object[]} storage items Array of room's storage items
+ * @apiSuccess (Success 200) {String} _id Storage item id
+ * @apiSuccess (Success 200) {Object} item Item data
+ * @apiSuccess (Success 200) {Number} quantity Quantity of item
+ * @apiSuccess (Success 200) {String} expiration Storage item expiration date
+ * @apiSuccess (Success 200) {String} description Storage item description
+ * @apiSuccessExample {json} Response(example):
+ * [
+ *        {
+ *      "_id": "5fc3f6d386d62d154079952a",
+ *      "item": {
+ *          "_id": "5fc3f66286d62d1540799523",
+ *         "name": "name",
+ *          "description": "asd",
+ *          "owner": "5fbe83acf4a9ae3450523667"
+ *      },
+ *     "quantity": 2
+ *  },
+ *   {
+ *       "_id": "5fc3f86bd0aedb1aecf9fc86",
+ *       "item": {
+ *           "_id": "5fc3f66286d62d1540799523",
+ *           "name": "name",
+ *           "description": "asd",
+ *           "owner": "5fbe83acf4a9ae3450523667"
+ *       },
+ *       "quantity": 2,
+ *       "expiration": "2020-01-19T14:17:58.580Z",
+ *       "description": "storage item description"
+ *   }
+ * ]
  */
 router.get('/:id/storage', roomsController.getRoomStorage);
 
@@ -47,6 +85,24 @@ router.get('/:id/storage', roomsController.getRoomStorage);
  * @apiPermission house owner or collaborator
  * @apiParam {String} roomId Room id
  * @apiParam {String} storageId Storage item id
+ * @apiSuccess (Success 200) {String} _id Storage item id
+ * @apiSuccess (Success 200) {Object} item Item data
+ * @apiSuccess (Success 200) {Number} quantity Quantity of item
+ * @apiSuccess (Success 200) {String} expiration Storage item expiration date
+ * @apiSuccess (Success 200) {String} description Storage item description
+ * @apiSuccessExample {json} Response(example):
+ *    {
+ *   "_id": "5fc3f86bd0aedb1aecf9fc86",
+ *   "item": {
+ *       "_id": "5fc3f66286d62d1540799523",
+ *       "name": "name",
+ *       "description": "asd",
+ *       "owner": "5fbe83acf4a9ae3450523667"
+ *   },
+ *   "quantity": 2,
+ *   "expiration": "1970-01-19T14:17:58.580Z",
+ *   "description": "storage item description"
+ * }
  */
 router.get('/:roomId/storage/:storageId', roomsController.getStorageItem);
 
@@ -66,6 +122,11 @@ router.get('/:id', roomsController.getRoom);
  * @apiPermission house owner or collaborator
  * @apiParam {String} roomId Room id
  * @apiParam {String} storageId Storage item id
+ * @apiSuccess (Success 200) {String} message Response message
+ * @apiSuccessExample {json} Response(example):
+ * {
+ *  "message": "Storage item updated successfully!"
+ *}
  */
 router.put(
   '/:roomId/storage/:storageId',
@@ -95,9 +156,14 @@ router.put(
  * @apiGroup Room
  * @apiPermission house owner or collaborator
  * @apiParam {String} roomId Room id
- * @apiParam {String} itemId Item id
+ * @apiParam {String} storageId Storage item id
+ * @apiSuccess (Success 200) {String} message Response message
+ * @apiSuccessExample {json} Response(example):
+ * {
+ *   "message": "Storage item deleted successfully!"
+ *}
  */
-router.delete('/:roomId/storage/:itemId', roomsController.deleteStorageItem);
+router.delete('/:roomId/storage/:storageId', roomsController.deleteStorageItem);
 
 /**
  * @api {delete} /rooms/:id Delete a room

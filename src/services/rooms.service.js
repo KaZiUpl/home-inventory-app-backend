@@ -188,6 +188,18 @@ exports.updateStorageItem = async function (roomId, itemId, newItemData) {
 
 exports.deleteStorageItem = async function (roomId, itemId) {
   try {
+    let room = await Room.findById(roomId);
+    if (room == undefined) {
+      throw new NotFoundError('Room not found.');
+    }
+    room = await Room.findOne({ _id: roomId, 'storage._id': itemId });
+    if (room == undefined) {
+      throw new NotFoundError('Storage item not found.');
+    }
+    room = await Room.findOneAndUpdate(
+      { 'storage._id': itemId },
+      { $pull: { storage: { _id: itemId } } }
+    );
   } catch (error) {
     throw error;
   }

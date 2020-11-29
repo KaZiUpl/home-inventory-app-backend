@@ -601,6 +601,7 @@ describe('Rooms Service', function () {
   });
   describe('Delete storage item', function () {
     let user, house, room, item;
+    let epoch, storageItem, storageItem2;
     beforeEach(async function () {
       await Room.deleteMany({});
       await House.deleteMany({});
@@ -617,12 +618,72 @@ describe('Rooms Service', function () {
       house.rooms = [room._id];
       await house.save();
       item = await Item.create({ name: 'item name', owner: user._id });
+
+      epoch = Date.now();
+      storageItem = await room.storage.create({
+        item: item._id,
+        quantity: 1,
+        expiration: epoch,
+        description: 'storage item'
+      });
+      room.storage.push(storageItem);
+
+      storageItem2 = await room.storage.create({
+        item: item._id,
+        quantity: 5,
+        expiration: epoch,
+        description: 'storage item 2'
+      });
+      room.storage.push(storageItem2);
+
+      await room.save();
     });
     afterEach(async function () {
       await Room.deleteMany({});
       await House.deleteMany({});
       await User.deleteMany({});
       await Item.deleteMany({});
+    });
+
+    it('should delete storage item', async function () {
+      await expect(RoomsService.deleteStorageItem(room._id, storageItem._id)).to
+        .be.fulfilled;
+
+      let updatedRoom = await Room.findById(room._id);
+      let deletedStorageItem = updatedRoom.storage.filter((elem) =>
+        elem._id.equals(storageItem._id)
+      );
+
+      expect(deletedStorageItem).to.be.empty;
+    });
+    it('should throw if room id is invalid', async function () {
+      await expect(RoomsService.deleteStorageItem('asd', storageItem._id)).to.be
+        .rejected;
+    });
+    it('should throw if room id is null', async function () {
+      await expect(RoomsService.deleteStorageItem(null, storageItem._id)).to.be
+        .rejected;
+    });
+    it('should throw if room is not found', async function () {
+      await expect(
+        RoomsService.deleteStorageItem(
+          mongoose.Types.ObjectId(),
+          storageItem._id
+        )
+      ).to.be.rejected;
+    });
+    it('should throw if storage item id is invalid', async function () {
+      await expect(RoomsService.deleteStorageItem(room._id, 'asd')).to.be
+        .rejected;
+    });
+    it('should throw if storage item id is null', async function () {
+      await expect(RoomsService.deleteStorageItem(room._id, null)).to.be
+        .rejected;
+    });
+    it('should throw if storage item is not found', async function () {
+      await expect(
+        RoomsService.deleteStorageItem(room._id, mongoose.Types.ObjectId())
+      ).to.be.rejected;
     });
   });
   describe('Check room existence', function () {

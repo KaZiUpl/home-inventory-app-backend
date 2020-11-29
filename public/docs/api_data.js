@@ -766,6 +766,36 @@ define({ "api": [
     "groupDescription": "<p>This controller controls user's items as well as publicly available items. Each user adds items to their database that can be added later as a storage items within rooms.</p>"
   },
   {
+    "type": "post",
+    "url": "/items/:id/photo",
+    "title": "Upload item's photo",
+    "description": "<p>Uploads a photo of the item. Request is required to be on Content-Type: multipart/form-data. Allowed file types are jpg and png.</p>",
+    "name": "PostItemImage",
+    "group": "Item",
+    "permission": [
+      {
+        "name": "item's owner"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": false,
+            "field": "image",
+            "description": "<p>item's image</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/items.js",
+    "groupTitle": "Item",
+    "groupDescription": "<p>This controller controls user's items as well as publicly available items. Each user adds items to their database that can be added later as a storage items within rooms.</p>"
+  },
+  {
     "type": "put",
     "url": "/items/:id",
     "title": "Update item info",
@@ -825,6 +855,202 @@ define({ "api": [
     "groupDescription": "<p>Controller for managing rooms within houses. Each room has it's own items. Item can be added, modified and deleted within the room. A room can be created, modified or deleted by the house owner.</p>"
   },
   {
+    "type": "delete",
+    "url": "/rooms/:roomId/storage/:itemId",
+    "title": "Delete an item from a room's storage",
+    "name": "DeleteStorageItem",
+    "group": "Room",
+    "permission": [
+      {
+        "name": "house owner or collaborator"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "roomId",
+            "description": "<p>Room id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "storageId",
+            "description": "<p>Storage item id</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Response message</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response(example):",
+          "content": "{\n  \"message\": \"Storage item deleted successfully!\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/rooms.js",
+    "groupTitle": "Room",
+    "groupDescription": "<p>Controller for managing rooms within houses. Each room has it's own items. Item can be added, modified and deleted within the room. A room can be created, modified or deleted by the house owner.</p>"
+  },
+  {
+    "type": "delete",
+    "url": "/rooms/:roomId/storage",
+    "title": "Add item to room's storage",
+    "name": "DostStorageItem",
+    "group": "Room",
+    "permission": [
+      {
+        "name": "house owner or collaborator"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "roomId",
+            "description": "<p>Room id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "item",
+            "description": "<p>Item id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "quantity",
+            "description": "<p>Quantity of item (optional, default=1, min. value = 1)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Date",
+            "optional": false,
+            "field": "expiration",
+            "description": "<p>Expiration date (optional)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Storage item description (optional)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 201": [
+          {
+            "group": "Success 201",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>message</p>"
+          },
+          {
+            "group": "Success 201",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>created storage item id</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response(example):",
+          "content": "{\n  \"message\": \"Storage item added to the room.\",\n  \"id\": \"5fc3f6d386d62d154079952a\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/rooms.js",
+    "groupTitle": "Room",
+    "groupDescription": "<p>Controller for managing rooms within houses. Each room has it's own items. Item can be added, modified and deleted within the room. A room can be created, modified or deleted by the house owner.</p>"
+  },
+  {
+    "type": "put",
+    "url": "/rooms/:roomId/storage/:itemId",
+    "title": "Update storage item info",
+    "name": "DutStorageItem",
+    "group": "Room",
+    "permission": [
+      {
+        "name": "house owner or collaborator"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "roomId",
+            "description": "<p>Room id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "storageId",
+            "description": "<p>Storage item id</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Response message</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response(example):",
+          "content": "{\n \"message\": \"Storage item updated successfully!\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/rooms.js",
+    "groupTitle": "Room",
+    "groupDescription": "<p>Controller for managing rooms within houses. Each room has it's own items. Item can be added, modified and deleted within the room. A room can be created, modified or deleted by the house owner.</p>"
+  },
+  {
     "type": "get",
     "url": "/rooms/:id",
     "title": "Get room info",
@@ -847,6 +1073,174 @@ define({ "api": [
           }
         ]
       }
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/rooms.js",
+    "groupTitle": "Room",
+    "groupDescription": "<p>Controller for managing rooms within houses. Each room has it's own items. Item can be added, modified and deleted within the room. A room can be created, modified or deleted by the house owner.</p>"
+  },
+  {
+    "type": "get",
+    "url": "/rooms/:roomId/storage",
+    "title": "Get room's storage",
+    "name": "GetRoomStorage",
+    "group": "Room",
+    "permission": [
+      {
+        "name": "house owner or collaborator"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Room id</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "storage",
+            "description": "<p>items Array of room's storage items</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "_id",
+            "description": "<p>Storage item id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "item",
+            "description": "<p>Item data</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "quantity",
+            "description": "<p>Quantity of item</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "expiration",
+            "description": "<p>Storage item expiration date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Storage item description</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response(example):",
+          "content": "[\n       {\n     \"_id\": \"5fc3f6d386d62d154079952a\",\n     \"item\": {\n         \"_id\": \"5fc3f66286d62d1540799523\",\n        \"name\": \"name\",\n         \"description\": \"asd\",\n         \"owner\": \"5fbe83acf4a9ae3450523667\"\n     },\n    \"quantity\": 2\n },\n  {\n      \"_id\": \"5fc3f86bd0aedb1aecf9fc86\",\n      \"item\": {\n          \"_id\": \"5fc3f66286d62d1540799523\",\n          \"name\": \"name\",\n          \"description\": \"asd\",\n          \"owner\": \"5fbe83acf4a9ae3450523667\"\n      },\n      \"quantity\": 2,\n      \"expiration\": \"2020-01-19T14:17:58.580Z\",\n      \"description\": \"storage item description\"\n  }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/rooms.js",
+    "groupTitle": "Room",
+    "groupDescription": "<p>Controller for managing rooms within houses. Each room has it's own items. Item can be added, modified and deleted within the room. A room can be created, modified or deleted by the house owner.</p>"
+  },
+  {
+    "type": "get",
+    "url": "/rooms/:roomId/storage/:itemId",
+    "title": "Get storage item info",
+    "name": "GetStorageItem",
+    "group": "Room",
+    "permission": [
+      {
+        "name": "house owner or collaborator"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "roomId",
+            "description": "<p>Room id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "storageId",
+            "description": "<p>Storage item id</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "_id",
+            "description": "<p>Storage item id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "item",
+            "description": "<p>Item data</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "quantity",
+            "description": "<p>Quantity of item</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "expiration",
+            "description": "<p>Storage item expiration date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Storage item description</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response(example):",
+          "content": "   {\n  \"_id\": \"5fc3f86bd0aedb1aecf9fc86\",\n  \"item\": {\n      \"_id\": \"5fc3f66286d62d1540799523\",\n      \"name\": \"name\",\n      \"description\": \"asd\",\n      \"owner\": \"5fbe83acf4a9ae3450523667\"\n  },\n  \"quantity\": 2,\n  \"expiration\": \"1970-01-19T14:17:58.580Z\",\n  \"description\": \"storage item description\"\n}",
+          "type": "json"
+        }
+      ]
     },
     "version": "0.0.0",
     "filename": "src/routes/rooms.js",

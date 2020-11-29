@@ -929,4 +929,124 @@ describe('Rooms Endpoints', function () {
         });
     });
   });
+  describe('DELETE /rooms/:roomId/storage/:storageId', function () {
+    let item, storageItem, storageItem2;
+    beforeEach(async function () {
+      await Item.deleteMany({});
+      item = await Item.create({ name: 'item', owner: user1._id });
+
+      storageItem = await room.storage.create({
+        item: item._id,
+        quantity: 1
+      });
+      room.storage.push(storageItem);
+      await room.save();
+
+      storageItem2 = room2.storage.create({ item: item._id, quantity: 1 });
+      room2.storage.push(storageItem2);
+      await room2.save();
+    });
+    afterEach(async function () {
+      await Item.deleteMany({});
+    });
+
+    it('should return 200 if user is house owner', async function () {
+      await request(server)
+        .delete(`/rooms/${room._id}/storage/${storageItem._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+    });
+    it('should return 200 if user is house collaborator', async function () {
+      await request(server)
+        .delete(`/rooms/${room._id}/storage/${storageItem._id}`)
+        .set('Authorization', `Bearer ${accessToken2}`)
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+    });
+    it('should throw 400 if room id is invalid', async function () {
+      await request(server)
+        .delete(`/rooms/asd/storage/${storageItem._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(400)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+    });
+    it('should throw 400 if storage item id is invalid', async function () {
+      await request(server)
+        .delete(`/rooms/${room._id}/storage/asd`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(400)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+    });
+    it('should throw 401 if user is not logged in', async function () {
+      refreshToken = user1.refresh_token;
+      user1.refresh_token = null;
+      await user1.save();
+
+      await request(server)
+        .delete(`/rooms/${room._id}/storage/${storageItem._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+
+      user1.refresh_token = refreshToken;
+      await user1.save();
+    });
+    it('should throw 401 if no Authorization header is present', async function () {
+      await request(server)
+        .delete(`/rooms/${room._id}/storage/${storageItem._id}`)
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+    });
+    it('should throw 403 if user is not a house owner nor a collaborator', async function () {
+      await request(server)
+        .delete(`/rooms/${room2._id}/storage/${storageItem._id}`)
+        .set('Authorization', `Bearer ${accessToken2}`)
+        .expect(403)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+    });
+    it('should throw 404 if room is not found', async function () {
+      await request(server)
+        .delete(
+          `/rooms/${mongoose.Types.ObjectId()}/storage/${storageItem._id}`
+        )
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(404)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+    });
+    it('should throw 404 if storage item is not found', async function () {
+      await request(server)
+        .delete(`/rooms/${room._id}/storage/${mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(404)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+    });
+  });
 });

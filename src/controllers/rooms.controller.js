@@ -133,7 +133,16 @@ exports.updateStorageItem = async function (req, res, next) {
 
 exports.deleteStorageItem = async function (req, res, next) {
   try {
-    res.json();
+    await RoomsService.checkRoomExistence(req.params.roomId);
+
+    await RoomsService.checkRoomAccess(req.params.roomId, req.userData.id);
+
+    await RoomsService.deleteStorageItem(
+      req.params.roomId,
+      req.params.storageId
+    );
+
+    res.status(200).json({ message: 'Storage item deleted successfully!' });
   } catch (error) {
     next(error);
   }
