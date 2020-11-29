@@ -23,7 +23,7 @@ exports.modifyRoom = async function (roomId, name, description) {
 
 exports.getRoom = async function (id) {
   try {
-    let room = await Room.findById(id);
+    let room = await Room.findById(id).populate('house', 'name');
 
     if (room == undefined) {
       throw new Error('Room not found.');

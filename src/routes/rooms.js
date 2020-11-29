@@ -109,9 +109,47 @@ router.get('/:roomId/storage/:storageId', roomsController.getStorageItem);
 /**
  * @api {get} /rooms/:id Get room info
  * @apiName GetRoom
+ * @apiDescription Returns an object containing information about a room and limited info about a house
  * @apiGroup Room
  * @apiPermission house owner
  * @apiParam {String} id Room id
+ * @apiSuccess (Success 200) {String} _id Room id
+ * @apiSuccess (Success 200) {String} name Room name
+ * @apiSuccess (Success 200) {String} description Room description
+ * @apiSuccess (Success 200) {Object[]} storage Room's storage items
+ * @apiSuccess (Success 200) {Object} house House info
+ * @apiSuccessExample {json} Response(example):
+ * {
+    "_id": "5fc3f6a786d62d1540799526",
+    "storage": [
+        {
+            "_id": "5fc3f6bc86d62d1540799527",
+            "item": "5fc3f66286d62d1540799523",
+            "quantity": 2
+        },
+        {
+            "_id": "5fc3f6d186d62d1540799528",
+            "item": "5fc3f66286d62d1540799523",
+            "quantity": 2
+        },
+        {
+            "_id": "5fc3f6d286d62d1540799529",
+            "item": "5fc3f66286d62d1540799523",
+            "quantity": 2
+        },
+        {
+            "_id": "5fc3f6d386d62d154079952a",
+            "item": "5fc3f66286d62d1540799523",
+            "quantity": 2
+        }
+    ],
+    "name": "new name 3",
+    "house": {
+        "_id": "5fc3f6a086d62d1540799525",
+        "name": "house"
+    },
+    "description": "room description"
+}
  */
 router.get('/:id', roomsController.getRoom);
 

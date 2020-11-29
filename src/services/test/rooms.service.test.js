@@ -56,7 +56,8 @@ describe('Rooms Service', function () {
 
       expect(response).to.be.a('object');
       expect(response).to.have.property('name', 'room name');
-      expect(response).to.have.deep.property('house', house._id);
+      expect(response.house).to.exist.and.be.a('object');
+      expect(response.house).to.have.deep.property('_id', house._id);
     });
     it('should throw if id is invalid', async function () {
       roomId = 'malformed';
