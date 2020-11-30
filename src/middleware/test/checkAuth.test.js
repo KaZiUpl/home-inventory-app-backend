@@ -12,6 +12,59 @@ const { UnauthorizedError } = require('../../error/errors');
 const User = require('../../models/user.model');
 
 describe('CheckAuthMiddleware', function () {
+  let user;
+  before(async function () {
+    //create db connection
+    await mongoose.connect(process.env.MONGO_TEST_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true
+    });
+  });
+  after(async function () {
+    await mongoose.connection.close();
+  });
+  beforeEach(async function () {
+    await User.deleteMany({});
+    user = await User.create({
+      login: 'kacperkaz',
+      email: 'kacperkaz@example.com',
+      password: 'asd',
+      role: 'user'
+    });
+  });
+  afterEach(async function () {
+    await User.deleteMany({});
+  });
+
+  it('should throw UnauthorizedError if user is not logged in', async function () {
+    // create access token
+    const tokenTimestamp = Math.floor(Date.now() / 1000) + 15 * 60; // expires in 15 minutes
+    const tokenExpDate = new Date(tokenTimestamp * 1000);
+
+    const token = jwt.sign(
+      {
+        login: user.login,
+        email: user.email,
+        id: user._id,
+        role: user.role,
+        exp: tokenTimestamp
+      },
+      process.env.JWT_SECRET
+    );
+    const req = {
+      get: function (headerName) {
+        return `Bearer ${token}`;
+      }
+    };
+    function next(error) {
+      throw error;
+    }
+
+    await expect(checkAuthMiddleware(req, {}, next)).to.be.rejectedWith(
+      UnauthorizedError
+    );
+  });
   it('should throw UnauthorizedError if no Authorization header is present', async function () {
     const req = {
       get: function (headerName) {
@@ -40,37 +93,10 @@ describe('CheckAuthMiddleware', function () {
       UnauthorizedError
     );
   });
-  it('should throw UnauthorizedError if user is not logged in', async function () {
-    //create db connection
-    await mongoose.connect(process.env.MONGO_TEST_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useCreateIndex: true
-    });
-    // create user
-    let user = await User.create({
-      login: 'kacperkaz',
-      email: 'kacperkaz@example.com',
-      password: 'asd',
-      role: 'user'
-    });
-    // create access token
-    const tokenTimestamp = Math.floor(Date.now() / 1000) + 15 * 60; // expires in 15 minutes
-    const tokenExpDate = new Date(tokenTimestamp * 1000);
-
-    const token = jwt.sign(
-      {
-        login: user.login,
-        email: user.email,
-        id: user._id,
-        role: user.role,
-        exp: tokenTimestamp
-      },
-      process.env.JWT_SECRET
-    );
+  it('should throw UnauthorizedError if access token is invalid', async function () {
     const req = {
       get: function (headerName) {
-        return token;
+        return 'Bearer xyz';
       }
     };
     function next(error) {
@@ -80,10 +106,6 @@ describe('CheckAuthMiddleware', function () {
     await expect(checkAuthMiddleware(req, {}, next)).to.be.rejectedWith(
       UnauthorizedError
     );
-
-    //clean db
-    await User.deleteMany({});
-    await mongoose.connection.close();
   });
   it('should add user data to userData property after decoding the token', function () {
     const req = {
