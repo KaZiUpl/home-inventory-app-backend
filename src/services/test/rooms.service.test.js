@@ -832,4 +832,125 @@ describe('Rooms Service', function () {
         .rejected;
     });
   });
+  describe('Check item access', function () {
+    let user1, user2, room1, room2, room3, room4, room5, item, item2, item3;
+    before(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+
+      user1 = await User.create({
+        login: 'user1',
+        email: 'user1@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+      user2 = await User.create({
+        login: 'user2',
+        email: 'user2@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+      let user3 = await User.create({
+        login: 'user3',
+        email: 'user3@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+
+      item = await Item.create({ name: 'item', owner: user1._id });
+      item2 = await Item.create({ name: 'item2', owner: user2._id });
+      item3 = await Item.create({ name: 'item3' });
+
+      //item owner as an owner and requesting user as a collaborator
+      let house1 = await House.create({
+        name: 'house1',
+        owner: user1._id,
+        collaborators: [user2._id]
+      });
+      //requesting user as an owner and item owner as a as a collaborator
+      let house2 = await House.create({
+        name: 'house2',
+        owner: user2._id,
+        collaborators: [user1._id]
+      });
+      //both item owner and requesting user as a collaborators
+      let house3 = await House.create({
+        name: 'house3',
+        owner: user3._id,
+        collaborators: [user1._id, user2._id]
+      });
+      //item owner as an owner and no collaborators
+      let house4 = await House.create({ name: 'house4', owner: user1._id });
+      //item owner as a  collaborator
+      let house5 = await House.create({
+        name: 'house5',
+        owner: user3._id,
+        collaborators: [user1._id]
+      });
+
+      room1 = await Room.create({ name: 'room1', house: house1._id });
+      house1.rooms = [room1._id];
+      await house1.save();
+
+      room2 = await Room.create({ name: 'room2', house: house2._id });
+      house2.rooms = [room2._id];
+      await house2.save();
+
+      room3 = await Room.create({ name: 'room3', house: house3._id });
+      house3.rooms = [room3._id];
+      await house3.save();
+
+      room4 = await Room.create({ name: 'room4', house: house4._id });
+      house4.rooms = [room4._id];
+      await house4.save();
+
+      room5 = await Room.create({ name: 'room5', house: house5._id });
+      house5.rooms = [room5._id];
+      await house5.save();
+    });
+    after(async function () {
+      await Room.deleteMany({});
+      await Item.deleteMany({});
+      await House.deleteMany({});
+      await User.deleteMany({});
+    });
+
+    it('should be fulfilled if house owner adds his item', async function () {
+      await expect(RoomsService.checkItemAccess(item._id, room1._id, user1._id))
+        .to.be.fulfilled;
+    });
+    it('should be fulfilled if house collaborator adds his item', async function () {
+      await expect(
+        RoomsService.checkItemAccess(item2._id, room1._id, user2._id)
+      ).to.be.fulfilled;
+    });
+    it('should be fulfilled if user adds global item', async function () {
+      await expect(
+        RoomsService.checkItemAccess(item3._id, room1._id, user1._id)
+      ).to.be.fulfilled;
+    });
+    it('should be fulfilled if user is in the same house as the item owner', async function () {
+      // item owner is a house owner and user is a house collaborator
+      await expect(RoomsService.checkItemAccess(item._id, room1._id, user2._id))
+        .to.be.fulfilled;
+
+      // item owner is a collaborator and user is the house owner
+      await expect(RoomsService.checkItemAccess(item._id, room2._id, user2._id))
+        .to.be.fulfilled;
+
+      // both item owner and house owner are collaborators
+      await expect(RoomsService.checkItemAccess(item._id, room3._id, user2._id))
+        .to.be.fulfilled;
+    });
+    it('should throw if user is not in the same house as the item owner', async function () {
+      // item owner is the house owner and user is not a collaborator
+      await expect(RoomsService.checkItemAccess(item._id, room4._id, user2._id))
+        .to.be.rejected;
+
+      // item owner is collaborator and user does not belong to a house
+      await expect(RoomsService.checkItemAccess(item._id, room5._id, user2._id))
+        .to.be.rejected;
+    });
+  });
 });

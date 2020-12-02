@@ -241,3 +241,32 @@ exports.checkRoomOwnership = async function (roomId, userId) {
     throw error;
   }
 };
+
+exports.checkItemAccess = async function (itemId, roomId, userId) {
+  try {
+    let item = await Item.findById(itemId);
+    if (item == undefined) {
+      throw new NotFoundError('Item does not exist.');
+    }
+    //global item
+    if (!item.owner) {
+      return;
+    }
+    //check if user and item's owner belong to the same house
+    let house = await House.findOne({
+      rooms: roomId,
+      $or: [
+        { $and: [{ owner: userId }, { owner: item.owner }] },
+        { owner: userId, collaborators: item.owner },
+        { owner: item.owner, collaborators: userId },
+        { collaborators: { $all: [userId, item.owner] } }
+      ]
+    });
+
+    if (house == undefined) {
+      throw new ForbiddenError('You do not have access to that item');
+    }
+  } catch (error) {
+    throw error;
+  }
+};

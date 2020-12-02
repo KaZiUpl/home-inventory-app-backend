@@ -64,6 +64,12 @@ exports.addStorageItem = async function (req, res, next) {
 
     await RoomsService.checkRoomAccess(req.params.id, req.userData.id);
 
+    await RoomsService.checkItemAccess(
+      req.body.item,
+      req.params.id,
+      req.userData.id
+    );
+
     let storageItemId = await RoomsService.addStorageItem(
       req.params.id,
       req.body.item,

@@ -136,11 +136,49 @@ describe('Rooms Endpoints', function () {
   });
 
   describe('POST /rooms/:id/storage', function () {
-    let item, item2;
+    let item, item2, item3, room3, room4;
     beforeEach(async function () {
       await Item.deleteMany({});
       item = await Item.create({ name: 'item', owner: user1._id });
       item2 = await Item.create({ name: 'item 2', owner: user2._id });
+      item3 = await Item.create({
+        name: 'item3',
+        owner: mongoose.Types.ObjectId()
+      });
+
+      let user3 = await User.create({
+        login: 'user3',
+        email: 'user3@example.com',
+        password:
+          '$2b$10$ecbupqJoYK4gFeZVcGQfpOYONp5GUUtqheW9AkA6/DHPgGtIGvc6K',
+        role: 'user'
+      });
+      // requesting user is the house owner and item owner is a collaborator
+      let house3 = await House.create({
+        name: 'house3',
+        owner: user2._id,
+        collaborators: [user1._id]
+      });
+      room3 = await Room.create({
+        name: 'room3',
+        description: 'description1',
+        house: house3._id
+      });
+      house3.rooms = [room3._id];
+      await house3.save();
+      // both requesting user and item owner are collaborators
+      let house4 = await House.create({
+        name: 'house4',
+        owner: user3._id,
+        collaborators: [user1._id, user2._id]
+      });
+      room4 = await Room.create({
+        name: 'room4',
+        description: 'description1',
+        house: house4._id
+      });
+      house4.rooms = [room4._id];
+      await house4.save();
     });
     afterEach(async function () {
       await Item.deleteMany({});
@@ -169,6 +207,58 @@ describe('Rooms Endpoints', function () {
         .set('Authorization', `Bearer ${accessToken2}`)
         .send({
           item: item2._id,
+          quantity: 1,
+          expiration: Date.now(),
+          description: 'desc'
+        })
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+          expect(res.body).to.exist.and.to.have.property('id');
+        });
+    });
+    it("should return 200 if both item's owner and requesting user have access to a house (owner + collaborator or 2 collaborators)", async function () {
+      // item owner is a house owner and requesting user is a collaborator
+      await request(server)
+        .post(`/rooms/${room.id}/storage`)
+        .set('Authorization', `Bearer ${accessToken2}`)
+        .send({
+          item: item._id,
+          quantity: 1,
+          expiration: Date.now(),
+          description: 'desc'
+        })
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+          expect(res.body).to.exist.and.to.have.property('id');
+        });
+
+      //item owner is a collaborator and requesting user is a house owner
+      await request(server)
+        .post(`/rooms/${room3.id}/storage`)
+        .set('Authorization', `Bearer ${accessToken2}`)
+        .send({
+          item: item._id,
+          quantity: 1,
+          expiration: Date.now(),
+          description: 'desc'
+        })
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+          expect(res.body).to.exist.and.to.have.property('id');
+        });
+
+      //both item owner and requesting user are collaborators
+      await request(server)
+        .post(`/rooms/${room4.id}/storage`)
+        .set('Authorization', `Bearer ${accessToken2}`)
+        .send({
+          item: item._id,
           quantity: 1,
           expiration: Date.now(),
           description: 'desc'
