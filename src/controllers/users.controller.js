@@ -2,11 +2,7 @@ const express = require('express');
 const { validationResult } = require('express-validator');
 
 const UsersService = require('../services/users.service');
-const {
-  ForbiddenError,
-  BadRequestError,
-  UnprocessableEntityError
-} = require('../error/errors');
+const { ForbiddenError, UnprocessableEntityError } = require('../error/errors');
 
 exports.createUser = async function (req, res, next) {
   if (!validationResult(req).isEmpty()) {
@@ -23,11 +19,7 @@ exports.createUser = async function (req, res, next) {
       .status(201)
       .json({ message: 'User created successfully.', id: newUserId });
   } catch (error) {
-    if (error instanceof BadRequestError) {
-      next(new BadRequestError(error.message));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
 
@@ -45,11 +37,7 @@ exports.putUser = async function (req, res, next) {
 
     return res.status(200).json({ message: 'User modified.' });
   } catch (error) {
-    if (error instanceof BadRequestError) {
-      next(new BadRequestError(error.message));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
 
@@ -63,11 +51,7 @@ exports.getUser = async function (req, res, next) {
 
     return res.status(200).json(user);
   } catch (error) {
-    if (error instanceof BadRequestError) {
-      next(new BadRequestError(error.message));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
 
@@ -83,11 +67,7 @@ exports.login = async function (req, res, next) {
 
     return res.status(200).json(tokenOutput);
   } catch (error) {
-    if (error instanceof BadRequestError) {
-      next(new BadRequestError(error.message));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
 
@@ -100,11 +80,7 @@ exports.refreshToken = async function (req, res, next) {
 
     return res.status(200).json(tokenOutput);
   } catch (error) {
-    if (error instanceof BadRequestError) {
-      next(new BadRequestError(error.message));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
 
@@ -117,11 +93,7 @@ exports.logout = async function (req, res, next) {
 
     return res.status(200).json({ message: 'User logged out.' });
   } catch (error) {
-    if (error instanceof BadRequestError) {
-      next(new BadRequestError(error.message));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
 
@@ -139,11 +111,7 @@ exports.changeLogin = async function (req, res, next) {
 
     return res.status(200).json({ message: 'Login changed successfully.' });
   } catch (error) {
-    if (error instanceof BadRequestError) {
-      next(new BadRequestError(error.message));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
 

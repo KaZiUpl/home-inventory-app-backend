@@ -61,9 +61,6 @@ exports.modifyUser = async function (id, data) {
 
 exports.getUser = async function (id) {
   try {
-    if (id == null) {
-      throw new Error();
-    }
     let user = await User.findById(id).select('-refresh_token -password -_id');
 
     if (user == undefined) {
