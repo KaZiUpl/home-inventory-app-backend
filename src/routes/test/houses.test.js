@@ -158,7 +158,7 @@ describe('Houses Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
   });
@@ -244,7 +244,7 @@ describe('Houses Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
   });
@@ -363,7 +363,7 @@ describe('Houses Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
   });
@@ -449,7 +449,7 @@ describe('Houses Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
   });
@@ -544,7 +544,7 @@ describe('Houses Endpoints', function () {
           expect(res.body).to.have.property('description');
         });
     });
-    it('should return 400 if house id is not valid', async function () {
+    it('should return 400 if house id is invalid', async function () {
       await request(server)
         .get(`/houses/asd`)
         .set('Authorization', `Bearer ${accessToken}`)

@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const formidable = require('formidable');
+const mongoose = require('mongoose');
 
 const ItemsService = require('../services/items.service');
 const {
@@ -8,13 +9,14 @@ const {
 } = require('../error/errors');
 
 exports.createItem = async function (req, res, next) {
-  if (!validationResult(req).isEmpty()) {
-    next(new UnprocessableEntityError());
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    next(new UnprocessableEntityError(errors.array()));
   }
   try {
     let itemId = await ItemsService.createItem(req.userData.id, req.body);
 
-    res.status(201).json({ message: 'Item created.', id: itemId });
+    res.status(201).json({ message: 'Item created', id: itemId });
   } catch (error) {
     next(error);
   }
@@ -22,6 +24,10 @@ exports.createItem = async function (req, res, next) {
 
 exports.getItem = async function (req, res, next) {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw new BadRequestError('Item id is invalid');
+    }
+
     await ItemsService.checkItemAccess(req.userData.id, req.params.id);
 
     const requestedItem = await ItemsService.getItem(req.params.id);
@@ -43,15 +49,20 @@ exports.getItems = async function (req, res, next) {
 };
 
 exports.putItem = async function (req, res, next) {
-  if (!validationResult(req).isEmpty()) {
-    next(new UnprocessableEntityError());
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    next(new UnprocessableEntityError(errors.array()));
   }
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw new BadRequestError('Item id is invalid');
+    }
+
     await ItemsService.checkItemAccess(req.userData.id, req.params.id);
 
     await ItemsService.putItem(req.params.id, req.body);
 
-    res.status(200).json({ message: 'Item updated!' });
+    res.status(200).json({ message: 'Item updated' });
   } catch (error) {
     next(error);
   }
@@ -59,11 +70,15 @@ exports.putItem = async function (req, res, next) {
 
 exports.deleteItem = async function (req, res, next) {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw new BadRequestError('Item id is invalid');
+    }
+
     await ItemsService.checkItemAccess(req.userData.id, req.params.id);
 
     await ItemsService.deleteItem(req.params.id);
 
-    res.status(200).json({ message: 'Item deleted.' });
+    res.status(200).json({ message: 'Item deleted' });
   } catch (error) {
     next(error);
   }
@@ -71,6 +86,10 @@ exports.deleteItem = async function (req, res, next) {
 
 exports.uploadItemImage = async function (req, res, next) {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw new BadRequestError('Item id is invalid');
+    }
+
     await ItemsService.checkItemAccess(req.userData.id, req.params.id);
 
     const form = formidable();
@@ -82,11 +101,19 @@ exports.uploadItemImage = async function (req, res, next) {
           return;
         }
         if (Object.values(files).length > 1) {
-          reject(new BadRequestError('Submit only one file'));
+          reject(new BadRequestError('Attach only one file'));
           return;
         }
         if (!files.image) {
-          reject(new UnprocessableEntityError('Image is missing'));
+          reject(
+            new UnprocessableEntityError([
+              {
+                msg: 'Image is missing',
+                param: 'image',
+                value: files.image
+              }
+            ])
+          );
           return;
         }
         resolve(files.image);
@@ -97,7 +124,7 @@ exports.uploadItemImage = async function (req, res, next) {
 
     await ItemsService.uploadItemImage(req.params.id, file);
 
-    res.status(200).json({ message: 'Item image added.' });
+    res.status(200).json({ message: 'Item image added' });
   } catch (error) {
     next(error);
   }

@@ -86,10 +86,10 @@ describe('Users Endpoints', function () {
       await request(server)
         .post('/users')
         .send({})
-        .expect('Content-Type', new RegExp('application/json;'))
         .expect(422)
+        .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
   });
@@ -132,7 +132,7 @@ describe('Users Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
     it('should return 400 if credentials are invalid', async function () {
@@ -195,7 +195,7 @@ describe('Users Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
     it('should return 400 if token is invalid', async function () {
@@ -273,7 +273,7 @@ describe('Users Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
     it('should return 400 if token is invalid', async function () {
@@ -555,7 +555,7 @@ describe('Users Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
   });
@@ -692,7 +692,7 @@ describe('Users Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
   });

@@ -123,8 +123,7 @@ describe('Items Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.exist;
-          expect(res.body).to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
   });
@@ -428,7 +427,7 @@ describe('Items Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.exist.and.to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
     it('should throw 422 if no description is in the request body', async function () {
@@ -442,7 +441,7 @@ describe('Items Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.exist.and.to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
     it('should throw 422 if no manufacturer is in the request body', async function () {
@@ -456,7 +455,7 @@ describe('Items Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.exist.and.to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
   });
@@ -524,6 +523,18 @@ describe('Items Endpoints', function () {
           expect(res.body).to.exist.and.to.have.property('message');
         });
     });
+    it('should throw 400 if there are two or more files provided', async function () {
+      await request(server)
+        .post(`/items/${item._id}/photo`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .attach('image', imagePath)
+        .attach('file', filePath)
+        .expect(400)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
     it('should throw 401 if user is not logged in', async function () {
       let refreshToken = user.refresh_token;
       user.refresh_token = null;
@@ -583,7 +594,7 @@ describe('Items Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.exist.and.to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
   });

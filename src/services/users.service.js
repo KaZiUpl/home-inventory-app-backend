@@ -7,6 +7,8 @@ const path = require('path');
 const dotenv = require('../config/dotenv');
 const User = require('../models/user.model');
 
+const { BadRequestError } = require('../error/errors');
+
 exports.createUser = async function (login, email, password) {
   try {
     let newUser = new User({
@@ -17,12 +19,12 @@ exports.createUser = async function (login, email, password) {
     //check for duplicate login
     let user = await User.findOne({ login: newUser.login });
     if (user !== null) {
-      throw new Error('User with such login already exist.');
+      throw new BadRequestError('User with such login already exist');
     }
     //check for duplicate email
     user = await User.findOne({ email: newUser.email });
     if (user !== null) {
-      throw new Error('User with such email already exist.');
+      throw new BadRequestError('User with such email already exist');
     }
     //add new user
     //set password
@@ -48,7 +50,7 @@ exports.modifyUser = async function (id, data) {
   try {
     let user = await User.findOne({ login: data.login });
     if (user != undefined) {
-      throw new Error('Login is taken');
+      throw new BadRequestError('Login is taken');
     }
     // change login
     await User.updateOne({ _id: id }, { $set: { login: data.login } });
@@ -64,7 +66,7 @@ exports.getUser = async function (id) {
     let user = await User.findById(id).select('-refresh_token -password -_id');
 
     if (user == undefined) {
-      throw new Error('User not found');
+      throw new NotFoundError('User not found');
     }
 
     return user;
@@ -92,7 +94,7 @@ exports.login = async function (login, password) {
 
     // user not found, wrong username
     if (user === null) {
-      throw new Error('Wrong credentials');
+      throw new BadRequestError('Wrong credentials');
     }
     // user exists
     let passwordMatch = await bcrypt.compare(
@@ -101,7 +103,7 @@ exports.login = async function (login, password) {
     );
     // wrong password
     if (!passwordMatch) {
-      throw new Error('Wrong credentials');
+      throw new BadRequestError('Wrong credentials');
     }
     // create access token
     const tokenTimestamp = Math.floor(Date.now() / 1000) + 15 * 60; // expires in 15 minutes
@@ -158,13 +160,13 @@ exports.login = async function (login, password) {
 exports.refreshToken = async function (refresh_token) {
   try {
     if (refresh_token == null) {
-      throw new Error('');
+      throw new BadRequestError('Refresh token cannot be null');
     }
     // get user with provided refresh token
     let user = await User.findOne({ refresh_token: refresh_token });
     // if user is not logged in
     if (user === null) {
-      throw new Error('User not logged in');
+      throw new BadRequestError('User not logged in');
     }
 
     // create new access token
@@ -201,7 +203,9 @@ exports.logout = async function (refresh_token) {
     let user = await User.findOne({ refresh_token: refresh_token });
     // user with provided token does not exist
     if (user === null) {
-      throw new Error('User not logged in or refresh token is invalid.');
+      throw new BadRequestError(
+        'User not logged in or refresh token is invalid'
+      );
     }
     // delete refresh token
     user.refresh_token = undefined;
@@ -215,7 +219,7 @@ exports.changeLogin = async function (userId, newLogin) {
   try {
     let existingUser = await User.findOne({ login: newLogin });
     if (existingUser != undefined) {
-      throw new Error('Login is taken');
+      throw new BadRequestError('Login is taken');
     }
     let user = await User.findById(userId);
     // if new login is the same
@@ -225,7 +229,7 @@ exports.changeLogin = async function (userId, newLogin) {
     // check whether new login is taken
     let checkLogin = await User.findOne(User({ login: newLogin }));
     if (checkLogin !== null) {
-      throw new Error('Login already in use.');
+      throw new BadRequestError('Login already in use');
     }
 
     user.login = newLogin;

@@ -223,7 +223,7 @@ describe('Items Service', function () {
       expect(updatedItem).to.have.deep.property('photo', 'asd');
     });
   });
-  describe('Update item image', function () {
+  describe('Upload item image', function () {
     let item, imageFilePNG, imageFileJPG, textFile;
     before(function () {
       //create user directory

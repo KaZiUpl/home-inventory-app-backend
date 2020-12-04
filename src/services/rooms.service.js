@@ -4,13 +4,17 @@ const Room = require('../models/room.model');
 const House = require('../models/house.model');
 const Item = require('../models/item.model');
 
-const { ForbiddenError, NotFoundError } = require('../error/errors');
+const {
+  ForbiddenError,
+  NotFoundError,
+  BadRequestError
+} = require('../error/errors');
 
 exports.modifyRoom = async function (roomId, name, description) {
   try {
     let room = await Room.findById(roomId);
     if (room == undefined) {
-      throw new Error('Room not found.');
+      throw new NotFoundError('Room not found');
     }
 
     room.name = name;
@@ -26,7 +30,7 @@ exports.getRoom = async function (id) {
     let room = await Room.findById(id).populate('house', 'name');
 
     if (room == undefined) {
-      throw new Error('Room not found.');
+      throw new NotFoundError('Room not found');
     }
 
     return room;
@@ -39,7 +43,7 @@ exports.deleteRoom = async function (id) {
   try {
     let room = await Room.findById(id);
     if (room == undefined) {
-      throw new Error('Room not found.');
+      throw new NotFoundError('Room not found');
     }
 
     await room.delete();
@@ -68,10 +72,12 @@ exports.addStorageItem = async function (
       throw new NotFoundError('Item not found');
     }
     if (quantity < 1) {
-      throw new Error('Item quantity must be greater than or equal to 1');
+      throw new BadRequestError(
+        'Item quantity must be greater than or equal to 1'
+      );
     }
     if (expiration && typeof expiration !== 'number') {
-      throw new Error('Expiration muse be a timestamp');
+      throw new BadRequestError('Expiration muse be a timestamp');
     }
 
     const storageItem = {
@@ -100,7 +106,7 @@ exports.getRoomStorage = async function (roomId) {
     });
 
     if (room == undefined) {
-      throw new NotFoundError('Room not found.');
+      throw new NotFoundError('Room not found');
     }
 
     return room.storage;
@@ -119,7 +125,7 @@ exports.getStorageItem = async function (roomId, itemId) {
     }).populate('item');
 
     if (room == undefined) {
-      throw new NotFoundError('Room not found.');
+      throw new NotFoundError('Room not found');
     }
 
     let storageItem = await Room.aggregate([
@@ -159,11 +165,11 @@ exports.getStorageItem = async function (roomId, itemId) {
 exports.updateStorageItem = async function (roomId, itemId, newItemData) {
   try {
     if (newItemData.quantity < 1) {
-      throw new Error('Quantity must be greater or equal to 1.');
+      throw new BadRequestError('Quantity must be greater or equal to 1');
     }
     let room = await Room.findById(roomId);
     if (room == undefined) {
-      throw new NotFoundError('Room not found.');
+      throw new NotFoundError('Room not found');
     }
     const updateBody = {
       'storage.$.quantity': newItemData.quantity
@@ -179,7 +185,7 @@ exports.updateStorageItem = async function (roomId, itemId, newItemData) {
     );
 
     if (room == undefined) {
-      throw new NotFoundError('Storage item not found.');
+      throw new NotFoundError('Storage item not found');
     }
   } catch (error) {
     throw error;
@@ -190,11 +196,11 @@ exports.deleteStorageItem = async function (roomId, itemId) {
   try {
     let room = await Room.findById(roomId);
     if (room == undefined) {
-      throw new NotFoundError('Room not found.');
+      throw new NotFoundError('Room not found');
     }
     room = await Room.findOne({ _id: roomId, 'storage._id': itemId });
     if (room == undefined) {
-      throw new NotFoundError('Storage item not found.');
+      throw new NotFoundError('Storage item not found');
     }
     room = await Room.findOneAndUpdate(
       { 'storage._id': itemId },
@@ -210,7 +216,7 @@ exports.checkRoomExistence = async function (roomId) {
     let room = await Room.findById(roomId);
 
     if (room == undefined) {
-      throw new NotFoundError('Room not found.');
+      throw new NotFoundError('Room not found');
     }
   } catch (error) {
     throw error;
@@ -246,7 +252,7 @@ exports.checkItemAccess = async function (itemId, roomId, userId) {
   try {
     let item = await Item.findById(itemId);
     if (item == undefined) {
-      throw new NotFoundError('Item does not exist.');
+      throw new NotFoundError('Item does not exist');
     }
     //global item
     if (!item.owner) {

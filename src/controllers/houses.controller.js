@@ -1,12 +1,17 @@
 const { validationResult } = require('express-validator');
+const mongoose = require('mongoose');
 
 const HousesService = require('../services/houses.service');
 
-const { UnprocessableEntityError } = require('../error/errors');
+const {
+  UnprocessableEntityError,
+  BadRequestError
+} = require('../error/errors');
 
 exports.createHouse = async function (req, res, next) {
-  if (!validationResult(req).isEmpty()) {
-    next(new UnprocessableEntityError());
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    next(new UnprocessableEntityError(errors.array()));
   }
   try {
     let houseId = await HousesService.createHouse(
@@ -15,17 +20,22 @@ exports.createHouse = async function (req, res, next) {
       req.body.description
     );
 
-    return res.status(201).json({ message: 'House created.', id: houseId });
+    return res.status(201).json({ message: 'House created', id: houseId });
   } catch (error) {
     next(error);
   }
 };
 
 exports.createRoom = async function (req, res, next) {
-  if (!validationResult(req).isEmpty()) {
-    next(new UnprocessableEntityError());
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    next(new UnprocessableEntityError(errors.array()));
   }
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw new BadRequestError('House id is invalid');
+    }
+
     await HousesService.checkHouseExistence(req.params.id);
 
     await HousesService.checkHouseOwnership(req.params.id, req.userData.id);
@@ -36,7 +46,7 @@ exports.createRoom = async function (req, res, next) {
       req.body.description
     );
 
-    return res.status(201).json({ message: 'Room created.', id: roomId });
+    return res.status(201).json({ message: 'Room created', id: roomId });
   } catch (error) {
     next(error);
   }
@@ -44,6 +54,9 @@ exports.createRoom = async function (req, res, next) {
 
 exports.getRooms = async function (req, res, next) {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw new BadRequestError('House id is invalid');
+    }
     await HousesService.checkHouseExistence(req.params.id);
 
     await HousesService.checkHouseAccess(req.params.id, req.userData.id);
@@ -57,8 +70,9 @@ exports.getRooms = async function (req, res, next) {
 };
 
 exports.addCollaborator = async function (req, res, next) {
-  if (!validationResult(req).isEmpty()) {
-    next(new UnprocessableEntityError());
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    next(new UnprocessableEntityError(errors.array()));
   }
   try {
     await HousesService.checkHouseExistence(req.params.id);
@@ -67,7 +81,7 @@ exports.addCollaborator = async function (req, res, next) {
 
     await HousesService.addCollaborator(req.params.id, req.body.name);
 
-    return res.status(200).json({ message: 'Collaborator added.' });
+    return res.status(200).json({ message: 'Collaborator added' });
   } catch (error) {
     next(error);
   }
@@ -85,6 +99,10 @@ exports.getHouseList = async function (req, res, next) {
 
 exports.getCollaborators = async function (req, res, next) {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw new BadRequestError('House id is invalid');
+    }
+
     await HousesService.checkHouseExistence(req.params.id);
 
     await HousesService.checkHouseAccess(req.params.id, req.userData.id);
@@ -99,6 +117,10 @@ exports.getCollaborators = async function (req, res, next) {
 
 exports.getHouse = async function (req, res, next) {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw new BadRequestError('House id is invalid');
+    }
+
     await HousesService.checkHouseExistence(req.params.id);
 
     await HousesService.checkHouseAccess(req.params.id, req.userData.id);
@@ -112,10 +134,15 @@ exports.getHouse = async function (req, res, next) {
 };
 
 exports.editHouse = async function (req, res, next) {
-  if (!validationResult(req).isEmpty()) {
-    next(new UnprocessableEntityError());
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    next(new UnprocessableEntityError(errors.array()));
   }
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw new BadRequestError('House id is invalid');
+    }
+
     await HousesService.checkHouseExistence(req.params.id);
 
     await HousesService.checkHouseOwnership(req.params.id, req.userData.id);
@@ -134,13 +161,17 @@ exports.editHouse = async function (req, res, next) {
 
 exports.deleteHouse = async function (req, res, next) {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw new BadRequestError('House id is invalid');
+    }
+
     await HousesService.checkHouseExistence(req.params.id);
 
     await HousesService.checkHouseOwnership(req.params.id, req.userData.id);
 
     await HousesService.deleteHouse(req.params.id);
 
-    return res.status(200).json({ message: 'House deleted.' });
+    return res.status(200).json({ message: 'House deleted' });
   } catch (error) {
     next(error);
   }
@@ -148,13 +179,17 @@ exports.deleteHouse = async function (req, res, next) {
 
 exports.deleteCollaborator = async function (req, res, next) {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw new BadRequestError('House id is invalid');
+    }
+
     await HousesService.checkHouseExistence(req.params.id);
 
     await HousesService.checkHouseOwnership(req.params.id, req.userData.id);
 
     await HousesService.deleteCollaborator(req.params.id, req.params.userId);
 
-    return res.status(200).json({ message: 'Collaborator deleted.' });
+    return res.status(200).json({ message: 'Collaborator deleted' });
   } catch (error) {
     next(error);
   }

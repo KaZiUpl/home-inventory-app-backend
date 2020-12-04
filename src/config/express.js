@@ -9,7 +9,8 @@ const {
   NotFoundError,
   BadRequestError,
   ForbiddenError,
-  UnauthorizedError
+  UnauthorizedError,
+  HTTPError
 } = require('../error/errors');
 
 // Routes
@@ -41,21 +42,19 @@ app.use('/items', itemsRoutes);
 
 //handle non-existent routes
 app.use((req, res, next) => {
-  next(new NotFoundError());
+  next(new NotFoundError('This endpoint does not exist'));
 });
 //handle errors
 app.use((error, req, res, next) => {
-  //console.log(error.stack);
-  if (error.constructor.name == 'CastError') {
-    error = new BadRequestError();
+  if (!(error instanceof HTTPError)) {
+    if (['CastError', 'ValidationError'].includes(error.constructor.name)) {
+      error = new BadRequestError(error.message);
+    } else {
+      console.log(error.stack);
+      error = new InternalServerError(error.message);
+    }
   }
-  if (error.constructor.name == 'Error') {
-    error = new BadRequestError(error.message);
-  }
-  if (!error.status) {
-    error = new InternalServerError();
-  }
-  return res.status(error.status).json({ message: error.message });
+  res.status(error.status).json(error.body);
 });
 
 module.exports = app;

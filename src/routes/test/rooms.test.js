@@ -431,7 +431,7 @@ describe('Rooms Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.exist.and.to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
   });
@@ -505,7 +505,7 @@ describe('Rooms Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
   });
@@ -654,7 +654,7 @@ describe('Rooms Endpoints', function () {
         .expect(422)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
-          expect(res.body).to.exist.and.have.property('message');
+          expect(res.body).to.exist.and.to.be.a('array');
         });
     });
   });

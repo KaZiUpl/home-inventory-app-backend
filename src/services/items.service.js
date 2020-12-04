@@ -14,7 +14,7 @@ exports.createItem = async function (userId, itemBody) {
   try {
     const user = await User.findById(userId);
     if (user == undefined) {
-      throw new Error('User not found.');
+      throw new NotFoundError('User not found');
     }
     const newItemBody = { ...itemBody, owner: user._id };
 
@@ -42,7 +42,7 @@ exports.getItem = async function (itemId) {
 exports.getItems = async function (userId) {
   try {
     if (userId == null) {
-      throw new Error();
+      throw new BadRequestError('User id cannot be null');
     }
     let items = await Item.find({ $or: [{ owner: userId }, { owner: null }] });
 
@@ -56,10 +56,10 @@ exports.putItem = async function (itemId, itemBody) {
   try {
     let item = await Item.findById(itemId);
     if (item == undefined) {
-      throw new Error();
+      throw new NotFoundError('Item not found');
     }
     if (itemBody.name == null) {
-      throw new Error();
+      throw new BadRequestError('Item name cannot be null');
     }
     //exclude owner and photo from itemBody
     let { owner, photo, ...newItemBody } = itemBody;
@@ -73,11 +73,11 @@ exports.putItem = async function (itemId, itemBody) {
 exports.deleteItem = async function (itemId) {
   try {
     if (!mongoose.Types.ObjectId.isValid(itemId)) {
-      throw new Error('Invalid id');
+      throw new BadRequestError('Invalid item id');
     }
     let item = await Item.findById(itemId);
     if (item == undefined) {
-      throw new Error('Item not found');
+      throw new NotFoundError('Item not found');
     }
     await item.delete();
   } catch (error) {

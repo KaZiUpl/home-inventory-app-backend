@@ -1,46 +1,72 @@
-class BadRequestError extends Error {
-  constructor(message = 'Something is wrong with the request.') {
+class HTTPError extends Error {
+  constructor(message, statusCode, body) {
     super(message);
-    this.status = 400;
+    Error.captureStackTrace(this, this.constructor);
+    if (typeof body === 'string') {
+      this.body = { message: body };
+    } else {
+      this.body = body;
+    }
+    this.status = statusCode;
   }
 }
 
-class UnauthorizedError extends Error {
-  constructor(message = 'You have to log in to access this resource.') {
-    super(message);
-    this.status = 401;
+class BadRequestError extends HTTPError {
+  constructor(
+    body = { message: 'Something is wrong with your request' },
+    errorMessage = 'Something went wrong'
+  ) {
+    super(typeof body === 'string' ? body : errorMessage, 400, body);
   }
 }
 
-class ForbiddenError extends Error {
-  constructor(message = 'You do not have permission to access this resource.') {
-    super(message);
-    this.status = 403;
+class UnauthorizedError extends HTTPError {
+  constructor(
+    body = { message: 'You have to log in to access this resource' },
+    errorMessage = 'User unauthorized'
+  ) {
+    super(typeof body === 'string' ? body : errorMessage, 401, body);
   }
 }
 
-class NotFoundError extends Error {
-  constructor(message = 'Resource not found') {
-    super(message);
-    this.status = 404;
+class ForbiddenError extends HTTPError {
+  constructor(
+    body = { message: 'You do not have permission to access this resource' },
+    errorMessage = 'Access to a resource denied'
+  ) {
+    super(typeof body === 'string' ? body : errorMessage, 403, body);
   }
 }
 
-class UnprocessableEntityError extends Error {
-  constructor(message = 'Unprocessable entity') {
-    super(message);
-    this.status = 422;
+class NotFoundError extends HTTPError {
+  constructor(
+    body = { message: 'Resource not found' },
+    errorMessage = 'Entity not found'
+  ) {
+    super(typeof body === 'string' ? body : errorMessage, 404, body);
   }
 }
 
-class InternalServerError extends Error {
-  constructor(message = 'Something went wrong.') {
-    super(message);
-    this.status = 500;
+class UnprocessableEntityError extends HTTPError {
+  constructor(
+    body = { message: 'Unprocessable entity' },
+    errorMessage = 'Invalid request body format'
+  ) {
+    super(typeof body === 'string' ? body : errorMessage, 422, body);
+  }
+}
+
+class InternalServerError extends HTTPError {
+  constructor(
+    errorMessage = 'Something went wrong',
+    message = { message: 'Something went wrong' }
+  ) {
+    super(typeof body === 'string' ? body : errorMessage, 500, body);
   }
 }
 
 module.exports = {
+  HTTPError,
   BadRequestError,
   UnauthorizedError,
   NotFoundError,
