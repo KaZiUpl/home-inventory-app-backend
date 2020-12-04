@@ -17,6 +17,10 @@ const itemSchema = new Schema({
   manufacturer: {
     type: String
   },
+  ean: {
+    type: Number,
+    unique: true
+  },
   photo: {
     type: String
   }
