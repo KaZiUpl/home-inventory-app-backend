@@ -103,6 +103,7 @@ describe('Users Endpoints', function () {
         role: 'user'
       });
     });
+
     it('should return 200 and tokens on success', async function () {
       //check login with username
       await request(server)
@@ -178,6 +179,7 @@ describe('Users Endpoints', function () {
     afterEach(async function () {
       await User.deleteMany({});
     });
+
     it('should return 200 and new access token on success', async function () {
       await request(server)
         .post('/users/auth/refresh')
@@ -256,6 +258,7 @@ describe('Users Endpoints', function () {
     afterEach(async function () {
       await User.deleteMany({});
     });
+
     it('should return 200 on success', async function () {
       await request(server)
         .post('/users/logout')
@@ -368,6 +371,7 @@ describe('Users Endpoints', function () {
     afterEach(async function () {
       User.deleteMany({});
     });
+
     it('should return 200 and user info on success', async function () {
       await request(server)
         .get(`/users/${user1._id}`)
@@ -477,6 +481,7 @@ describe('Users Endpoints', function () {
     afterEach(async function () {
       User.deleteMany({});
     });
+
     it('should return 200 on success', async function () {
       await request(server)
         .put(`/users/${user1._id}`)
@@ -626,6 +631,7 @@ describe('Users Endpoints', function () {
     afterEach(async function () {
       User.deleteMany({});
     });
+
     it('should return 200 on success', async function () {
       await request(server)
         .put(`/users/${user1._id}/login`)

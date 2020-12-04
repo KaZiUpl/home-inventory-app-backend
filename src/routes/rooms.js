@@ -22,7 +22,7 @@ router.use(checkAuthMiddleware);
  * @apiParam {String} roomId Room id
  * @apiParam {String} item Item id
  * @apiParam {Number} quantity Quantity of item (optional, default=1, min. value = 1)
- * @apiParam {Date} expiration Expiration date (optional)
+ * @apiParam {Number} expiration Expiration date timestamp (optional)
  * @apiParam {String} description Storage item description (optional)
  * @apiSuccess (Success 201) {String} message message
  * @apiSuccess (Success 201) {String} id created storage item id
