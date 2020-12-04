@@ -137,7 +137,7 @@ describe('Users Service', function () {
       await User.deleteMany({});
     });
 
-    it('should modify user data', async function () {
+    it('should be fulfilled and modify user login', async function () {
       //create user
       let user = await User.create({
         login: 'kacperkaz',
@@ -155,6 +155,17 @@ describe('Users Service', function () {
       let newUser = await User.findById(user._id);
 
       expect(newUser).to.have.property('login', newLogin);
+    });
+    it('should be fulfilled if new login is the same', async function () {
+      let user = await User.create({
+        login: 'kacperkaz',
+        email: 'kacperkaz@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+      const newLogin = 'kacperkaz';
+      await expect(UsersService.changeLogin(user._id, newLogin)).to.be
+        .fulfilled;
     });
     it('should throw if provided login is taken', async function () {
       //create first user
@@ -176,6 +187,17 @@ describe('Users Service', function () {
 
       await expect(UsersService.changeLogin(user2._id, newLogin)).to.be
         .rejected;
+    });
+    it('should throw if new login is null', async function () {
+      //create first user
+      let user = await User.create({
+        login: 'kacperkaz',
+        email: 'kacperkaz@example.com',
+        password: 'asd',
+        role: 'user'
+      });
+
+      await expect(UsersService.changeLogin(user._id, null)).to.be.rejected;
     });
   });
   describe('Get user', function () {

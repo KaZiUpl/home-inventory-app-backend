@@ -217,23 +217,20 @@ exports.logout = async function (refresh_token) {
 
 exports.changeLogin = async function (userId, newLogin) {
   try {
-    let existingUser = await User.findOne({ login: newLogin });
+    // check whether new login is taken
+    let existingUser = await User.findOne({
+      login: newLogin,
+      _id: { $ne: userId }
+    });
     if (existingUser != undefined) {
       throw new BadRequestError('Login is taken');
     }
     let user = await User.findById(userId);
-    // if new login is the same
-    if (user.login == this.newLogin) {
-      return;
-    }
-    // check whether new login is taken
-    let checkLogin = await User.findOne(User({ login: newLogin }));
-    if (checkLogin !== null) {
-      throw new BadRequestError('Login already in use');
-    }
 
-    user.login = newLogin;
-    await user.save();
+    if (user.login != this.newLogin) {
+      user.login = newLogin;
+      await user.save();
+    }
   } catch (error) {
     throw error;
   }
