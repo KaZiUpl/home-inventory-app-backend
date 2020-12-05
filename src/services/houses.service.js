@@ -188,6 +188,13 @@ exports.deleteCollaborator = async function (houseId, collaboratorId) {
   }
 };
 
+exports.getStorage = async function (houseId) {
+  try {
+  } catch (error) {
+    throw error;
+  }
+};
+
 exports.checkHouseExistence = async function (houseId) {
   try {
     let house = await House.findById(houseId);

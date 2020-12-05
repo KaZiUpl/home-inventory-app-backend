@@ -12,6 +12,7 @@ const server = require('../../config/express');
 const User = require('../../models/user.model');
 const House = require('../../models/house.model');
 const Room = require('../../models/room.model');
+const Item = require('../../models/item.model');
 
 describe('Houses Endpoints', function () {
   before(async function () {
@@ -603,6 +604,139 @@ describe('Houses Endpoints', function () {
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
           expect(res.body).to.have.property('message');
+        });
+    });
+  });
+  describe('GET /houses/:id/storage', function () {
+    let house, house2;
+    beforeEach(async function () {
+      await Item.deleteMany({});
+      await Room.deleteMany({});
+      await House.deleteMany({});
+
+      house = await House.create({
+        name: 'house name',
+        owner: user1._id,
+        collaborators: [user2._id]
+      });
+      house2 = await House.create({
+        name: 'house2 name',
+        owner: user1._id
+      });
+
+      let item = await Item.create({ name: 'item name', owner: user1._id });
+
+      let room = await Room.create({
+        name: 'room name',
+        house: house._id,
+        storage: [
+          { item: item._id, quantity: 1 },
+          { item: item._id, quantity: 4 }
+        ]
+      });
+      let room2 = await Room.create({
+        name: 'room name',
+        house: house2._id,
+        storage: [
+          { item: item._id, quantity: 1 },
+          { item: item._id, quantity: 4 }
+        ]
+      });
+      let room3 = await Room.create({
+        name: 'room name',
+        house: house2._id,
+        storage: [
+          { item: item._id, quantity: 1 },
+          { item: item._id, quantity: 4 }
+        ]
+      });
+
+      house.rooms = [room];
+      house = await house.save();
+
+      house2.rooms = [room2, room3];
+      house2 = await house2.save();
+    });
+    afterEach(async function () {
+      await Item.deleteMany({});
+      await Room.deleteMany({});
+      await House.deleteMany({});
+    });
+
+    it('should return 200 and storage items array for a house owner', async function () {
+      await request(server)
+        .get(`/houses/${house2._id}/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.be.a('array').of.length(4);
+        });
+    });
+    it('should return 200 and storage items array for a house collaborator', async function () {
+      await request(server)
+        .get(`/houses/${house._id}/storage`)
+        .set('Authorization', `Bearer ${accessToken2}`)
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.be.a('array').of.length(2);
+        });
+    });
+    it('should return 400 if house id is invalid', async function () {
+      await request(server)
+        .get(`/houses/asd/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(400)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+    });
+    it('should return 401 if user is not logged in', async function () {
+      refreshToken = user1.refresh_token;
+      user1.refresh_token = null;
+      await user1.save();
+
+      await request(server)
+        .get(`/houses/${house2._id}/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+
+      user1.refresh_token = refreshToken;
+      await user1.save();
+    });
+    it('should return 401 if no Authorization header is present', async function () {
+      await request(server)
+        .get(`/houses/${house._id}/storage`)
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+    });
+    it('should return 403 if user is not a house owner nor a collaborator', async function () {
+      await request(server)
+        .get(`/houses/${house2._id}/storage`)
+        .set('Authorization', `Bearer ${accessToken2}`)
+        .expect(403)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+    });
+    it('should return 404 if house does not exist', async function () {
+      await request(server)
+        .get(`/houses/${mongoose.Types.ObjectId()}/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(404)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
         });
     });
   });

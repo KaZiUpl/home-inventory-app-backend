@@ -194,3 +194,11 @@ exports.deleteCollaborator = async function (req, res, next) {
     next(error);
   }
 };
+
+exports.getStorage = async function (req, res, next) {
+  try {
+    return res.json();
+  } catch (error) {
+    next(error);
+  }
+};
