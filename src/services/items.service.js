@@ -39,12 +39,30 @@ exports.getItem = async function (itemId) {
   }
 };
 
-exports.getItems = async function (userId) {
+exports.getItems = async function (
+  userId,
+  eanCode = undefined,
+  name = undefined
+) {
   try {
     if (userId == null) {
       throw new BadRequestError('User id cannot be null');
     }
-    let items = await Item.find({ $or: [{ owner: userId }, { owner: null }] });
+    const match = {};
+    if (eanCode != undefined) {
+    }
+
+    let items = Item.find({
+      $or: [{ owner: mongoose.Types.ObjectId(userId) }, { owner: null }]
+    });
+    if (eanCode) {
+      items = items.where('ean').regex(new RegExp(eanCode));
+    }
+    if (name) {
+      items = items.where('name').regex(new RegExp(name));
+    }
+
+    items = await items.exec();
 
     return items;
   } catch (error) {

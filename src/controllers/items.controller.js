@@ -40,7 +40,11 @@ exports.getItem = async function (req, res, next) {
 
 exports.getItems = async function (req, res, next) {
   try {
-    let items = await ItemsService.getItems(req.userData.id);
+    const ean = req.query.ean ? decodeURIComponent(req.query.ean) : undefined;
+    const name = req.query.name
+      ? decodeURIComponent(req.query.name)
+      : undefined;
+    let items = await ItemsService.getItems(req.userData.id, ean, name);
 
     res.status(200).json(items);
   } catch (error) {

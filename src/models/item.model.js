@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 const itemSchema = new Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   description: {
     type: String
@@ -15,11 +16,12 @@ const itemSchema = new Schema({
     ref: 'User'
   },
   manufacturer: {
-    type: String
+    type: String,
+    trim: true
   },
   ean: {
-    type: Number,
-    unique: true
+    type: String,
+    trim: true
   },
   photo: {
     type: String

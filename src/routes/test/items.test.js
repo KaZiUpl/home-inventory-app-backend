@@ -252,7 +252,8 @@ describe('Items Endpoints', function () {
       globalItem = await Item.create({
         name: 'global item',
         description: 'global item description',
-        manufacturer: 'manufacturer'
+        manufacturer: 'manufacturer',
+        ean: '1234567898926'
       });
       userItem = await Item.create({
         name: 'user item',
@@ -271,7 +272,7 @@ describe('Items Endpoints', function () {
       await Item.deleteMany({});
     });
 
-    it("should return 200 and array of user's and global items", async function () {
+    it("should return 200 and array of user's items and global items", async function () {
       await request(server)
         .get(`/items`)
         .set('Authorization', `Bearer ${accessToken}`)
@@ -283,6 +284,37 @@ describe('Items Endpoints', function () {
           expect(res.body[0]).to.have.property('name');
           expect(res.body[0]).to.have.property('description');
           expect(res.body[0]).to.have.property('manufacturer');
+        });
+    });
+    it('should return 200 and filtered array if filters are provided', async function () {
+      await request(server)
+        .get(`/items`)
+        .query({ ean: '1234567898926' })
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.be.a('array').of.length(1);
+        });
+
+      await request(server)
+        .get(`/items`)
+        .query({ name: decodeURIComponent('global item') })
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.be.a('array').of.length(1);
+        });
+
+      await request(server)
+        .get(`/items`)
+        .query({ name: decodeURIComponent('user item'), ean: '1234567898926' })
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.be.a('array').of.length(0);
         });
     });
     it('should throw 401 if user is not logged in', async function () {

@@ -120,7 +120,8 @@ describe('Items Service', function () {
       globalItem = await Item.create({
         name: 'global item',
         description: 'global item description',
-        manufacturer: 'manufacturer'
+        manufacturer: 'manufacturer',
+        ean: '1234567898926'
       });
       userItem = await Item.create({
         name: 'user item',
@@ -143,6 +144,20 @@ describe('Items Service', function () {
       let items = await ItemsService.getItems(user._id);
 
       expect(items).to.exist.and.be.a('array').of.length(2);
+    });
+    it('should return filtered array if filters are provided', async function () {
+      items = await ItemsService.getItems(user._id, '1234567898926');
+      expect(items).to.exist.and.be.a('array').of.length(1);
+
+      items = await ItemsService.getItems(user._id, undefined, 'global item');
+      expect(items).to.exist.and.be.a('array').of.length(1);
+
+      items = await ItemsService.getItems(
+        user._id,
+        '1234567898926',
+        'user item'
+      );
+      expect(items).to.exist.and.be.a('array').of.length(0);
     });
     it('should throw if user id is invalid', async function () {
       await expect(ItemsService.getItems('asd')).to.be.rejected;
