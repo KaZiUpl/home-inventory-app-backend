@@ -241,6 +241,15 @@ describe('Houses Service', function () {
       expect(storageItems[0].item).to.exist.and.to.have.property('_id');
       expect(storageItems[0].item).to.exist.and.to.have.property('name');
     });
+    it('should be fulfilled and return filtered array of storage items', async function () {
+      let storageItems = await HousesService.getStorage(house2._id, 'item2');
+
+      expect(storageItems).to.exist.and.be.a('array').of.length(2);
+      expect(storageItems[0]).to.have.property('quantity');
+      expect(storageItems[0]).to.have.property('room');
+      expect(storageItems[0].item).to.exist.and.to.have.property('_id');
+      expect(storageItems[0].item).to.exist.and.to.have.property('name');
+    });
     it('should throw if house id is null', async function () {
       await expect(HousesService.getStorage(null)).to.be.rejected;
     });

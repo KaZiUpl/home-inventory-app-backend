@@ -201,7 +201,11 @@ exports.getStorage = async function (req, res, next) {
 
     await HousesService.checkHouseAccess(req.params.id, req.userData.id);
 
-    let items = await HousesService.getStorage(req.params.id);
+    const name = req.query.name
+      ? decodeURIComponent(req.query.name)
+      : undefined;
+
+    let items = await HousesService.getStorage(req.params.id, name);
 
     return res.status(200).json(items);
   } catch (error) {

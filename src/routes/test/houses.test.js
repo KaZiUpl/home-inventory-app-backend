@@ -625,13 +625,14 @@ describe('Houses Endpoints', function () {
       });
 
       let item = await Item.create({ name: 'item name', owner: user1._id });
+      let item2 = await Item.create({ name: 'item2 name', owner: user1._id });
 
       let room = await Room.create({
         name: 'room name',
         house: house._id,
         storage: [
           { item: item._id, quantity: 1 },
-          { item: item._id, quantity: 4 }
+          { item: item2._id, quantity: 4 }
         ]
       });
       let room2 = await Room.create({
@@ -639,14 +640,14 @@ describe('Houses Endpoints', function () {
         house: house2._id,
         storage: [
           { item: item._id, quantity: 1 },
-          { item: item._id, quantity: 4 }
+          { item: item2._id, quantity: 4 }
         ]
       });
       let room3 = await Room.create({
         name: 'room name',
         house: house2._id,
         storage: [
-          { item: item._id, quantity: 1 },
+          { item: item2._id, quantity: 1 },
           { item: item._id, quantity: 4 }
         ]
       });
@@ -672,6 +673,15 @@ describe('Houses Endpoints', function () {
         .then((res) => {
           expect(res.body).to.exist.and.be.a('array').of.length(4);
         });
+      await request(server)
+        .get(`/houses/${house2._id}/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .query({ name: 'item2' })
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.be.a('array').of.length(2);
+        });
     });
     it('should return 200 and storage items array for a house collaborator', async function () {
       await request(server)
@@ -681,6 +691,15 @@ describe('Houses Endpoints', function () {
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
           expect(res.body).to.exist.and.be.a('array').of.length(2);
+        });
+      await request(server)
+        .get(`/houses/${house._id}/storage`)
+        .set('Authorization', `Bearer ${accessToken2}`)
+        .query({ name: 'item2' })
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.be.a('array').of.length(1);
         });
     });
     it('should return 400 if house id is invalid', async function () {

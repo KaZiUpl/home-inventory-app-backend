@@ -188,7 +188,7 @@ exports.deleteCollaborator = async function (houseId, collaboratorId) {
   }
 };
 
-exports.getStorage = async function (houseId) {
+exports.getStorage = async function (houseId, name = undefined) {
   try {
     houseId = mongoose.Types.ObjectId(houseId);
 
@@ -228,7 +228,13 @@ exports.getStorage = async function (houseId) {
       { $unwind: '$root' },
       { $replaceRoot: { newRoot: '$root' } }
     ]);
-    //TODO: filtering
+
+    if (name) {
+      house = house.append([
+        { $match: { 'item.name': { $regex: new RegExp(name) } } }
+      ]);
+    }
+
     let items = await house.exec();
     return items;
   } catch (error) {
