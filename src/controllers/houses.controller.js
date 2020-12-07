@@ -194,3 +194,17 @@ exports.deleteCollaborator = async function (req, res, next) {
     next(error);
   }
 };
+
+exports.getStorage = async function (req, res, next) {
+  try {
+    await HousesService.checkHouseExistence(req.params.id);
+
+    await HousesService.checkHouseAccess(req.params.id, req.userData.id);
+
+    let items = await HousesService.getStorage(req.params.id);
+
+    return res.status(200).json(items);
+  } catch (error) {
+    next(error);
+  }
+};

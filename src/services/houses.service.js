@@ -188,6 +188,54 @@ exports.deleteCollaborator = async function (houseId, collaboratorId) {
   }
 };
 
+exports.getStorage = async function (houseId) {
+  try {
+    houseId = mongoose.Types.ObjectId(houseId);
+
+    let house = House.aggregate([{ $match: { _id: houseId } }]);
+
+    if ((await house.exec()).length === 0) {
+      throw new BadRequestError('House does not exist');
+    }
+
+    house.append([
+      {
+        $lookup: {
+          from: 'rooms',
+          localField: 'rooms',
+          foreignField: '_id',
+          as: 'rooms'
+        }
+      },
+      { $unwind: '$rooms' },
+      { $unwind: '$rooms.storage' },
+      {
+        $lookup: {
+          from: 'items',
+          localField: 'rooms.storage.item',
+          foreignField: '_id',
+          as: 'rooms.storage.item'
+        }
+      },
+      {
+        $addFields: {
+          'rooms.storage.item': { $arrayElemAt: ['$rooms.storage.item', 0] },
+          'rooms.storage.room._id': '$rooms._id',
+          'rooms.storage.room.name': '$rooms.name'
+        }
+      },
+      { $group: { _id: null, root: { $push: '$rooms.storage' } } },
+      { $unwind: '$root' },
+      { $replaceRoot: { newRoot: '$root' } }
+    ]);
+    //TODO: filtering
+    let items = await house.exec();
+    return items;
+  } catch (error) {
+    throw error;
+  }
+};
+
 exports.checkHouseExistence = async function (houseId) {
   try {
     let house = await House.findById(houseId);
