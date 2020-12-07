@@ -48,9 +48,6 @@ exports.getItems = async function (
     if (userId == null) {
       throw new BadRequestError('User id cannot be null');
     }
-    const match = {};
-    if (eanCode != undefined) {
-    }
 
     let items = Item.find({
       $or: [{ owner: mongoose.Types.ObjectId(userId) }, { owner: null }]
