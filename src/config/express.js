@@ -48,7 +48,10 @@ app.use((req, res, next) => {
 app.use((error, req, res, next) => {
   if (!(error instanceof HTTPError)) {
     if (['CastError', 'ValidationError'].includes(error.constructor.name)) {
-      error = new BadRequestError(error.message);
+      error = new BadRequestError({
+        message: error.message,
+        stack: error.stack
+      });
     } else {
       console.log(error.stack);
       error = new InternalServerError(error.message);

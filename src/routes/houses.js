@@ -150,6 +150,55 @@ router.get('/', housesController.getHouseList);
  * @apiPermission house owner, house collaborator
  * @apiDescription Returns a list of storage items from all of the house rooms
  * @apiSuccess (Success 200) {Object[]} items Array of storage items
+ * @apiSuccess (Success 200) {String} _id Storage item id
+ * @apiSuccess (Success 200) {Number} quantity Storage item quantity
+ * @apiSuccess (Success 200) {Date} expiration Storage item expiration date
+ * @apiSuccess (Success 200) {String} description Storage item description
+ * @apiSuccess (Success 200) {Object} item Item reference
+ * @apiSuccess (Success 200) {String} item._id Item id
+ * @apiSuccess (Success 200) {String} item.name Item name
+ * @apiSuccess (Success 200) {String} item.description Item description
+ * @apiSuccess (Success 200) {String} item.owner Item owner
+ * @apiSuccess (Success 200) {Object} room Room reference
+ * @apiSuccess (Success 200) {String} room._id Room id
+ * @apiSuccess (Success 200) {String} room.name Room name
+ * @apiSuccessExample {json} Success-Response:
+ * [
+ *  {
+ *      "_id": "5fccb43bbf6d7110f05d78c8",
+ *      "item": {
+ *          "_id": "5fc3f66286d62d1540799523",
+ *          "name": "name",
+ *          "description": "asd",
+ *          "owner": "5fbe83acf4a9ae3450523667",
+ *          "__v": 0
+ *      },
+ *      "quantity": 2,
+ *      "expiration": "1970-01-19T14:17:58.580Z",
+ *      "description": "another description",
+ *      "room": {
+ *          "_id": "5fbe83e4f4a9ae345052366b",
+ *          "name": "room1"
+ *      }
+ *  },
+ *  {
+ *      "_id": "5fccb45abf6d7110f05d78ca",
+ *      "item": {
+ *          "_id": "5fc3f4ba865c05280c628c34",
+ *          "name": "name",
+ *          "description": "asd",
+ *          "owner": "5fbe83acf4a9ae3450523667",
+ *          "__v": 0
+ *      },
+ *      "quantity": 2,
+ *      "expiration": "1970-01-19T14:17:58.580Z",
+ *      "description": "description",
+ *      "room": {
+ *          "_id": "5fbe83e4f4a9ae345052366b",
+ *          "name": "room1"
+ *      }
+ *  }
+ * ]
  */
 router.get('/:id/storage', housesController.getStorage);
 

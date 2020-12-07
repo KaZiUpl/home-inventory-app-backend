@@ -193,29 +193,30 @@ describe('Houses Service', function () {
       });
 
       let item = await Item.create({ name: 'item name', owner: user1._id });
+      let item2 = await Item.create({ name: 'item2 name', owner: user1._id });
 
       let room = await Room.create({
         name: 'room name',
         house: house._id,
         storage: [
           { item: item._id, quantity: 1 },
-          { item: item._id, quantity: 4 }
+          { item: item2._id, quantity: 4 }
         ]
       });
       let room2 = await Room.create({
-        name: 'room name',
+        name: 'room2 name',
         house: house2._id,
         storage: [
-          { item: item._id, quantity: 1 },
+          { item: item2._id, quantity: 1 },
           { item: item._id, quantity: 4 }
         ]
       });
       let room3 = await Room.create({
-        name: 'room name',
+        name: 'room3 name',
         house: house2._id,
         storage: [
           { item: item._id, quantity: 1 },
-          { item: item._id, quantity: 4 }
+          { item: item2._id, quantity: 4 }
         ]
       });
 
@@ -231,11 +232,12 @@ describe('Houses Service', function () {
       await House.deleteMany({});
     });
 
-    it('should be fulfilled and return array of storage items', async function () {
+    it('should be fulfilled and return array of storage items from all rooms', async function () {
       let storageItems = await HousesService.getStorage(house2._id);
 
       expect(storageItems).to.exist.and.be.a('array').of.length(4);
       expect(storageItems[0]).to.have.property('quantity');
+      expect(storageItems[0]).to.have.property('room');
       expect(storageItems[0].item).to.exist.and.to.have.property('_id');
       expect(storageItems[0].item).to.exist.and.to.have.property('name');
     });

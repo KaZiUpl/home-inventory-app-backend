@@ -319,6 +319,127 @@
   },
   {
     "type": "get",
+    "url": "/houses/:id/storage",
+    "title": "Get the list of storage items from all house rooms",
+    "name": "GetHouseStorage",
+    "group": "House",
+    "permission": [
+      {
+        "name": "house owner, house collaborator"
+      }
+    ],
+    "description": "<p>Returns a list of storage items from all of the house rooms</p>",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "items",
+            "description": "<p>Array of storage items</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "_id",
+            "description": "<p>Storage item id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "quantity",
+            "description": "<p>Storage item quantity</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "expiration",
+            "description": "<p>Storage item expiration date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Storage item description</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "item",
+            "description": "<p>Item reference</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item._id",
+            "description": "<p>Item id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.name",
+            "description": "<p>Item name</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.description",
+            "description": "<p>Item description</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.owner",
+            "description": "<p>Item owner</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "room",
+            "description": "<p>Room reference</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "room._id",
+            "description": "<p>Room id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "room.name",
+            "description": "<p>Room name</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "[\n {\n     \"_id\": \"5fccb43bbf6d7110f05d78c8\",\n     \"item\": {\n         \"_id\": \"5fc3f66286d62d1540799523\",\n         \"name\": \"name\",\n         \"description\": \"asd\",\n         \"owner\": \"5fbe83acf4a9ae3450523667\",\n         \"__v\": 0\n     },\n     \"quantity\": 2,\n     \"expiration\": \"1970-01-19T14:17:58.580Z\",\n     \"description\": \"another description\",\n     \"room\": {\n         \"_id\": \"5fbe83e4f4a9ae345052366b\",\n         \"name\": \"room1\"\n     }\n },\n {\n     \"_id\": \"5fccb45abf6d7110f05d78ca\",\n     \"item\": {\n         \"_id\": \"5fc3f4ba865c05280c628c34\",\n         \"name\": \"name\",\n         \"description\": \"asd\",\n         \"owner\": \"5fbe83acf4a9ae3450523667\",\n         \"__v\": 0\n     },\n     \"quantity\": 2,\n     \"expiration\": \"1970-01-19T14:17:58.580Z\",\n     \"description\": \"description\",\n     \"room\": {\n         \"_id\": \"5fbe83e4f4a9ae345052366b\",\n         \"name\": \"room1\"\n     }\n }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/houses.js",
+    "groupTitle": "House",
+    "groupDescription": "<p>Endpoints for managing information about user's houses called houses. Every house has one owner that can change house info and add other users as collaborators.</p>"
+  },
+  {
+    "type": "get",
     "url": "/houses/:id/rooms",
     "title": "Get the list of rooms",
     "name": "GetRoomsList",
@@ -947,10 +1068,10 @@
           },
           {
             "group": "Parameter",
-            "type": "Date",
+            "type": "Number",
             "optional": false,
             "field": "expiration",
-            "description": "<p>Expiration date (optional)</p>"
+            "description": "<p>Expiration date timestamp (optional)</p>"
           },
           {
             "group": "Parameter",
