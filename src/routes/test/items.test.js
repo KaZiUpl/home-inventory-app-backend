@@ -12,6 +12,8 @@ chai.use(chaiAsPromised);
 const server = require('../../config/express');
 const User = require('../../models/user.model');
 const Item = require('../../models/item.model');
+const House = require('../../models/house.model');
+const Room = require('../../models/room.model');
 
 describe('Items Endpoints', function () {
   let user, accessToken;
@@ -631,9 +633,12 @@ describe('Items Endpoints', function () {
     });
   });
   describe('DELETE /items/:id', function () {
-    let item, item2;
+    let item, item2, item3, globalItem;
     beforeEach(async function () {
+      await Room.deleteMany({});
       await Item.deleteMany({});
+      await House.deleteMany({});
+
       item = await Item.create({
         name: 'item name',
         description: 'item description',
@@ -646,9 +651,35 @@ describe('Items Endpoints', function () {
         manufacturer: 'item manufacturer',
         owner: mongoose.Types.ObjectId()
       });
+      item3 = await Item.create({
+        name: 'item2 name',
+        description: 'item2 description',
+        manufacturer: 'item2 manufacturer',
+        owner: user._id
+      });
+      globalItem = await Item.create({ name: 'global item' });
+
+      let house = await House.create({
+        name: 'house name',
+        owner: user._id
+      });
+      let room = await Room.create({
+        name: 'room name',
+        house: house._id
+      });
+      let storageItem = await room.storage.create({
+        item: item3._id,
+        quantity: 5
+      });
+      room.storage.push(storageItem);
+      await room.save();
+      house.rooms.push(room);
+      await house.save();
     });
     afterEach(async function () {
+      await Room.deleteMany({});
       await Item.deleteMany({});
+      await House.deleteMany({});
     });
 
     it('should return 200 on success', async function () {
@@ -656,6 +687,16 @@ describe('Items Endpoints', function () {
         .delete(`/items/${item._id}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 400 if item is in storage', async function () {
+      await request(server)
+        .delete(`/items/${item3._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(400)
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
           expect(res.body).to.exist.and.to.have.property('message');
@@ -690,6 +731,16 @@ describe('Items Endpoints', function () {
     it("should throw 403 if trying to delete other user's items", async function () {
       await request(server)
         .delete(`/items/${item2._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(403)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 403 if trying to delete global item', async function () {
+      await request(server)
+        .delete(`/items/${globalItem._id}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(403)
         .expect('Content-Type', new RegExp('application/json;'))

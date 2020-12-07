@@ -4,6 +4,7 @@ const path = require('path');
 
 const Item = require('../models/item.model');
 const User = require('../models/user.model');
+const Room = require('../models/room.model');
 const {
   NotFoundError,
   ForbiddenError,
@@ -94,6 +95,15 @@ exports.deleteItem = async function (itemId) {
     if (item == undefined) {
       throw new NotFoundError('Item not found');
     }
+    if (item.owner == undefined) {
+      throw new ForbiddenError('You cannot delete global item');
+    }
+
+    let rooms = await Room.findOne({ 'storage.item': itemId });
+    if (rooms != undefined) {
+      throw new BadRequestError('Item is in storage');
+    }
+
     await item.delete();
   } catch (error) {
     throw error;

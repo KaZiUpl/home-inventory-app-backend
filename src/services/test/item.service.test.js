@@ -11,6 +11,8 @@ const expect = chai.expect;
 const ItemsService = require('../items.service');
 const User = require('../../models/user.model');
 const Item = require('../../models/item.model');
+const Room = require('../../models/room.model');
+const House = require('../../models/house.model');
 const { request } = require('express');
 
 describe('Items Service', function () {
@@ -347,17 +349,46 @@ describe('Items Service', function () {
     });
   });
   describe('Delete an item', function () {
-    let item;
+    let item, item2, globalItem;
     beforeEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
       await Item.deleteMany({});
+
       item = await Item.create({
         name: 'item name',
         description: 'item description',
         manufacturer: 'item manufacturer',
         owner: user._id
       });
+      item2 = await Item.create({
+        name: 'item2 name',
+        description: 'item2 description',
+        manufacturer: 'item2 manufacturer',
+        owner: user._id
+      });
+      globalItem = await Item.create({ name: 'global item' });
+
+      let house = await House.create({
+        name: 'house name',
+        owner: user._id
+      });
+      let room = await Room.create({
+        name: 'room name',
+        house: house._id
+      });
+      let storageItem = await room.storage.create({
+        item: item2._id,
+        quantity: 5
+      });
+      room.storage.push(storageItem);
+      await room.save();
+      house.rooms.push(room);
+      await house.save();
     });
     afterEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
       await Item.deleteMany({});
     });
 
@@ -367,6 +398,12 @@ describe('Items Service', function () {
       let deletedItem = await Item.findById(item._id);
 
       expect(deletedItem).to.not.exist;
+    });
+    it('should throw if item is used in storage', async function () {
+      await expect(ItemsService.deleteItem(item2._id)).to.be.rejected;
+    });
+    it('should throw if item is a global item', async function () {
+      await expect(ItemsService.deleteItem(globalItem._id)).to.be.rejected;
     });
     it('should throw if item id is invalid', async function () {
       await expect(ItemsService.deleteItem('asd')).to.be.rejected;
