@@ -870,13 +870,6 @@ define({ "api": [
             "optional": false,
             "field": "manufacturer",
             "description": "<p>item's manufacturer name</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "photo",
-            "description": "<p>image data base64 encoded</p>"
           }
         ]
       }

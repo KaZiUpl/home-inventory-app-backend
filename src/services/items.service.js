@@ -29,7 +29,7 @@ exports.createItem = async function (userId, itemBody) {
 
 exports.getItem = async function (itemId) {
   try {
-    const item = await Item.findById(itemId);
+    const item = await Item.findById(itemId).populate('owner', 'login');
     if (item == undefined) {
       throw new NotFoundError('No such item');
     }
@@ -45,6 +45,7 @@ exports.getItems = async function (
   eanCode = undefined,
   name = undefined
 ) {
+  console.log(new RegExp(name, 'i'));
   try {
     if (userId == null) {
       throw new BadRequestError('User id cannot be null');
@@ -57,7 +58,7 @@ exports.getItems = async function (
       items = items.where('ean').regex(new RegExp(eanCode));
     }
     if (name) {
-      items = items.where('name').regex(new RegExp(name));
+      items = items.where('name').regex(new RegExp(name, 'i'));
     }
 
     items = await items.exec();

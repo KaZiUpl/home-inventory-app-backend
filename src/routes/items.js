@@ -20,7 +20,6 @@ router.use(checkAuthMiddleware);
  * @apiParam {String} name item name
  * @apiParam {String} description item description
  * @apiParam {String} manufacturer item's manufacturer name
- * @apiParam {String} photo image data base64 encoded
  */
 router.post('/', [body('name').exists()], ItemsController.createItem);
 
