@@ -22,7 +22,7 @@ const itemsRoutes = require('../routes/items');
 
 const app = express();
 
-ap.use(helmet());
+app.use(helmet());
 
 if (process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() !== 'test') {
   app.use(morgan('dev'));
