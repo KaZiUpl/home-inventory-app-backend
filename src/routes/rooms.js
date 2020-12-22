@@ -15,7 +15,7 @@ router.use(checkAuthMiddleware);
  */
 
 /**
- * @api {delete} /rooms/:roomId/storage Add item to room's storage
+ * @api {post} /rooms/:roomId/storage Add item to room's storage
  * @apiName DostStorageItem
  * @apiGroup Room
  * @apiPermission house owner or collaborator

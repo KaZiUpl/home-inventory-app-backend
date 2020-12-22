@@ -127,79 +127,7 @@ describe('Users Service', function () {
       ).to.be.rejected;
     });
   });
-  describe('Change login', function () {
-    beforeEach(async function () {
-      //clear Users collection
-      await User.deleteMany({});
-    });
-    afterEach(async function () {
-      //clear Users collection
-      await User.deleteMany({});
-    });
-
-    it('should be fulfilled and modify user login', async function () {
-      //create user
-      let user = await User.create({
-        login: 'kacperkaz',
-        email: 'kacperkaz@example.com',
-        password: 'asd',
-        role: 'user'
-      });
-
-      const newLogin = 'kacperaz';
-
-      await expect(UsersService.changeLogin(user._id, newLogin)).to.be
-        .fulfilled;
-
-      //get user after modifying login
-      let newUser = await User.findById(user._id);
-
-      expect(newUser).to.have.property('login', newLogin);
-    });
-    it('should be fulfilled if new login is the same', async function () {
-      let user = await User.create({
-        login: 'kacperkaz',
-        email: 'kacperkaz@example.com',
-        password: 'asd',
-        role: 'user'
-      });
-      const newLogin = 'kacperkaz';
-      await expect(UsersService.changeLogin(user._id, newLogin)).to.be
-        .fulfilled;
-    });
-    it('should throw if provided login is taken', async function () {
-      //create first user
-      let user = await User.create({
-        login: 'kacperkaz',
-        email: 'kacperkaz@example.com',
-        password: 'asd',
-        role: 'user'
-      });
-      //create second user
-      let user2 = await User.create({
-        login: 'asd',
-        email: 'asd@example.com',
-        password: 'asd',
-        role: 'user'
-      });
-
-      const newLogin = 'kacperkaz';
-
-      await expect(UsersService.changeLogin(user2._id, newLogin)).to.be
-        .rejected;
-    });
-    it('should throw if new login is null', async function () {
-      //create first user
-      let user = await User.create({
-        login: 'kacperkaz',
-        email: 'kacperkaz@example.com',
-        password: 'asd',
-        role: 'user'
-      });
-
-      await expect(UsersService.changeLogin(user._id, null)).to.be.rejected;
-    });
-  });
+  
   describe('Get user', function () {
     beforeEach(async function () {
       //clear Users collection
@@ -270,6 +198,7 @@ describe('Users Service', function () {
       });
 
       const body = {
+        login:'newlogin',
         email: 'asd@example.com',
         password: 'sdf',
         role: 'admin'

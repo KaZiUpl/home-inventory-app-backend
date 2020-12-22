@@ -46,11 +46,11 @@ exports.createUser = async function (login, email, password) {
   }
 };
 
-exports.modifyUser = async function (id, data) {
+exports.modifyUser = async function (userId, data) {
   try {
     // check whether new login is taken
     let existingUser = await User.findOne({
-      login: newLogin,
+      login: data.login,
       _id: { $ne: userId }
     });
     if (existingUser != undefined) {
@@ -58,8 +58,8 @@ exports.modifyUser = async function (id, data) {
     }
     let user = await User.findById(userId);
 
-    if (user.login != this.newLogin) {
-      user.login = newLogin;
+    if (user.login != data.login) {
+      user.login = data.login;
       await user.save();
     }
   } catch (error) {
