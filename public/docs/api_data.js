@@ -1768,49 +1768,6 @@ define({ "api": [
   },
   {
     "type": "put",
-    "url": "/users/:id/login",
-    "title": "Change user's login",
-    "name": "PutChangeLogin",
-    "group": "User",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "login",
-            "description": "<p>New login</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Response message</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Response(example):",
-          "content": "{\n  \"message\": \"Login changed.\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/routes/users.js",
-    "groupTitle": "User"
-  },
-  {
-    "type": "put",
     "url": "/users/:id",
     "title": "Update user info",
     "name": "PutUserInfo",
