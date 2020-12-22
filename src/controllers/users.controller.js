@@ -113,25 +113,6 @@ exports.logout = async function (req, res, next) {
   }
 };
 
-exports.changeLogin = async function (req, res, next) {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    next(new UnprocessableEntityError(errors.array()));
-  }
-  try {
-    //check whether user is requesting his info
-    if (req.params.id != req.userData.id) {
-      throw new ForbiddenError();
-    }
-
-    await UsersService.changeLogin(req.params.id, req.body.login);
-
-    return res.status(200).json({ message: 'Login changed successfully' });
-  } catch (error) {
-    next(error);
-  }
-};
-
 function validateEmail(email) {
   const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());

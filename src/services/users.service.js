@@ -48,14 +48,20 @@ exports.createUser = async function (login, email, password) {
 
 exports.modifyUser = async function (id, data) {
   try {
-    let user = await User.findOne({ login: data.login });
-    if (user != undefined) {
+    // check whether new login is taken
+    let existingUser = await User.findOne({
+      login: newLogin,
+      _id: { $ne: userId }
+    });
+    if (existingUser != undefined) {
       throw new BadRequestError('Login is taken');
     }
-    // change login
-    await User.updateOne({ _id: id }, { $set: { login: data.login } });
+    let user = await User.findById(userId);
 
-    return;
+    if (user.login != this.newLogin) {
+      user.login = newLogin;
+      await user.save();
+    }
   } catch (error) {
     throw error;
   }
@@ -210,27 +216,6 @@ exports.logout = async function (refresh_token) {
     // delete refresh token
     user.refresh_token = undefined;
     await user.save();
-  } catch (error) {
-    throw error;
-  }
-};
-
-exports.changeLogin = async function (userId, newLogin) {
-  try {
-    // check whether new login is taken
-    let existingUser = await User.findOne({
-      login: newLogin,
-      _id: { $ne: userId }
-    });
-    if (existingUser != undefined) {
-      throw new BadRequestError('Login is taken');
-    }
-    let user = await User.findById(userId);
-
-    if (user.login != this.newLogin) {
-      user.login = newLogin;
-      await user.save();
-    }
   } catch (error) {
     throw error;
   }
