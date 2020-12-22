@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 const path = require('path');
+const helmet = require("helmet");
 
 const {
   InternalServerError,
@@ -20,6 +21,8 @@ const roomsRoutes = require('../routes/rooms');
 const itemsRoutes = require('../routes/items');
 
 const app = express();
+
+ap.use(helmet());
 
 if (process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() !== 'test') {
   app.use(morgan('dev'));
