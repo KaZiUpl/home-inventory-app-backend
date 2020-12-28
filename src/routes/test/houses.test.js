@@ -186,13 +186,25 @@ describe('Houses Endpoints', function () {
     });
   });
   describe('POST /houses/:id/rooms', function () {
-    let house;
+    let house, fullHouse;
     beforeEach(async function () {
       house = await House.create({
         name: 'house',
         description: 'house description',
         owner: user1._id
       });
+      fullHouse = await House.create({ name: 'full house', owner: user1._id });
+      let rooms = [];
+
+      for (i = 0; i < 10; i++) {
+        let room = await Room.create({
+          name: 'room' + i,
+          house: fullHouse._id
+        });
+        rooms.push(room._id);
+      }
+      fullHouse.rooms = rooms;
+      await fullHouse.save();
     });
     afterEach(async function () {
       await House.deleteMany({});
@@ -207,6 +219,17 @@ describe('Houses Endpoints', function () {
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
           expect(res.body).to.have.property('id');
+        });
+    });
+    it('should throw 400 if house has 10 rooms', async () => {
+      await request(server)
+        .post(`/houses/${fullHouse._id}/rooms`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ name: 'room', description: 'room description' })
+        .expect(400)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.have.property('message');
         });
     });
     it('should throw 401 if user is not logged in', async function () {

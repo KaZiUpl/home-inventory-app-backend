@@ -282,7 +282,7 @@ exports.checkHouseAccess = async function (houseId, userId) {
   }
 };
 
-exports.canCreateHouse = async function (userId) {
+exports.checkHouseLimit = async function (userId) {
   try {
     let houseCount = await House.aggregate([
       { $match: { owner: mongoose.Types.ObjectId(userId) } },
@@ -294,5 +294,16 @@ exports.canCreateHouse = async function (userId) {
     }
   } catch (error) {
     throw error;
+  }
+};
+
+exports.checkRoomLimit = async function (houseId) {
+  let roomCount = await Room.aggregate([
+    { $match: { house: mongoose.Types.ObjectId(houseId) } },
+    { $count: 'no_of_rooms' }
+  ]);
+
+  if (roomCount[0] && roomCount[0].no_of_rooms == 10) {
+    throw new BadRequestError('You have too many rooms in this house');
   }
 };

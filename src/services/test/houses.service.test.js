@@ -637,7 +637,7 @@ describe('Houses Service', function () {
         .rejected;
     });
   });
-  describe('Can Create House', function () {
+  describe('Check House Limit', function () {
     beforeEach(async function () {
       //clear House collection
       await House.deleteMany({});
@@ -650,10 +650,42 @@ describe('Houses Service', function () {
     });
 
     it('should be fulfilled if user has less than 5 houses', async function () {
-      await expect(HousesService.canCreateHouse(user2._id)).to.be.fulfilled;
+      await expect(HousesService.checkHouseLimit(user2._id)).to.be.fulfilled;
     });
     it('should throw if user has 5 houses', async function () {
-      await expect(HousesService.canCreateHouse(user1._id)).to.be.rejected;
+      await expect(HousesService.checkHouseLimit(user1._id)).to.be.rejected;
+    });
+  });
+  describe('Check Room Limit', function () {
+    let house, fullHouse;
+    beforeEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+
+      house = await House.create({ name: 'house', owner: user1._id });
+      fullHouse = await House.create({ name: 'full house', owner: user1._id });
+      let rooms = [];
+
+      for (i = 0; i < 10; i++) {
+        let room = await Room.create({
+          name: 'room' + i,
+          house: fullHouse._id
+        });
+        rooms.push(room._id);
+      }
+      fullHouse.rooms = rooms;
+      await fullHouse.save();
+    });
+    afterEach(async function () {
+      await Room.deleteMany({});
+      await House.deleteMany({});
+    });
+
+    it('should be fulfilled if house has less than 10 rooms', async function () {
+      await expect(HousesService.checkRoomLimit(house._id)).to.be.fulfilled;
+    });
+    it('should throw if house has 10 rooms', async function () {
+      await expect(HousesService.checkRoomLimit(fullHouse._id)).to.be.rejected;
     });
   });
 });
