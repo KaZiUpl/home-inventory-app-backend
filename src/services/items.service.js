@@ -75,6 +75,9 @@ exports.putItem = async function (itemId, itemBody) {
     if (item == undefined) {
       throw new NotFoundError('Item not found');
     }
+    if (!item.owner) {
+      throw new ForbiddenError('You cannot modify global items.');
+    }
     if (itemBody.name == null) {
       throw new BadRequestError('Item name cannot be null');
     }
@@ -118,7 +121,7 @@ exports.checkItemAccess = async function (userId, itemId) {
       throw new NotFoundError('Item not found');
     }
 
-    if (!item.owner || item.owner && !item.owner.equals(userId)) {
+    if (item.owner && !item.owner.equals(userId)) {
       throw new ForbiddenError();
     }
   } catch (error) {
