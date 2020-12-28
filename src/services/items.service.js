@@ -118,7 +118,7 @@ exports.checkItemAccess = async function (userId, itemId) {
       throw new NotFoundError('Item not found');
     }
 
-    if (item.owner && !item.owner.equals(userId)) {
+    if (!item.owner || item.owner && !item.owner.equals(userId)) {
       throw new ForbiddenError();
     }
   } catch (error) {

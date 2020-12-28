@@ -349,7 +349,7 @@ describe('Items Endpoints', function () {
     });
   });
   describe('PUT /items/:id', function () {
-    let item, item2;
+    let item, item2, globalItem;
     beforeEach(async function () {
       await Item.deleteMany({});
       item = await Item.create({
@@ -363,6 +363,11 @@ describe('Items Endpoints', function () {
         description: 'item description',
         manufacturer: 'manufacturer',
         owner: mongoose.Types.ObjectId()
+      });
+      globalItem = await Item.create({
+        name: 'global item name',
+        description: 'global item description',
+        manufacturer: 'manufacturer'
       });
     });
     afterEach(async function () {
@@ -423,6 +428,21 @@ describe('Items Endpoints', function () {
     it('should throw 403 if user is not an owner of the item', async function () {
       await request(server)
         .put(`/items/${item2._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          name: 'new item name',
+          description: 'new item description',
+          manufacturer: 'new manufacturer'
+        })
+        .expect(403)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.to.have.property('message');
+        });
+    });
+    it('should throw 403 if item is a global item', async function () {
+      await request(server)
+        .put(`/items/${globalItem._id}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           name: 'new item name',
