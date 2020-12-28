@@ -127,7 +127,7 @@ describe('Users Service', function () {
       ).to.be.rejected;
     });
   });
-  
+
   describe('Get user', function () {
     beforeEach(async function () {
       //clear Users collection
@@ -198,7 +198,7 @@ describe('Users Service', function () {
       });
 
       const body = {
-        login:'newlogin',
+        login: 'newlogin',
         email: 'asd@example.com',
         password: 'sdf',
         role: 'admin'

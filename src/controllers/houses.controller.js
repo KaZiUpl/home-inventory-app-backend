@@ -14,6 +14,8 @@ exports.createHouse = async function (req, res, next) {
     next(new UnprocessableEntityError(errors.array()));
   }
   try {
+    await HousesService.canCreateHouse(req.userData.id);
+
     let houseId = await HousesService.createHouse(
       req.userData.id,
       req.body.name,

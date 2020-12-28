@@ -637,4 +637,23 @@ describe('Houses Service', function () {
         .rejected;
     });
   });
+  describe('Can Create House', function () {
+    beforeEach(async function () {
+      //clear House collection
+      await House.deleteMany({});
+      for (i = 0; i < 5; i++) {
+        await House.create({ name: 'house' + i, owner: user1._id });
+      }
+    });
+    afterEach(async function () {
+      await House.deleteMany({});
+    });
+
+    it('should be fulfilled if user has less than 5 houses', async function () {
+      await expect(HousesService.canCreateHouse(user2._id)).to.be.fulfilled;
+    });
+    it('should throw if user has 5 houses', async function () {
+      await expect(HousesService.canCreateHouse(user1._id)).to.be.rejected;
+    });
+  });
 });

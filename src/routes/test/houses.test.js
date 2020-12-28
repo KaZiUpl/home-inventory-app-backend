@@ -119,6 +119,28 @@ describe('Houses Endpoints', function () {
           expect(res.body).to.have.property('id');
         });
     });
+    context('when user is the owner of 5 houses', function () {
+      beforeEach(async function () {
+        await House.deleteMany({});
+        for (i = 0; i < 5; i++) {
+          await House.create({ name: 'house' + i, owner: user1._id });
+        }
+      });
+      afterEach(async function () {
+        await House.deleteMany({});
+      });
+      it('should return 400', async function () {
+        await request(server)
+          .post('/houses')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .send({ name: 'house', description: 'description' })
+          .expect(400)
+          .expect('Content-Type', new RegExp('application/json;'))
+          .then((res) => {
+            expect(res.body).to.have.property('message');
+          });
+      });
+    });
     context('if user is not logged in', function () {
       beforeEach(async function () {
         refreshToken = user1.refresh_token;

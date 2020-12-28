@@ -281,3 +281,18 @@ exports.checkHouseAccess = async function (houseId, userId) {
     throw error;
   }
 };
+
+exports.canCreateHouse = async function (userId) {
+  try {
+    let houseCount = await House.aggregate([
+      { $match: { owner: mongoose.Types.ObjectId(userId) } },
+      { $count: 'no_of_houses' }
+    ]);
+
+    if (houseCount[0] && houseCount[0].no_of_houses == 5) {
+      throw new BadRequestError('You have too many houses.');
+    }
+  } catch (error) {
+    throw error;
+  }
+};
