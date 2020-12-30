@@ -156,6 +156,7 @@ exports.login = async function (login, password) {
       expires: tokenExpDate,
       id: user._id,
       email: user.email,
+      login: user.login,
       role: user.role
     };
   } catch (error) {
