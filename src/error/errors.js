@@ -58,8 +58,8 @@ class UnprocessableEntityError extends HTTPError {
 
 class InternalServerError extends HTTPError {
   constructor(
-    errorMessage = 'Something went wrong',
-    message = { message: 'Something went wrong' }
+    body = { message: 'Something went wrong' },
+    errorMessage = 'Something went wrong'
   ) {
     super(typeof body === 'string' ? body : errorMessage, 500, body);
   }
