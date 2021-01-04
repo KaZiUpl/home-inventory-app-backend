@@ -198,6 +198,7 @@ exports.refreshToken = async function (refresh_token) {
       expires: tokenExpDate,
       id: user._id,
       email: user.email,
+      login: user.login,
       role: user.role
     };
   } catch (error) {
