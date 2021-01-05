@@ -46,10 +46,15 @@ exports.deleteRoom = async function (id) {
       throw new NotFoundError('Room not found');
     }
 
-    await room.delete();
-
     //update connected House
-    await House.updateOne({ _id: room.house, $pull: { rooms: room._id } });
+    await House.updateOne(
+      { _id: mongoose.Types.ObjectId(room.house) },
+      {
+        $pull: { rooms: room._id }
+      }
+    );
+
+    await room.delete();
   } catch (error) {
     throw error;
   }
@@ -100,10 +105,15 @@ exports.addStorageItem = async function (
 
 exports.getRoomStorage = async function (roomId) {
   try {
-    let room = await Room.findById(roomId).populate({
-      path: 'storage',
-      populate: { path: 'item' }
-    });
+    let room = await Room.findById(roomId)
+      .populate({
+        path: 'storage',
+        populate: { path: 'item' }
+      })
+      .populate({
+        path: 'storage.item',
+        populate: { path: 'owner', select: 'login' }
+      });
 
     if (room == undefined) {
       throw new NotFoundError('Room not found');
@@ -150,7 +160,27 @@ exports.getStorageItem = async function (roomId, itemId) {
           as: 'storage.item'
         }
       },
-      { $unwind: '$storage.item' }
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'storage.item.owner',
+          foreignField: '_id',
+          as: 'itemOwner'
+        }
+      },
+      {
+        $project: {
+          'itemOwner.email': 0,
+          'itemOwner.password': 0,
+          'itemOwner.role': 0,
+          'itemOwner.refresh_token': 0,
+          'itemOwner.__v': 0
+        }
+      },
+      { $unwind: '$storage.item' },
+      { $unwind: '$itemOwner' },
+      { $set: { 'storage.item.owner': '$itemOwner' } },
+      { $unset: 'itemOwner' }
     ]);
 
     if (storageItem[0] == undefined) {

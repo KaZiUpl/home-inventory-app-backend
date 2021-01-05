@@ -121,7 +121,11 @@ exports.getHouse = async function (houseId) {
     let requestedHouse = await House.findById(houseId)
       .populate('owner', 'login')
       .populate('collaborators', 'login')
-      .populate('rooms', 'name description');
+      .populate({
+        path: 'rooms',
+        populate: { path: 'storage.item', select: 'name' }
+      });
+
     if (requestedHouse == null) {
       throw new NotFoundError({
         message: 'The requested house does not exist'

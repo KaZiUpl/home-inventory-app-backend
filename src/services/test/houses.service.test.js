@@ -143,19 +143,42 @@ describe('Houses Service', function () {
   });
   describe('Get house info', function () {
     beforeEach(async function () {
-      //clear House collection
+      await Room.deleteMany({});
+      await Item.deleteMany({});
       await House.deleteMany({});
     });
     afterEach(async function () {
-      //clear House collection
+      await Room.deleteMany({});
+      await Item.deleteMany({});
       await House.deleteMany({});
     });
     it('should return house info', async function () {
       let house = await House.create({
         owner: user1._id,
         name: 'asd',
-        description: 'asd'
+        description: 'asd',
+        collaborators: [user2._id]
       });
+      // create item, room and add item to the room
+      let item = await Item.create({ name: 'item name', owner: user1._id });
+      let room = await Room.create({
+        name: 'room',
+        description: 'room description',
+        house: house._id
+      });
+
+      const storageItemData = {
+        item: item._id,
+        quantity: 2,
+        expiration: new Date(),
+        description: 'storage item'
+      };
+      let storageItem = await room.storage.create(storageItemData);
+      room.storage.push(storageItem);
+      await room.save();
+
+      house.rooms = [room._id];
+      await house.save();
 
       let response = await HousesService.getHouse(house._id);
 

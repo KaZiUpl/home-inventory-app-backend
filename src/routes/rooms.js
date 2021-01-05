@@ -27,10 +27,10 @@ router.use(checkAuthMiddleware);
  * @apiSuccess (Success 201) {String} message message
  * @apiSuccess (Success 201) {String} id created storage item id
  * @apiSuccessExample {json} Response(example):
- * {
- *   "message": "Storage item added to the room.",
- *   "id": "5fc3f6d386d62d154079952a"
- * }
+{
+    "message": "Storage item added to the room",
+    "id": "5ff327ecc0136323bcbc01fa"
+}
  */
 router.post(
   '/:id/storage',
@@ -43,38 +43,41 @@ router.post(
  * @apiName GetRoomStorage
  * @apiGroup Room
  * @apiPermission house owner or collaborator
+ * @apiDescription Return an array of room's storage items
  * @apiParam {String} id Room id
- * @apiSuccess (Success 200) {Object[]} storage items Array of room's storage items
  * @apiSuccess (Success 200) {String} _id Storage item id
  * @apiSuccess (Success 200) {Object} item Item data
+ * @apiSuccess (Success 200) {String} item._id item's id
+ * @apiSuccess (Success 200) {String} item.name item's name
+ * @apiSuccess (Success 200) {String} item.description item's description
+ * @apiSuccess (Success 200) {String} item.manufacturer item's manufacturer name
+ * @apiSuccess (Success 200) {Object} item.owner item's owner info
+ * @apiSuccess (Success 200) {String} item.owner._id item's owner id
+ * @apiSuccess (Success 200) {String} item.owner.login item's owner login
+ * @apiSuccess (Success 200) {String} description Storage item description
  * @apiSuccess (Success 200) {Number} quantity Quantity of item
  * @apiSuccess (Success 200) {String} expiration Storage item expiration date
- * @apiSuccess (Success 200) {String} description Storage item description
+
  * @apiSuccessExample {json} Response(example):
- * [
- *        {
- *      "_id": "5fc3f6d386d62d154079952a",
- *      "item": {
- *          "_id": "5fc3f66286d62d1540799523",
- *         "name": "name",
- *          "description": "asd",
- *          "owner": "5fbe83acf4a9ae3450523667"
- *      },
- *     "quantity": 2
- *  },
- *   {
- *       "_id": "5fc3f86bd0aedb1aecf9fc86",
- *       "item": {
- *           "_id": "5fc3f66286d62d1540799523",
- *           "name": "name",
- *           "description": "asd",
- *           "owner": "5fbe83acf4a9ae3450523667"
- *       },
- *       "quantity": 2,
- *       "expiration": "2020-01-19T14:17:58.580Z",
- *       "description": "storage item description"
- *   }
- * ]
+[
+    {
+        "_id": "5ff3283d81a1883a146c7c18",
+        "item": {
+            "_id": "5ff32565ab575e1cf4120159",
+            "name": "Test item",
+            "description": "Test item description",
+            "manufacturer": "Test manufacturer",
+            "owner": {
+                "_id": "5ff3217ced3a2e44d4970bb6",
+                "login": "Test2"
+            },
+            "__v": 0
+        },
+        "quantity": 1,
+        "expiration": "2020-12-24T17:30:00.000Z",
+        "description": "Storage item description"
+    }
+]
  */
 router.get('/:id/storage', roomsController.getRoomStorage);
 
@@ -87,22 +90,33 @@ router.get('/:id/storage', roomsController.getRoomStorage);
  * @apiParam {String} storageId Storage item id
  * @apiSuccess (Success 200) {String} _id Storage item id
  * @apiSuccess (Success 200) {Object} item Item data
+ * @apiSuccess (Success 200) {String} item.name item's name
+ * @apiSuccess (Success 200) {String} item.description item's description
+ * @apiSuccess (Success 200) {String} item.manufacturer item's manufacturer name
+ * @apiSuccess (Success 200) {Object} item.owner item's owner info
+ * @apiSuccess (Success 200) {String} item.owner._id item's owner id
+ * @apiSuccess (Success 200) {String} item.owner.login item's owner login
  * @apiSuccess (Success 200) {Number} quantity Quantity of item
  * @apiSuccess (Success 200) {String} expiration Storage item expiration date
  * @apiSuccess (Success 200) {String} description Storage item description
  * @apiSuccessExample {json} Response(example):
- *    {
- *   "_id": "5fc3f86bd0aedb1aecf9fc86",
- *   "item": {
- *       "_id": "5fc3f66286d62d1540799523",
- *       "name": "name",
- *       "description": "asd",
- *       "owner": "5fbe83acf4a9ae3450523667"
- *   },
- *   "quantity": 2,
- *   "expiration": "1970-01-19T14:17:58.580Z",
- *   "description": "storage item description"
- * }
+{
+    "_id": "5ff3283d81a1883a146c7c18",
+    "item": {
+        "_id": "5ff32565ab575e1cf4120159",
+        "name": "Test item",
+        "description": "Test item description",
+        "manufacturer": "Test manufacturer",
+        "owner": {
+            "_id": "5ff3217ced3a2e44d4970bb6",
+            "login": "Test2"
+        },
+        "__v": 0
+    },
+    "quantity": 1,
+    "expiration": "2020-12-24T17:30:00.000Z",
+    "description": "Storage item description"
+}
  */
 router.get('/:roomId/storage/:storageId', roomsController.getStorageItem);
 
@@ -162,9 +176,9 @@ router.get('/:id', roomsController.getRoom);
  * @apiParam {String} storageId Storage item id
  * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccessExample {json} Response(example):
- * {
- *  "message": "Storage item updated successfully!"
- *}
+{
+    "message": "Storage item updated successfully"
+}
  */
 router.put(
   '/:roomId/storage/:storageId',
@@ -181,6 +195,10 @@ router.put(
  * @apiParam {String} id Room id
  * @apiParam {String} name Room's name
  * @apiParam {String} description Room's description
+ * @apiSuccessExample {json} Response(example):
+{
+    "message": "Room modified"
+}
  */
 router.put(
   '/:id',
@@ -197,9 +215,9 @@ router.put(
  * @apiParam {String} storageId Storage item id
  * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccessExample {json} Response(example):
- * {
- *   "message": "Storage item deleted successfully!"
- *}
+{
+    "message": "Storage item deleted successfully"
+}
  */
 router.delete('/:roomId/storage/:storageId', roomsController.deleteStorageItem);
 
@@ -210,6 +228,11 @@ router.delete('/:roomId/storage/:storageId', roomsController.deleteStorageItem);
  * @apiDescription Deletes a room with provided id
  * @apiPermission house owner
  * @apiParam {String} id Room id
+ * @apiSuccess (Success 200) {String} message Response message
+ * @apiSuccessExample {json} Response(example):
+{
+    "message": "Room deleted"
+}
  */
 router.delete('/:id', roomsController.deleteRoom);
 

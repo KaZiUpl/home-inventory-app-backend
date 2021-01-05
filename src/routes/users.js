@@ -15,9 +15,10 @@ const router = express.Router();
  * @apiParam {String} email User email
  * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccessExample {json} Response(example):
- *     {
- *       "message": "User created."
- *     }
+{
+    "message": "User created successfully",
+    "id": "5ff3217ced3a2e44d4970bb6"
+}
  */
 router.post(
   '/',
@@ -34,11 +35,12 @@ router.post(
  * @apiSuccess (Success 200) {String} email User's email
  * @apiSuccess (Success 200) {String} role User's role
  * @apiSuccessExample {json} Response(example):
- * {
- *     "login": "user",
- *     "email": "john_doe@gmail.com",
- *     "role": "user",
- * }
+{
+    "login": "Test",
+    "email": "test@example.com",
+    "role": "user",
+    "__v": 0
+}
  */
 router.get('/:id', checkAuthMiddleware, userController.getUser);
 
@@ -49,9 +51,9 @@ router.get('/:id', checkAuthMiddleware, userController.getUser);
  * @apiPermission logged in user
  * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccessExample {json} Response(example):
- *     {
- *       "message": "User modified."
- *     }
+{
+    "message": "User modified"
+}
  */
 router.put(
   '/:id',
@@ -71,16 +73,18 @@ router.put(
  * @apiSuccess (Success 200) {String} expires Expiry date of access token
  * @apiSuccess (Success 200) {String} email User's email address
  * @apiSuccess (Success 200) {String} role User's role
+ * @apiSuccess (Success 200) {String} login User's login
  * @apiSuccess (Success 200) {String} id User's id
  * @apiSuccessExample {json} Response(example):
- *     {
- *       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
- *       "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
- *       "expires": "2020-08-03T11:11:13.000Z",
- *       "id": "5f2584b9bb2de6e74fd3b39e",
- *       "email": "john_doe@gmail.com",
- *       "role": "user"
- *     }
+{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6IlRlc3QiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjVmZjMyMTdjZWQzYTJlNDRkNDk3MGJiNiIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNjA5NzcwMzA3LCJpYXQiOjE2MDk3Njk0MDd9.v3hm8uHzp8BexJBuixJLV-8ADoyzXacH2FUzwCjxMWY",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6IlRlc3QiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjVmZjMyMTdjZWQzYTJlNDRkNDk3MGJiNiIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNjQxMzA1NDA3LCJpYXQiOjE2MDk3Njk0MDd9.NBgQ2eZT-SXl8CIXmYv-iqF1N-8Ks-6xjk2fbV4l-VQ",
+    "expires": "2021-01-04T14:25:07.000Z",
+    "id": "5ff3217ced3a2e44d4970bb6",
+    "email": "test@example.com",
+    "login": "Test",
+    "role": "user"
+}
  */
 router.post(
   '/auth',
@@ -98,16 +102,18 @@ router.post(
  * @apiSuccess (Success 200) {String} expires Expiry date of access token
  * @apiSuccess (Success 200) {String} email User's email address
  * @apiSuccess (Success 200) {String} role User's role
+ * @apiSuccess (Success 200) {String} login User's login
  * @apiSuccess (Success 200) {String} id User's id
  * @apiSuccessExample {json} Response(example):
- *     {
- *       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
- *       "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
- *       "expires": "2020-08-03T11:11:13.000Z",
- *       "id": "5f2584b9bb2de6e74fd3b39e",
- *       "email": "john_doe@gmail.com",
- *       "role": "user"
- *     }
+{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6IlRlc3QiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjVmZjMyMTdjZWQzYTJlNDRkNDk3MGJiNiIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNjA5NzcwNTMwLCJpYXQiOjE2MDk3Njk2MzB9.URROkh-tZ6Vx0dzpoYmmoIwDL0vxGm53gO29XaI46lM",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6IlRlc3QiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjVmZjMyMTdjZWQzYTJlNDRkNDk3MGJiNiIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNjQxMzA1NDA3LCJpYXQiOjE2MDk3Njk0MDd9.NBgQ2eZT-SXl8CIXmYv-iqF1N-8Ks-6xjk2fbV4l-VQ",
+    "expires": "2021-01-04T14:28:50.000Z",
+    "id": "5ff3217ced3a2e44d4970bb6",
+    "email": "test@example.com",
+    "login": "Test",
+    "role": "user"
+}
  */
 router.post(
   '/auth/refresh',
@@ -122,9 +128,9 @@ router.post(
  * @apiParam {String} token User's refresh token
  * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccessExample {json} Response(example):
- *     {
- *       "message": "User logged out."
- *     }
+{
+    "message": "User logged out"
+}
  */
 router.post('/logout', [body('token').exists()], userController.logout);
 

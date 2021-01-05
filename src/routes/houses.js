@@ -23,10 +23,10 @@ router.use(checkAuthMiddleware);
  * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccess (Success 200) {String} id id of created house
  * @apiSuccessExample {json} Response(example):
- * {
- *      "message": "House created."
- *      "id": "5f576dedb9d20a30e02e81e6"
- * }
+{
+    "message": "House created",
+    "id": "5ff323d07e31d80928d4a5a4"
+}
  */
 router.post('/', [body('name').exists()], housesController.createHouse);
 
@@ -42,10 +42,10 @@ router.post('/', [body('name').exists()], housesController.createHouse);
  * @apiSuccess (Success 200) {String} message message
  * @apiSuccess (Success 200) {String} id id of created room
  * @apiSuccessExample {json} Response(example):
- * {
- *  "message": "Room created.",
- * "id": "5f576dedb9d20a30e02e81e6"
- *}
+{
+    "message": "Room created",
+    "id": "5ff324fae7613431908d3e27"
+}
  */
 router.post('/:id/rooms', [body('name').exists()], housesController.createRoom);
 
@@ -59,9 +59,9 @@ router.post('/:id/rooms', [body('name').exists()], housesController.createRoom);
  * @apiParam {String} name login or email of the collaborator
  * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccessExample {json} Response(example):
- * {
- *      "message": "Collaborator added."
- * }
+{
+    "message": "Collaborator added"
+}
  */
 router.post(
   '/:id/collaborators',
@@ -74,17 +74,17 @@ router.post(
  * @apiName GetCollaboratorList
  * @apiGroup House
  * @apiPermission House owner or collaborator
+ * @apiDescription Returns an array of house collaborators.
  * @apiParam {String} id house id
- * @apiSuccess (Success 200) {Object[]} users Array of collaborators
  * @apiSuccess (Success 200) {String} _id Collaborator's id
  * @apiSuccess (Success 200) {String} login Collaborator's login
  * @apiSuccessExample {json} Response(example):
- *[
- *   {
- *       "_id": "5f327188295d5f121464d782",
- *       "login": "kacperkaz"
- *   }
- *]
+[
+    {
+        "_id": "5fd4a0ca340e8d405cd76507",
+        "login": "KaZiUpl"
+    }
+]
  */
 router.get('/:id/collaborators', housesController.getCollaborators);
 
@@ -93,22 +93,45 @@ router.get('/:id/collaborators', housesController.getCollaborators);
  * @apiName GetRoomsList
  * @apiGroup House
  * @apiPermission House owner or collaborator
+ * @apiDescription Returns an array of house rooms.
  * @apiParam {String} id house id
- * @apiSuccess (Success 200) {Object[]} rooms Array of house rooms
  * @apiSuccess (Success 200) {String} _id Room id
  * @apiSuccess (Success 200) {String} name Room name
  * @apiSuccess (Success 200) {String} description Room description
  * @apiSuccess (Success 200) {String} house House id
+ * @apiSuccess (Success 200) {Object[]} storage Array of room storage items
+ * @apiSuccess (Success 200) {String} storage._id storage item id
+ * @apiSuccess (Success 200) {String} storage.item item id
+ * @apiSuccess (Success 200) {String} storage.quantity storage item quantity
+ * @apiSuccess (Success 200) {String} storage.expiration storage item expiration date
+ * @apiSuccess (Success 200) {String} storage.description storage item description
  * @apiSuccessExample {json} Response(example):
- * [
- * {
- *   "_id": "5f5775f5e8b1493d3c82ebca",
- *   "name": "room1",
- *   "description": "description",
- *   "house": "5f576dedb9d20a30e02e81e6",
- *   "__v": 0
- * }
- *]
+[
+    {
+        "_id": "5ff324fae7613431908d3e27",
+        "storage": [
+            {
+                "_id": "5ff3283d81a1883a146c7c18",
+                "item": "5ff32565ab575e1cf4120159",
+                "quantity": 5,
+                "expiration": "2020-12-24T17:30:00.000Z",
+                "description": "storage item description"
+            }
+        ],
+        "name": "Test room",
+        "description": "test room description",
+        "house": "5ff323d07e31d80928d4a5a4",
+        "__v": 2
+    },
+    {
+        "_id": "5ff3250eab575e1cf4120157",
+        "storage": [],
+        "name": "Test room 2",
+        "description": "Test room 2 description",
+        "house": "5ff323d07e31d80928d4a5a4",
+        "__v": 0
+    }
+]
  */
 router.get('/:id/rooms', housesController.getRooms);
 
@@ -117,29 +140,47 @@ router.get('/:id/rooms', housesController.getRooms);
  * @apiName GetHouseList
  * @apiGroup House
  * @apiPermission logged in user
- * @apiDescription Returns a list of houses that user owns or is collaborating in.
- * @apiSuccess (Success 200) {Object[]} houses Array of user's houses
- * @apiSuccess (Success 200) {String[]} collaborators Array of collaborator's id's
+ * @apiDescription Return an array of houses that user owns and is a collaborator in.
+ * @apiSuccess (Success 200) {String[]} collaborators Array of collaborator ids
+ * @apiSuccess (Success 200) {String[]} rooms Array of room ids
  * @apiSuccess (Success 200) {String} _id House id
  * @apiSuccess (Success 200) {String} name Name of the house
  * @apiSuccess (Success 200) {String} description Description of the house
- * @apiSuccess (Success 200) {Object} owner Object with owner's id and login
+ * @apiSuccess (Success 200) {Object} owner house owner
+ * @apiSuccess (Success 200) {String} owner._id house owner id
+ * @apiSuccess (Success 200) {String} owner.login house owner login
  * @apiSuccessExample {json} Success-Response:
- *[
- *  {
- *      "collaborators": [
- *          "5f327188295d5f121464d782"
- *     ],
- *     "_id": "5f438a3f1b69ff37807e2a0c",
- *    "name": "asd",
- *    "description": "some description",
- *    "owner": {
- *        "_id": "5f2584b9bb2de6e74fd3b39e",
- *        "login": "admin"
- *    },
- *   "__v": 3
- *}
- *]
+[
+    {
+        "collaborators": [
+            "5fd4a0ca340e8d405cd76507"
+        ],
+        "rooms": [
+            "5ff324fae7613431908d3e27",
+            "5ff3250eab575e1cf4120157"
+        ],
+        "_id": "5ff323d07e31d80928d4a5a4",
+        "name": "New test house name",
+        "description": "New test house description",
+        "owner": {
+            "_id": "5ff3217ced3a2e44d4970bb6",
+            "login": "Test2"
+        },
+        "__v": 3
+    },
+    {
+        "collaborators": [],
+        "rooms": [],
+        "_id": "5ff32409f7670a19a4e08250",
+        "name": "Test house 2",
+        "description": "Test house 2 description",
+        "owner": {
+            "_id": "5ff3217ced3a2e44d4970bb6",
+            "login": "Test2"
+        },
+        "__v": 0
+    }
+]
  */
 router.get('/', housesController.getHouseList);
 
@@ -148,8 +189,7 @@ router.get('/', housesController.getHouseList);
  * @apiName GetHouseStorage
  * @apiGroup House
  * @apiPermission house owner, house collaborator
- * @apiDescription Returns a list of storage items from all of the house rooms
- * @apiSuccess (Success 200) {Object[]} items Array of storage items
+ * @apiDescription Returns a list of storage items from all of the house rooms.
  * @apiSuccess (Success 200) {String} _id Storage item id
  * @apiSuccess (Success 200) {Number} quantity Storage item quantity
  * @apiSuccess (Success 200) {Date} expiration Storage item expiration date
@@ -207,30 +247,68 @@ router.get('/:id/storage', housesController.getStorage);
  * @apiName GetHouseInfo
  * @apiGroup House
  * @apiPermission house owner or collaborators
+ * @apiDescription Return an object containing house information as well as array of rooms that belong to the requested house. Each room contains an array of it's storage items.
  * @apiParam {String} id ID of the house
- * @apiSuccess (Success 200) {Object} Requested house
- * @apiSuccess (Success 200) {Object[]} collaborators Array of collaborators' logins and ids
+ * @apiSuccess (Success 200) {Object[]} collaborators Array of house collaborators
+ * @apiSuccess (Success 200) {String} collaborators._id Collaborator's id
+ * @apiSuccess (Success 200) {String} collaborators.login Collaborator's login
+ * @apiSuccess (Success 200) {Object[]} rooms Array of house rooms
+ * @apiSuccess (Success 200) {String} rooms._id room's id
+ * @apiSuccess (Success 200) {String} rooms.name room's name
+ * @apiSuccess (Success 200) {String} rooms.description room's description'
+ * @apiSuccess (Success 200) {String} rooms.house house id
+ * @apiSuccess (Success 200) {Object[]} rooms.storage room storage
+ * @apiSuccess (Success 200) {String} rooms.storage._id storage item id
+ * @apiSuccess (Success 200) {Object} rooms.storage.item item reference
+ * @apiSuccess (Success 200) {String} rooms.storage.item._id item's id
+ * @apiSuccess (Success 200) {String} rooms.storage.item.name item's name
+ * @apiSuccess (Success 200) {String} rooms.storage.quantity storage item's quantity
+ * @apiSuccess (Success 200) {String} rooms.storage.description storage item's description
+ * @apiSuccess (Success 200) {String} rooms.storage.expiration storage item's expiration date
  * @apiSuccess (Success 200) {String} _id house's id
  * @apiSuccess (Success 200) {String} name Name of the house
  * @apiSuccess (Success 200) {String} description Description of the house
- * @apiSuccess (Success 200) {Object} owner Object with owner's id and login
+ * @apiSuccess (Success 200) {Object} owner house owner reference
+ * @apiSuccess (Success 200) {String} owner._id house owner id
+ * @apiSuccess (Success 200) {String} owner.login house owner login
  * @apiSuccessExample {json} Success-Response:
- *{
- *  "collaborators": [
- *      {
- *          "_id": "5f327188295d5f121464d782",
- *          "login": "kacperkaz"
- *      }
- *  ],
- *  "_id": "5f438a3f1b69ff37807e2a0c",
- *  "name": "asd",
- *  "description": "some description",
- *  "owner": {
- *      "_id": "5f2584b9bb2de6e74fd3b39e",
- *        "login": "admin"
- *   },
- *   "__v": 3
- *}
+{
+    "collaborators": [
+        {
+            "_id": "5fd4a0ca340e8d405cd76507",
+            "login": "KaZiUpl"
+        }
+    ],
+    "rooms": [
+        {
+            "_id": "5ff324fae7613431908d3e27",
+            "storage": [
+                {
+                    "_id": "5ff3283d81a1883a146c7c18",
+                    "item": {
+                        "_id": "5ff32565ab575e1cf4120159",
+                        "name": "Test item"
+                    },
+                    "quantity": 5,
+                    "expiration": "2020-12-24T17:30:00.000Z",
+                    "description": "new storage item description"
+                }
+            ],
+            "name": "new room name",
+            "description": "new room description",
+            "house": "5ff323d07e31d80928d4a5a4",
+            "__v": 2
+        }
+    ],
+    "_id": "5ff323d07e31d80928d4a5a4",
+    "name": "New test house name",
+    "description": "New test house description",
+    "owner": {
+        "_id": "5ff3217ced3a2e44d4970bb6",
+        "login": "Test2"
+    },
+    "__v": 3
+}
  */
 router.get('/:id', housesController.getHouse);
 
@@ -243,9 +321,9 @@ router.get('/:id', housesController.getHouse);
  * @apiParam {String} description New description of the house
  * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccessExample Success-Response:
- *     {
- *       "message": "House info updated."
- *     }
+{
+    "message": "House info updated"
+}
  */
 router.put(
   '/:id',
@@ -263,9 +341,9 @@ router.put(
  * @apiParam {String} id collaborator's id
  * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccessExample {json} Response(example):
- * {
- *      "message": "Collaborator deleted."
- * }
+{
+    "message": "Collaborator deleted"
+}
  */
 router.delete(
   '/:id/collaborators/:userId',
@@ -280,9 +358,9 @@ router.delete(
  * @apiParam {String} id house id
  * @apiSuccess {String} message Response message
  * @apiSuccessExample {json} Success-Response:
- *     {
- *       "message": "House deleted."
- *     }
+{
+    "message": "House deleted"
+}
  */
 router.delete('/:id', housesController.deleteHouse);
 
