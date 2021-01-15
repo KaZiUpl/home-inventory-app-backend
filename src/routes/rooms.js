@@ -174,6 +174,9 @@ router.get('/:id', roomsController.getRoom);
  * @apiPermission house owner or collaborator
  * @apiParam {String} roomId Room id
  * @apiParam {String} storageId Storage item id
+ * @apiParam (Request) {Number} quantity new storage item quantity
+ * @apiParam (Request) {Number} expiration new storage item expiration (timestamp in ms)
+ * @apiParam (Request) {String} description new storage item description
  * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccessExample {json} Response(example):
 {

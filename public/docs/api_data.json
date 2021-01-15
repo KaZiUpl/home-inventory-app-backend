@@ -1505,6 +1505,29 @@
             "field": "storageId",
             "description": "<p>Storage item id</p>"
           }
+        ],
+        "Request": [
+          {
+            "group": "Request",
+            "type": "Number",
+            "optional": false,
+            "field": "quantity",
+            "description": "<p>new storage item quantity</p>"
+          },
+          {
+            "group": "Request",
+            "type": "Number",
+            "optional": false,
+            "field": "expiration",
+            "description": "<p>new storage item expiration (timestamp in ms)</p>"
+          },
+          {
+            "group": "Request",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>new storage item description</p>"
+          }
         ]
       }
     },
