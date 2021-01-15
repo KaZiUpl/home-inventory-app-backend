@@ -185,7 +185,7 @@ router.get('/:id/rooms', housesController.getRooms);
 router.get('/', housesController.getHouseList);
 
 /**
- * @api {get} /houses/storage Get the list of all storage items accessible by user
+ * @api {get} /houses/storage Get all accessible storage
  * @apiDescription Return array of storage items from all rooms of all houses accesible by a user
  * @apiName GetAllStorage
  * @apiGroup House
