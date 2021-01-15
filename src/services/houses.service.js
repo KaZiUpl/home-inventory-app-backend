@@ -192,7 +192,61 @@ exports.deleteCollaborator = async function (houseId, collaboratorId) {
   }
 };
 
-exports.getStorage = async function (houseId, name = undefined) {
+exports.getStorage = async function (userId) {
+  try {
+    if (userId == null) {
+      throw new UnauthorizedError();
+    }
+    userId = mongoose.Types.ObjectId(userId);
+
+    let storage = await House.aggregate([
+      { $match: { $or: [{ owner: userId }, { collaborators: userId }] } }, //get houses
+      {
+        $lookup: {
+          from: 'rooms',
+          localField: 'rooms',
+          foreignField: '_id',
+          as: 'rooms'
+        }
+      },
+      { $unwind: '$rooms' },
+      { $unwind: '$rooms.storage' },
+      {
+        $lookup: {
+          from: 'items',
+          localField: 'rooms.storage.item',
+          foreignField: '_id',
+          as: 'rooms.storage.item'
+        }
+      },
+      {
+        $unset: [
+          'rooms.storage.item.description',
+          'rooms.storage.item.manufacturer',
+          'rooms.storage.item.owner'
+        ]
+      },
+      {
+        $addFields: {
+          'rooms.storage.item': { $arrayElemAt: ['$rooms.storage.item', 0] },
+          'rooms.storage.room._id': '$rooms._id',
+          'rooms.storage.room.name': '$rooms.name',
+          'rooms.storage.house._id': '$_id',
+          'rooms.storage.house.name': '$name'
+        }
+      },
+      { $group: { _id: null, root: { $push: '$rooms.storage' } } },
+      { $unwind: '$root' },
+      { $replaceRoot: { newRoot: '$root' } }
+    ]);
+    console.log(JSON.stringify(storage, null, 4));
+    return storage;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getHouseStorage = async function (houseId, name = undefined) {
   try {
     houseId = mongoose.Types.ObjectId(houseId);
 

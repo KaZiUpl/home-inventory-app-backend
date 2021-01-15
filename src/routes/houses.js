@@ -185,6 +185,72 @@ router.get('/:id/rooms', housesController.getRooms);
 router.get('/', housesController.getHouseList);
 
 /**
+ * @api {get} /houses/storage Get the list of all storage items accessible by user
+ * @apiDescription Return array of storage items from all rooms of all houses accesible by a user
+ * @apiName GetAllStorage
+ * @apiGroup House
+ * @apiPermission logged in user
+ * @apiSuccess (Success 200) {String} _id Storage item id
+ * @apiSuccess (Success 200) {String} description Storage item description
+ * @apiSuccess (Success 200) {Number} quantity Storage item quantity
+ * @apiSuccess (Success 200) {String} expiration Storage item expiration date
+ * @apiSuccess (Success 200) {Object} item Item reference
+ * @apiSuccess (Success 200) {String} item._id Item id
+ * @apiSuccess (Success 200) {String} item.name Item name
+ * @apiSuccess (Success 200) {String} item.ean Item barcode
+ * @apiSuccess (Success 200) {Object} room Room reference
+ * @apiSuccess (Success 200) {String} room._id Room id
+ * @apiSuccess (Success 200) {String} room.name Room name
+ * @apiSuccess (Success 200) {Object} house House reference
+ * @apiSuccess (Success 200) {String} house._id House id
+ * @apiSuccess (Success 200) {String} house.name House name
+ * @apiSuccessExample {json} Success-Response:
+[
+    {
+        "_id": "60020c7d3c95294a6ca4af23",
+        "quantity": 1,
+        "item": {
+            "_id": "60020c7d3c95294a6ca4af1d",
+            "name": "item1",
+            "ean": "123",
+            "__v": 0
+        },
+        "description": "desc",
+        "expiration": "2021-01-15T21:49:01.636Z",
+        "room": {
+            "_id": "60020c7d3c95294a6ca4af21",
+            "name": "room1"
+        },
+        "house": {
+            "_id": "60020c7d3c95294a6ca4af1f",
+            "name": "house1"
+        }
+    },
+    {
+        "_id": "60020c7d3c95294a6ca4af24",
+        "quantity": 2,
+        "item": {
+            "_id": "60020c7d3c95294a6ca4af1e",
+            "name": "item2",
+            "ean": "123",
+            "__v": 0
+        },
+        "description": "desc",
+        "expiration": "2021-01-15T21:49:01.636Z",
+        "room": {
+            "_id": "60020c7d3c95294a6ca4af21",
+            "name": "room1"
+        },
+        "house": {
+            "_id": "60020c7d3c95294a6ca4af1f",
+            "name": "house1"
+        }
+    }
+]
+ */
+router.get('/storage', housesController.getStorage);
+
+/**
  * @api {get} /houses/:id/storage Get the list of storage items from all house rooms
  * @apiName GetHouseStorage
  * @apiGroup House
@@ -240,7 +306,7 @@ router.get('/', housesController.getHouseList);
  *  }
  * ]
  */
-router.get('/:id/storage', housesController.getStorage);
+router.get('/:id/storage', housesController.getHouseStorage);
 
 /**
  * @api {get} /houses/:id Get house info

@@ -201,6 +201,16 @@ exports.deleteCollaborator = async function (req, res, next) {
 
 exports.getStorage = async function (req, res, next) {
   try {
+    let storage = await HousesService.getStorage(req.userData.id);
+
+    return res.status(200).json(storage);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getHouseStorage = async function (req, res, next) {
+  try {
     await HousesService.checkHouseExistence(req.params.id);
 
     await HousesService.checkHouseAccess(req.params.id, req.userData.id);
@@ -209,7 +219,7 @@ exports.getStorage = async function (req, res, next) {
       ? decodeURIComponent(req.query.name)
       : undefined;
 
-    let items = await HousesService.getStorage(req.params.id, name);
+    let items = await HousesService.getHouseStorage(req.params.id, name);
 
     return res.status(200).json(items);
   } catch (error) {

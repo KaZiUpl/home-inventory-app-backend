@@ -100,6 +100,134 @@
   },
   {
     "type": "get",
+    "url": "/houses/storage",
+    "title": "Get the list of all storage items accessible by user",
+    "description": "<p>Return array of storage items from all rooms of all houses accesible by a user</p>",
+    "name": "GetAllStorage",
+    "group": "House",
+    "permission": [
+      {
+        "name": "logged in user"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "_id",
+            "description": "<p>Storage item id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Storage item description</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "quantity",
+            "description": "<p>Storage item quantity</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "expiration",
+            "description": "<p>Storage item expiration date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "item",
+            "description": "<p>Item reference</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item._id",
+            "description": "<p>Item id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.name",
+            "description": "<p>Item name</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.ean",
+            "description": "<p>Item barcode</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "room",
+            "description": "<p>Room reference</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "room._id",
+            "description": "<p>Room id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "room.name",
+            "description": "<p>Room name</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "house",
+            "description": "<p>House reference</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "house._id",
+            "description": "<p>House id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "house.name",
+            "description": "<p>House name</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "[\n    {\n        \"_id\": \"60020c7d3c95294a6ca4af23\",\n        \"quantity\": 1,\n        \"item\": {\n            \"_id\": \"60020c7d3c95294a6ca4af1d\",\n            \"name\": \"item1\",\n            \"ean\": \"123\",\n            \"__v\": 0\n        },\n        \"description\": \"desc\",\n        \"expiration\": \"2021-01-15T21:49:01.636Z\",\n        \"room\": {\n            \"_id\": \"60020c7d3c95294a6ca4af21\",\n            \"name\": \"room1\"\n        },\n        \"house\": {\n            \"_id\": \"60020c7d3c95294a6ca4af1f\",\n            \"name\": \"house1\"\n        }\n    },\n    {\n        \"_id\": \"60020c7d3c95294a6ca4af24\",\n        \"quantity\": 2,\n        \"item\": {\n            \"_id\": \"60020c7d3c95294a6ca4af1e\",\n            \"name\": \"item2\",\n            \"ean\": \"123\",\n            \"__v\": 0\n        },\n        \"description\": \"desc\",\n        \"expiration\": \"2021-01-15T21:49:01.636Z\",\n        \"room\": {\n            \"_id\": \"60020c7d3c95294a6ca4af21\",\n            \"name\": \"room1\"\n        },\n        \"house\": {\n            \"_id\": \"60020c7d3c95294a6ca4af1f\",\n            \"name\": \"house1\"\n        }\n    }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/houses.js",
+    "groupTitle": "House",
+    "groupDescription": "<p>Endpoints for managing information about user's houses called houses. Every house has one owner that can change house info and add other users as collaborators.</p>"
+  },
+  {
+    "type": "get",
     "url": "/houses/:id/collaborators",
     "title": "Get the list of collaborators",
     "name": "GetCollaboratorList",

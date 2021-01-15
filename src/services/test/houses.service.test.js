@@ -198,6 +198,104 @@ describe('Houses Service', function () {
       await expect(HousesService.getHouse(id)).to.be.rejected;
     });
   });
+  describe('Get all storage', function () {
+    let house1, house2;
+    beforeEach(async function () {
+      await Item.deleteMany({});
+      await Room.deleteMany({});
+      await House.deleteMany({});
+
+      //create items
+      let item1 = await Item.create({
+        name: 'item1',
+        description: 'desc',
+        ean: '123',
+        manufacturer: 'manu',
+        owner: user1._id
+      });
+      let item2 = await Item.create({
+        name: 'item2',
+        description: 'desc',
+        ean: '123',
+        manufacturer: 'manu'
+      });
+      //create houses
+      house1 = await House.create({
+        name: 'house1',
+        description: 'desc',
+        owner: user1._id,
+        collaborators: [user2._id]
+      });
+      house2 = await House.create({
+        name: 'house2',
+        description: 'desc',
+        owner: user1._id
+      });
+      //create rooms
+      let room1 = await Room.create({
+        name: 'room1',
+        description: 'desc',
+        house: house1._id
+      });
+      let room2 = await Room.create({
+        name: 'room2',
+        description: 'desc',
+        house: house2._id
+      });
+      //create storage items
+      const storageItem1 = {
+        quantity: 1,
+        item: item1,
+        description: 'desc',
+        expiration: new Date()
+      };
+      const storageItem2 = {
+        quantity: 2,
+        item: item2._id,
+        description: 'desc',
+        expiration: new Date()
+      };
+      let response1 = await room1.storage.create(storageItem1);
+      let response2 = await room1.storage.create(storageItem2);
+      room1.storage.push(response1);
+      room1.storage.push(response2);
+      await room1.save();
+
+      response1 = await room2.storage.create(storageItem1);
+      response2 = await room2.storage.create(storageItem2);
+      room2.storage.push(response1);
+      room2.storage.push(response2);
+      await room2.save();
+
+      //add rooms to houses
+      house1.rooms.push(room1._id);
+      house2.rooms.push(room2._id);
+
+      await house1.save();
+      await house2.save();
+    });
+    afterEach(async function () {
+      await Item.deleteMany({});
+      await Room.deleteMany({});
+      await House.deleteMany({});
+    });
+
+    it('should return storage', async function () {
+      let storage = await HousesService.getStorage(user1._id);
+
+      expect(storage).to.exist.and.be.a('array').of.length(4);
+      expect(storage[0]).to.have.property('room');
+      expect(storage[0]).to.have.property('house');
+      expect(storage[0]).to.have.property('quantity');
+      expect(storage[0]).to.have.property('description');
+    });
+    it('should throw is userId is null', async function () {
+      await expect(HousesService.getStorage(null)).to.be.rejected;
+    });
+    it('should throw if userId is invalid', async function () {
+      await expect(HousesService.getStorage('asd')).to.be.rejected;
+    });
+  });
   describe('Get house storage', function () {
     let house, house2;
     beforeEach(async function () {
@@ -256,7 +354,7 @@ describe('Houses Service', function () {
     });
 
     it('should be fulfilled and return array of storage items from all rooms', async function () {
-      let storageItems = await HousesService.getStorage(house2._id);
+      let storageItems = await HousesService.getHouseStorage(house2._id);
 
       expect(storageItems).to.exist.and.be.a('array').of.length(4);
       expect(storageItems[0]).to.have.property('quantity');
@@ -265,7 +363,10 @@ describe('Houses Service', function () {
       expect(storageItems[0].item).to.exist.and.to.have.property('name');
     });
     it('should be fulfilled and return filtered array of storage items', async function () {
-      let storageItems = await HousesService.getStorage(house2._id, 'item2');
+      let storageItems = await HousesService.getHouseStorage(
+        house2._id,
+        'item2'
+      );
 
       expect(storageItems).to.exist.and.be.a('array').of.length(2);
       expect(storageItems[0]).to.have.property('quantity');
@@ -274,11 +375,11 @@ describe('Houses Service', function () {
       expect(storageItems[0].item).to.exist.and.to.have.property('name');
     });
     it('should throw if house id is null', async function () {
-      await expect(HousesService.getStorage(null)).to.be.rejected;
+      await expect(HousesService.getHouseStorage(null)).to.be.rejected;
     });
     it('should throw if house id is invalid', async function () {
-      await expect(HousesService.getStorage(mongoose.Types.ObjectId())).to.be
-        .rejected;
+      await expect(HousesService.getHouseStorage(mongoose.Types.ObjectId())).to
+        .be.rejected;
     });
   });
   describe('Get rooms list', function () {

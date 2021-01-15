@@ -45,7 +45,6 @@ exports.getItems = async function (
   eanCode = undefined,
   name = undefined
 ) {
-  console.log(new RegExp(name, 'i'));
   try {
     if (userId == null) {
       throw new BadRequestError('User id cannot be null');

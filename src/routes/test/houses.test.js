@@ -652,6 +652,125 @@ describe('Houses Endpoints', function () {
         });
     });
   });
+  describe('GET /houses/storage', function () {
+    let house1, house2;
+    beforeEach(async function () {
+      await Item.deleteMany({});
+      await Room.deleteMany({});
+      await House.deleteMany({});
+
+      //create items
+      let item1 = await Item.create({
+        name: 'item1',
+        description: 'desc',
+        ean: '123',
+        manufacturer: 'manu',
+        owner: user1._id
+      });
+      let item2 = await Item.create({
+        name: 'item2',
+        description: 'desc',
+        ean: '123',
+        manufacturer: 'manu'
+      });
+      //create houses
+      house1 = await House.create({
+        name: 'house1',
+        description: 'desc',
+        owner: user1._id,
+        collaborators: [user2._id]
+      });
+      house2 = await House.create({
+        name: 'house2',
+        description: 'desc',
+        owner: user1._id
+      });
+      //create rooms
+      let room1 = await Room.create({
+        name: 'room1',
+        description: 'desc',
+        house: house1._id
+      });
+      let room2 = await Room.create({
+        name: 'room2',
+        description: 'desc',
+        house: house2._id
+      });
+      //create storage items
+      const storageItem1 = {
+        quantity: 1,
+        item: item1,
+        description: 'desc',
+        expiration: new Date()
+      };
+      const storageItem2 = {
+        quantity: 2,
+        item: item2._id,
+        description: 'desc',
+        expiration: new Date()
+      };
+      let response1 = await room1.storage.create(storageItem1);
+      let response2 = await room1.storage.create(storageItem2);
+      room1.storage.push(response1);
+      room1.storage.push(response2);
+      await room1.save();
+
+      response1 = await room2.storage.create(storageItem1);
+      response2 = await room2.storage.create(storageItem2);
+      room2.storage.push(response1);
+      room2.storage.push(response2);
+      await room2.save();
+
+      //add rooms to houses
+      house1.rooms.push(room1._id);
+      house2.rooms.push(room2._id);
+
+      await house1.save();
+      await house2.save();
+    });
+    afterEach(async function () {
+      await Item.deleteMany({});
+      await Room.deleteMany({});
+      await House.deleteMany({});
+    });
+
+    it('should return 200 and storage items for a logged in user', async function () {
+      await request(server)
+        .get(`/houses/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.be.a('array');
+        });
+    });
+    it('should return 401 if user is not logged in', async function () {
+      refreshToken = user1.refresh_token;
+      user1.refresh_token = null;
+      await user1.save();
+
+      await request(server)
+        .get(`/houses/storage`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+
+      user1.refresh_token = refreshToken;
+      await user1.save();
+    });
+    it('should return 401 if no Authorization header is present', async function () {
+      await request(server)
+        .get(`/houses/storage`)
+        .expect(401)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.exist.and.have.property('message');
+        });
+    });
+  });
   describe('GET /houses/:id/storage', function () {
     let house, house2;
     beforeEach(async function () {
