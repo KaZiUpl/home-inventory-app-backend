@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const fs = require('fs').promises;
+const fs = require('fs');
 const path = require('path');
 
 const Item = require('../models/item.model');
@@ -136,17 +136,26 @@ exports.uploadItemImage = async function (itemId, file) {
     let item = await Item.findById(itemId);
 
     const dir = path.resolve(__dirname, `../../public/img/${item.owner}`);
-    const rawData = await fs.readFile(file.path);
+    const rawData = await fs.promises.readFile(file.path);
     const fileExtension = file.type.split('/')[1];
     const filename = `${itemId}.${fileExtension}`;
 
+    //create dir
+    let dirExists = await fs.promises
+      .access(dir, fs.constants.F_OK)
+      .then(() => true)
+      .catch(() => false);
+    if (!dirExists) {
+      await fs.promises.mkdir(`${dir}`);
+    }
+
     //write file
-    await fs.writeFile(`${dir}${path.sep}${filename}`, rawData);
+    await fs.promises.writeFile(`${dir}${path.sep}${filename}`, rawData);
     if (item.photo) {
       let oldImagePath = `${dir}${path.sep}${
         item.photo.split('/')[item.photo.split('/').length - 1]
       }`;
-      await fs.unlink(oldImagePath);
+      await fs.promises.unlink(oldImagePath);
     }
     //update item
     item.photo = `localhost:3000/img/${item.owner}/${item._id}.${fileExtension}`;

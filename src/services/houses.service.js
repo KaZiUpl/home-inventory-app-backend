@@ -352,7 +352,7 @@ exports.checkHouseLimit = async function (userId) {
       { $count: 'no_of_houses' }
     ]);
 
-    if (houseCount[0] && houseCount[0].no_of_houses == 5) {
+    if (houseCount[0] && houseCount[0].no_of_houses >= 5) {
       throw new BadRequestError('You have too many houses.');
     }
   } catch (error) {
@@ -366,7 +366,7 @@ exports.checkRoomLimit = async function (houseId) {
     { $count: 'no_of_rooms' }
   ]);
 
-  if (roomCount[0] && roomCount[0].no_of_rooms == 10) {
+  if (roomCount[0] && roomCount[0].no_of_rooms >= 10) {
     throw new BadRequestError('You have too many rooms in this house');
   }
 };
