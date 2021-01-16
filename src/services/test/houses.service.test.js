@@ -488,18 +488,23 @@ describe('Houses Service', function () {
       await House.deleteMany({});
     });
 
-    it('should delete house', async function () {
+    it('should delete house with all rooms', async function () {
       let house = await House.create({
         name: 'asd',
         description: 'asd',
         owner: user1._id
       });
+      let room = await Room.create({ name: 'name', house: house._id });
+      house.rooms.push(room._id);
+      await house.save();
 
       await expect(HousesService.deleteHouse(house._id)).to.be.fulfilled;
 
       let dbHouse = await House.findById(house._id);
+      let dbRoom = await Room.findById(room._id);
 
       expect(dbHouse).to.not.exist;
+      expect(dbRoom).to.not.exist;
     });
     it('should throw if house does not exist', async function () {
       let house = await House.create({

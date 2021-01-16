@@ -154,19 +154,24 @@ exports.editHouse = async function (houseId, newName, newDescription) {
 };
 
 exports.deleteHouse = async function (houseId) {
+  let session = await mongoose.startSession();
   try {
-    // get house
-    let house = await House.findOne({ _id: houseId });
-    if (house == null) {
-      throw new NotFoundError({
-        message: 'The requested house does not exist'
-      });
-    }
+    await session.withTransaction(async function () {
+      // get house
+      let house = await House.findOne({ _id: houseId });
+      if (house == null) {
+        throw new NotFoundError({
+          message: 'The requested house does not exist'
+        });
+      }
 
-    await Room.deleteMany({ house: house._id });
-    await house.deleteOne();
+      await Room.deleteMany({ house: house._id });
+      await house.deleteOne();
+    });
   } catch (error) {
     throw error;
+  } finally {
+    session.endSession();
   }
 };
 
