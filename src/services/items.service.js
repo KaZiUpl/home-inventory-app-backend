@@ -135,30 +135,37 @@ exports.uploadItemImage = async function (itemId, file) {
     }
     let item = await Item.findById(itemId);
 
-    const dir = path.resolve(process.env.CWD, `../public/img/${item.owner}`);
+    const dir = path.join(process.env.CWD, `/public/img/${item.owner}`);
     const rawData = await fs.promises.readFile(file.path);
     const fileExtension = file.type.split('/')[1];
-    const filename = `${itemId}.${fileExtension}`;
+    const filename = `${itemId}`;
 
     //create dir
     let dirExists = await fs.promises
       .access(dir, fs.constants.F_OK)
       .then(() => true)
       .catch(() => false);
+
     if (!dirExists) {
       await fs.promises.mkdir(`${dir}`);
     }
 
-    //write file
-    await fs.promises.writeFile(`${dir}${path.sep}${filename}`, rawData);
     if (item.photo) {
       let oldImagePath = `${dir}${path.sep}${
         item.photo.split('/')[item.photo.split('/').length - 1]
       }`;
       await fs.promises.unlink(oldImagePath);
     }
+
+    console.log(`${dir}${path.sep}${filename}.${fileExtension}`);
+    //write file
+    await fs.promises.writeFile(
+      `${dir}${path.sep}${filename}.${fileExtension}`,
+      rawData
+    );
+
     //update item
-    item.photo = `localhost:3000/img/${item.owner}/${item._id}.${fileExtension}`;
+    item.photo = `/img/${item.owner}/${item._id}.${fileExtension}`;
     await item.save();
   } catch (error) {
     throw error;
