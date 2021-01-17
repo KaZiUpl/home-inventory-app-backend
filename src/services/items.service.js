@@ -135,7 +135,7 @@ exports.uploadItemImage = async function (itemId, file) {
     }
     let item = await Item.findById(itemId);
 
-    const dir = path.resolve(__dirname, `../../public/img/${item.owner}`);
+    const dir = path.resolve(process.env.CWD, `../public/img/${item.owner}`);
     const rawData = await fs.promises.readFile(file.path);
     const fileExtension = file.type.split('/')[1];
     const filename = `${itemId}.${fileExtension}`;
