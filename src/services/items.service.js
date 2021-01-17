@@ -154,7 +154,15 @@ exports.uploadItemImage = async function (itemId, file) {
       let oldImagePath = `${dir}${path.sep}${
         item.photo.split('/')[item.photo.split('/').length - 1]
       }`;
-      await fs.promises.unlink(oldImagePath);
+
+      let fileExists = await fs.promises
+        .access(oldImagePath, fs.constants.F_OK)
+        .then(() => true)
+        .catch(() => false);
+
+      if (fileExists) {
+        await fs.promises.unlink(oldImagePath);
+      }
     }
 
     console.log(`${dir}${path.sep}${filename}.${fileExtension}`);
