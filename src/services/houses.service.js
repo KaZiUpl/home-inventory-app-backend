@@ -123,7 +123,7 @@ exports.getHouse = async function (houseId) {
       .populate('collaborators', 'login')
       .populate({
         path: 'rooms',
-        populate: { path: 'storage.item', select: 'name' }
+        populate: { path: 'storage.item', select: 'name photo' }
       });
 
     if (requestedHouse == null) {
