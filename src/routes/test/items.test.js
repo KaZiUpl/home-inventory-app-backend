@@ -517,26 +517,18 @@ describe('Items Endpoints', function () {
     let item, item2, imagePath, filePath;
     before(async function () {
       //create user directory
-      await fs.mkdir(
-        path.resolve(__dirname, `../../../public/img/${user._id}`),
-        { recursive: true }
-      );
+      await fs.mkdir(path.join(process.env.CWD, `/public/img/${user._id}`), {
+        recursive: true
+      });
       //create paths
-      imagePath = path.resolve(
-        __dirname,
-        '../../../public/img/test/test_image.png'
-      );
-      filePath = path.resolve(
-        __dirname,
-        '../../../public/img/test/test_file.txt'
-      );
+      imagePath = path.join(process.env.CWD, '/public/img/test/test_image.png');
+      filePath = path.join(process.env.CWD, '/public/img/test/test_file.txt');
     });
     after(async function () {
       //delete user directory
-      await fs.rmdir(
-        path.resolve(__dirname, `../../../public/img/${user._id}`),
-        { recursive: true }
-      );
+      await fs.rmdir(path.join(process.env.CWD, `/public/img/${user._id}`), {
+        recursive: true
+      });
     });
     beforeEach(async function () {
       await Item.deleteMany({});
@@ -564,6 +556,7 @@ describe('Items Endpoints', function () {
         .expect('Content-Type', new RegExp('application/json;'))
         .then((res) => {
           expect(res.body).to.exist.and.to.have.property('message');
+          expect(res.body).to.have.property('photo');
         });
     });
     it('should throw 400 if file is not an image', async function () {

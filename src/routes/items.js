@@ -135,6 +135,13 @@ router.delete('/:id', ItemsController.deleteItem);
  * @apiGroup Item
  * @apiPermission item's owner
  * @apiParam {File} image item's image
+ * @apiSuccess (Success 200) {String} message Response message
+ * @apiSuccess (Success 200) {String} photo Image URI
+ * @apiSuccessExample {json} Response(example):
+{
+    "message": "Item image added",
+    "photo": "/img/5fd4a0ca340e8d405cd76507/60037638ce419d00178e7ce6.jpeg"
+}
  */
 router.post('/:id/photo', ItemsController.uploadItemImage);
 

@@ -36,7 +36,7 @@ exports.createUser = async function (login, email, password) {
 
     //create user image directory
     await fs.promises.mkdir(
-      path.resolve(process.env.CWD, `../public/img/${newUser._id}`),
+      path.join(process.env.CWD, `/public/img/${newUser._id}`),
       { recursive: true }
     );
 

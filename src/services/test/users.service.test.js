@@ -42,7 +42,7 @@ describe('Users Service', function () {
       let users = await User.find({});
       users.forEach(async function (user) {
         await fs.promises.rmdir(
-          path.resolve(__dirname, `../../../public/img/${user._id}`),
+          path.join(process.env.CWD, `/public/img/${user._id}`),
           {
             recursive: true
           }
@@ -82,10 +82,7 @@ describe('Users Service', function () {
         body.password
       );
 
-      const dirPath = path.resolve(
-        __dirname,
-        `../../../public/img/${response}`
-      );
+      const dirPath = path.join(process.env.CWD, `/public/img/${response}`);
 
       expect(fs.existsSync(dirPath)).to.be.true;
     });

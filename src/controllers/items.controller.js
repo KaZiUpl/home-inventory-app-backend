@@ -126,9 +126,9 @@ exports.uploadItemImage = async function (req, res, next) {
       throw err;
     });
 
-    await ItemsService.uploadItemImage(req.params.id, file);
+    const imagePath = await ItemsService.uploadItemImage(req.params.id, file);
 
-    res.status(200).json({ message: 'Item image added' });
+    res.status(200).json({ message: 'Item image added', photo: imagePath });
   } catch (error) {
     next(error);
   }

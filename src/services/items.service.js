@@ -164,8 +164,6 @@ exports.uploadItemImage = async function (itemId, file) {
         await fs.promises.unlink(oldImagePath);
       }
     }
-
-    console.log(`${dir}${path.sep}${filename}.${fileExtension}`);
     //write file
     await fs.promises.writeFile(
       `${dir}${path.sep}${filename}.${fileExtension}`,
@@ -175,6 +173,8 @@ exports.uploadItemImage = async function (itemId, file) {
     //update item
     item.photo = `/img/${item.owner}/${item._id}.${fileExtension}`;
     await item.save();
+
+    return item.photo;
   } catch (error) {
     throw error;
   }
