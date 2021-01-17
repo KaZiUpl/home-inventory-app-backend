@@ -318,14 +318,36 @@ describe('Rooms Service', function () {
 
       expect(storageItemArray).to.exist.and.be.a('array').of.length(2);
 
-      let output = storageItem.toJSON();
-      output.item = item.toJSON();
+      expect(storageItemArray[0].toJSON()).to.include.all.keys(
+        '_id',
+        'item',
+        'quantity'
+      );
+      expect(storageItemArray[0].item.toJSON()).to.include.all.keys(
+        '_id',
+        'name',
+        'owner'
+      );
+      expect(storageItemArray[0].item.owner.toJSON()).to.include.all.keys(
+        '_id',
+        'login'
+      );
 
-      let output2 = storageItem2.toJSON();
-      output2.item = item.toJSON();
-
-      expect(storageItemArray[0].toJSON()).to.deep.equal(output);
-      expect(storageItemArray[1].toJSON()).to.deep.equal(output2);
+      expect(storageItemArray[1].toJSON()).to.include.all.keys(
+        '_id',
+        'item',
+        'quantity',
+        'expiration'
+      );
+      expect(storageItemArray[1].item.toJSON()).to.include.all.keys(
+        '_id',
+        'name',
+        'owner'
+      );
+      expect(storageItemArray[1].item.owner.toJSON()).to.include.all.keys(
+        '_id',
+        'login'
+      );
     });
     it('should throw if room does not exist', async function () {
       await expect(RoomsService.getRoomStorage(mongoose.Types.ObjectId())).to.be
@@ -361,7 +383,8 @@ describe('Rooms Service', function () {
       epoch = Date.now();
       storageItem = await room.storage.create({
         item: item._id,
-        quantity: 1
+        quantity: 1,
+        expiration: epoch
       });
       room.storage.push(storageItem);
       room.storage.push(
@@ -387,11 +410,9 @@ describe('Rooms Service', function () {
       );
 
       expect(response).to.exist.and.be.a('object');
-
-      let _tmp = storageItem.toJSON();
-      _tmp.item = item.toJSON();
-
-      expect(response).to.be.deep.equal(_tmp);
+      expect(response).to.include.all.keys('_id', 'item', 'quantity');
+      expect(response.item).to.include.all.keys('_id', 'name', 'owner');
+      expect(response.item.owner).to.include.all.keys('_id', 'login');
     });
     it('should throw if room is not found', async function () {
       await expect(

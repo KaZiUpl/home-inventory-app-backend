@@ -244,7 +244,6 @@ exports.getStorage = async function (userId) {
       { $unwind: '$root' },
       { $replaceRoot: { newRoot: '$root' } }
     ]);
-    console.log(JSON.stringify(storage, null, 4));
     return storage;
   } catch (error) {
     throw error;
