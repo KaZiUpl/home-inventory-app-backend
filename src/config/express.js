@@ -27,7 +27,7 @@ app.use(helmet.hidePoweredBy());
 if (process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() !== 'test') {
   app.use(morgan('dev'));
 }
-console.log(process.cwd() + '/public');
+
 //set static documentation files
 app.use(express.static(path.join(process.cwd() + '/public')));
 app.use('/docs', express.static('public/docs'));
