@@ -360,12 +360,32 @@ exports.checkHouseLimit = async function (userId) {
 };
 
 exports.checkRoomLimit = async function (houseId) {
-  let roomCount = await Room.aggregate([
-    { $match: { house: mongoose.Types.ObjectId(houseId) } },
-    { $count: 'no_of_rooms' }
-  ]);
+  try {
+    let roomCount = await Room.aggregate([
+      { $match: { house: mongoose.Types.ObjectId(houseId) } },
+      { $count: 'no_of_rooms' }
+    ]);
 
-  if (roomCount[0] && roomCount[0].no_of_rooms >= 10) {
-    throw new BadRequestError('You have too many rooms in this house');
+    if (roomCount[0] && roomCount[0].no_of_rooms >= 10) {
+      throw new BadRequestError('You have too many rooms in this house');
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.checkCollaboratorLimit = async function (houseId) {
+  try {
+    let house = await House.findById(houseId);
+    if (house == null) {
+      throw new NotFoundError('House id is invalid');
+    }
+    if (house.collaborators.length >= 10) {
+      throw new BadRequestError(
+        'You have too many collaborators in this house'
+      );
+    }
+  } catch (error) {
+    throw error;
   }
 };

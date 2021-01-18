@@ -295,11 +295,20 @@ describe('Houses Endpoints', function () {
     });
   });
   describe('POST /houses/:id/collaborators', function () {
-    let house;
+    let house, house2;
     beforeEach(async function () {
       house = await House.create({
         name: 'house',
         description: 'house description',
+        owner: user1._id
+      });
+      let collaborators = [];
+      for (i = 0; i < 10; i++) {
+        collaborators.push(mongoose.Types.ObjectId());
+      }
+      house2 = await House.create({
+        name: 'house2',
+        collaborators: collaborators,
         owner: user1._id
       });
     });
@@ -343,6 +352,17 @@ describe('Houses Endpoints', function () {
     it('should return 400 if owner is trying to add himself as a collaborator', async function () {
       await request(server)
         .post(`/houses/${house._id}/collaborators`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ name: user1.email })
+        .expect(400)
+        .expect('Content-Type', new RegExp('application/json;'))
+        .then((res) => {
+          expect(res.body).to.have.property('message');
+        });
+    });
+    it('should throw 400 if house has 10 or more collaborators', async function () {
+      await request(server)
+        .post(`/houses/${house2._id}/collaborators`)
         .set('Authorization', `Bearer ${accessToken}`)
         .send({ name: user1.email })
         .expect(400)

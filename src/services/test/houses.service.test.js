@@ -817,4 +817,41 @@ describe('Houses Service', function () {
       await expect(HousesService.checkRoomLimit(fullHouse._id)).to.be.rejected;
     });
   });
+  describe('Check Collaborator Limit', function () {
+    let house, house2, house3;
+    beforeEach(async function () {
+      await House.deleteMany({});
+      let collaborators = [];
+      for (i = 0; i < 10; i++) {
+        collaborators.push(mongoose.Types.ObjectId());
+      }
+      house = await House.create({ name: 'house', owner: user1._id });
+      house2 = await House.create({
+        name: 'house2',
+        collaborators: collaborators,
+        owner: user1._id
+      });
+      collaborators.push(mongoose.Types.ObjectId());
+      house3 = await House.create({
+        name: 'house3',
+        collaborators: collaborators,
+        owner: user1._id
+      });
+    });
+    afterEach(async function () {
+      await House.deleteMany({});
+    });
+
+    it('should be fulfilled for houses with less than 10 collaborators', async function () {
+      await expect(HousesService.checkCollaboratorLimit(house._id)).to.be
+        .fulfilled;
+    });
+    it('should be rejected for houses with 10 or more collaborators', async function () {
+      await expect(HousesService.checkCollaboratorLimit(house2._id)).to.be
+        .rejected;
+
+      await expect(HousesService.checkCollaboratorLimit(house3._id)).to.be
+        .rejected;
+    });
+  });
 });

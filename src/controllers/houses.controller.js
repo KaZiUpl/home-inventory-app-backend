@@ -84,6 +84,8 @@ exports.addCollaborator = async function (req, res, next) {
 
     await HousesService.checkHouseOwnership(req.params.id, req.userData.id);
 
+    await HousesService.checkCollaboratorLimit(req.params.id);
+
     await HousesService.addCollaborator(req.params.id, req.body.name);
 
     return res.status(200).json({ message: 'Collaborator added' });
