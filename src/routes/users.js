@@ -10,8 +10,8 @@ const router = express.Router();
  * @api {post} /users Create new user
  * @apiName PostCreateUser
  * @apiGroup User
- * @apiParam {String} login Username
- * @apiParam {String} password User password
+ * @apiParam {String} login Username (min length: 5, max length: 20, regexp: ^[a-zA-Z0-9]+$)
+ * @apiParam {String} password User password (min length: 8, max length: 20, regexp: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@$!%*?&])[A-Za-z0-9@$!%*?&]{1,}$)
  * @apiParam {String} email User email
  * @apiSuccess (Success 200) {String} message Response message
  * @apiSuccessExample {json} Response(example):
@@ -22,7 +22,29 @@ const router = express.Router();
  */
 router.post(
   '/',
-  [body('login').exists(), body('email').exists(), body('password').exists()],
+  [
+    body('login')
+      .exists()
+      .isLength({ min: 5 })
+      .withMessage('must be at least 5 chars long')
+      .isLength({ max: 20 })
+      .withMessage('must be at most 20 chars long')
+      .matches('^[a-zA-Z0-9]+$')
+      .withMessage('can only have digits and lower and upper case characters'),
+    body('email').exists(),
+    body('password')
+      .exists()
+      .isLength({ min: 8 })
+      .withMessage('must be at least 8 chars long')
+      .isLength({ max: 20 })
+      .withMessage('must be at most 20 chars long')
+      .matches(
+        '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@$!%*?&])[A-Za-z0-9@$!%*?&]{1,}$'
+      )
+      .withMessage(
+        'must have lower, upper case letter, a digit and special character'
+      )
+  ],
   userController.createUser
 );
 

@@ -12,6 +12,7 @@ exports.createHouse = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new UnprocessableEntityError(errors.array()));
+    return;
   }
   try {
     await HousesService.checkHouseLimit(req.userData.id);
@@ -32,6 +33,7 @@ exports.createRoom = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new UnprocessableEntityError(errors.array()));
+    return;
   }
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -78,6 +80,7 @@ exports.addCollaborator = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new UnprocessableEntityError(errors.array()));
+    return;
   }
   try {
     await HousesService.checkHouseExistence(req.params.id);
@@ -147,6 +150,7 @@ exports.editHouse = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new UnprocessableEntityError(errors.array()));
+    return;
   }
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {

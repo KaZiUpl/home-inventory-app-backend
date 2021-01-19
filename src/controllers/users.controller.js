@@ -9,6 +9,7 @@ exports.createUser = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new UnprocessableEntityError(errors.array()));
+    return;
   }
   try {
     let newUserId = await UsersService.createUser(
@@ -29,6 +30,7 @@ exports.putUser = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new UnprocessableEntityError(errors.array()));
+    return;
   }
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -69,6 +71,7 @@ exports.login = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new UnprocessableEntityError(errors.array()));
+    return;
   }
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -91,6 +94,7 @@ exports.refreshToken = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new UnprocessableEntityError(errors.array()));
+    return;
   }
   try {
     let tokenOutput = await UsersService.refreshToken(req.body.token);
@@ -106,6 +110,7 @@ exports.logout = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new UnprocessableEntityError(errors.array()));
+    return;
   }
   try {
     await UsersService.logout(req.body.token);

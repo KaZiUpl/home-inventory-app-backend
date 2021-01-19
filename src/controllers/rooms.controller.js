@@ -11,6 +11,7 @@ exports.modifyRoom = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new UnprocessableEntityError(errors.array()));
+    return;
   }
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -74,6 +75,7 @@ exports.addStorageItem = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new UnprocessableEntityError(errors.array()));
+    return;
   }
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -156,6 +158,7 @@ exports.updateStorageItem = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new UnprocessableEntityError(errors.array()));
+    return;
   }
   try {
     if (!mongoose.isValidObjectId(req.params.roomId)) {

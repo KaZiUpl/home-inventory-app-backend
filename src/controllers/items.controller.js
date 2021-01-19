@@ -12,6 +12,7 @@ exports.createItem = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new UnprocessableEntityError(errors.array()));
+    return;
   }
   try {
     let itemId = await ItemsService.createItem(req.userData.id, req.body);
@@ -58,6 +59,7 @@ exports.putItem = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new UnprocessableEntityError(errors.array()));
+    return;
   }
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
