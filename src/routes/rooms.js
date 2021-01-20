@@ -46,14 +46,15 @@ router.post(
  * @apiDescription Return an array of room's storage items
  * @apiParam {String} id Room id
  * @apiSuccess (Success 200) {String} _id Storage item id
- * @apiSuccess (Success 200) {Object} item Item data
- * @apiSuccess (Success 200) {String} item._id item's id
- * @apiSuccess (Success 200) {String} item.name item's name
- * @apiSuccess (Success 200) {String} item.description item's description
- * @apiSuccess (Success 200) {String} item.manufacturer item's manufacturer name
- * @apiSuccess (Success 200) {Object} item.owner item's owner info
- * @apiSuccess (Success 200) {String} item.owner._id item's owner id
- * @apiSuccess (Success 200) {String} item.owner.login item's owner login
+ * @apiSuccess (Success 200) {Object} item Item reference
+ * @apiSuccess (Success 200) {String} item._id Item id
+ * @apiSuccess (Success 200) {String} item.name Item name
+ * @apiSuccess (Success 200) {String} item.description Item description
+ * @apiSuccess (Success 200) {String} item.ean Item ean code
+ * @apiSuccess (Success 200) {String} item.manufacturer Item manufacturer
+ * @apiSuccess (Success 200) {Object} item.owner Item owner reference
+ * @apiSuccess (Success 200) {String} item.owner._id Item owner id
+ * @apiSuccess (Success 200) {String} item.owner.login Item owner login
  * @apiSuccess (Success 200) {String} description Storage item description
  * @apiSuccess (Success 200) {Number} quantity Quantity of item
  * @apiSuccess (Success 200) {String} expiration Storage item expiration date
@@ -89,32 +90,37 @@ router.get('/:id/storage', roomsController.getRoomStorage);
  * @apiParam {String} roomId Room id
  * @apiParam {String} storageId Storage item id
  * @apiSuccess (Success 200) {String} _id Storage item id
- * @apiSuccess (Success 200) {Object} item Item data
- * @apiSuccess (Success 200) {String} item.name item's name
- * @apiSuccess (Success 200) {String} item.description item's description
- * @apiSuccess (Success 200) {String} item.manufacturer item's manufacturer name
- * @apiSuccess (Success 200) {Object} item.owner item's owner info
- * @apiSuccess (Success 200) {String} item.owner._id item's owner id
- * @apiSuccess (Success 200) {String} item.owner.login item's owner login
+ * @apiSuccess (Success 200) {Object} item Item reference
+ * @apiSuccess (Success 200) {String} item._id Item id
+ * @apiSuccess (Success 200) {String} item.name Item name
+ * @apiSuccess (Success 200) {String} item.description Item description
+ * @apiSuccess (Success 200) {String} item.ean Item ean code
+ * @apiSuccess (Success 200) {String} item.manufacturer Item manufacturer
+ * @apiSuccess (Success 200) {String} item.photo Item photo path
+ * @apiSuccess (Success 200) {Objest} item.owner Item owner
+ * @apiSuccess (Success 200) {String} item.owner._id Item owner id
+ * @apiSuccess (Success 200) {String} item.owner.login Item owner login
  * @apiSuccess (Success 200) {Number} quantity Quantity of item
  * @apiSuccess (Success 200) {String} expiration Storage item expiration date
  * @apiSuccess (Success 200) {String} description Storage item description
  * @apiSuccessExample {json} Response(example):
 {
-    "_id": "5ff3283d81a1883a146c7c18",
+    "_id": "600825c81c89735084e33264",
     "item": {
-        "_id": "5ff32565ab575e1cf4120159",
+        "_id": "600824adf1c47c1e80d941a3",
         "name": "Test item",
         "description": "Test item description",
-        "manufacturer": "Test manufacturer",
+        "manufacturer": "Test item manufdacturer",
         "owner": {
-            "_id": "5ff3217ced3a2e44d4970bb6",
-            "login": "Test2"
+            "_id": "600823fb9afa7825281009da",
+            "login": "Testuser"
         },
-        "__v": 0
+        "__v": 0,
+        "photo": "/img/600823fb9afa7825281009da/600824adf1c47c1e80d941a3.jpeg",
+        "ean": "12345678901011"
     },
-    "quantity": 1,
-    "expiration": "2020-12-24T17:30:00.000Z",
+    "quantity": 3,
+    "expiration": "1970-01-01T00:02:03.456Z",
     "description": "Storage item description"
 }
  */

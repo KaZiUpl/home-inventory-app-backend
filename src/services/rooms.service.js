@@ -27,7 +27,9 @@ exports.modifyRoom = async function (roomId, name, description) {
 
 exports.getRoom = async function (id) {
   try {
-    let room = await Room.findById(id).populate('house', 'name');
+    let room = await Room.findById(id)
+      .populate('house', 'name')
+      .populate({ path: 'storage.item', select: '-owner' });
 
     if (room == undefined) {
       throw new NotFoundError('Room not found');

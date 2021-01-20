@@ -101,7 +101,7 @@
   {
     "type": "get",
     "url": "/houses/storage",
-    "title": "Get the list of all storage items accessible by user",
+    "title": "Get all accessible storage",
     "description": "<p>Return array of storage items from all rooms of all houses accesible by a user</p>",
     "name": "GetAllStorage",
     "group": "House",
@@ -166,8 +166,22 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
+            "field": "item.description",
+            "description": "<p>Item description</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
             "field": "item.ean",
-            "description": "<p>Item barcode</p>"
+            "description": "<p>Item ean code</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.manufacturer",
+            "description": "<p>Item manufacturer</p>"
           },
           {
             "group": "Success 200",
@@ -386,21 +400,42 @@
             "type": "Object",
             "optional": false,
             "field": "rooms.storage.item",
-            "description": "<p>item reference</p>"
+            "description": "<p>Item reference</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "rooms.storage.item._id",
-            "description": "<p>item's id</p>"
+            "description": "<p>Item id</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "rooms.storage.item.name",
-            "description": "<p>item's name</p>"
+            "description": "<p>Item name</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "rooms.storage.item.description",
+            "description": "<p>Item description</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "rooms.storage.item.ean",
+            "description": "<p>Item ean code</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "rooms.storage.item.manufacturer",
+            "description": "<p>Item manufacturer</p>"
           },
           {
             "group": "Success 200",
@@ -470,7 +505,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n    \"collaborators\": [\n        {\n            \"_id\": \"5fd4a0ca340e8d405cd76507\",\n            \"login\": \"KaZiUpl\"\n        }\n    ],\n    \"rooms\": [\n        {\n            \"_id\": \"5ff324fae7613431908d3e27\",\n            \"storage\": [\n                {\n                    \"_id\": \"5ff3283d81a1883a146c7c18\",\n                    \"item\": {\n                        \"_id\": \"5ff32565ab575e1cf4120159\",\n                        \"name\": \"Test item\"\n                    },\n                    \"quantity\": 5,\n                    \"expiration\": \"2020-12-24T17:30:00.000Z\",\n                    \"description\": \"new storage item description\"\n                }\n            ],\n            \"name\": \"new room name\",\n            \"description\": \"new room description\",\n            \"house\": \"5ff323d07e31d80928d4a5a4\",\n            \"__v\": 2\n        }\n    ],\n    \"_id\": \"5ff323d07e31d80928d4a5a4\",\n    \"name\": \"New test house name\",\n    \"description\": \"New test house description\",\n    \"owner\": {\n        \"_id\": \"5ff3217ced3a2e44d4970bb6\",\n        \"login\": \"Test2\"\n    },\n    \"__v\": 3\n}",
+          "content": "{\n    \"collaborators\": [\n        {\n            \"_id\": \"5fd4a0ca340e8d405cd76507\",\n            \"login\": \"KaZiUpl\"\n        }\n    ],\n    \"rooms\": [\n        {\n            \"_id\": \"600825951c89735084e33263\",\n            \"storage\": [\n                {\n                    \"_id\": \"600825c81c89735084e33264\",\n                    \"item\": {\n                        \"_id\": \"600824adf1c47c1e80d941a3\",\n                        \"name\": \"Test item\",\n                        \"description\": \"Test item description\",\n                        \"manufacturer\": \"Test item manufdacturer\",\n                        \"__v\": 0,\n                        \"photo\": \"/img/600823fb9afa7825281009da/600824adf1c47c1e80d941a3.jpeg\",\n                        \"ean\": \"12345678901011\"\n                    },\n                    \"quantity\": 3,\n                    \"expiration\": \"1970-01-01T00:02:03.456Z\",\n                    \"description\": \"Storage item description\"\n                }\n            ],\n            \"name\": \"Test 2 room \",\n            \"description\": \"Test room 2 description\",\n            \"house\": \"60082520f1c47c1e80d941a4\",\n            \"__v\": 1\n        }\n    ],\n    \"_id\": \"60082520f1c47c1e80d941a4\",\n    \"name\": \"Test house\",\n    \"description\": \"Test house description\",\n    \"owner\": {\n        \"_id\": \"600823fb9afa7825281009da\",\n        \"login\": \"Testuser\"\n    },\n    \"__v\": 3\n}",
           "type": "json"
         }
       ]
@@ -569,7 +604,7 @@
   {
     "type": "get",
     "url": "/houses/:id/storage",
-    "title": "Get the list of storage items from all house rooms",
+    "title": "Get the list of storage items from a house",
     "name": "GetHouseStorage",
     "group": "House",
     "permission": [
@@ -641,8 +676,22 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "item.owner",
-            "description": "<p>Item owner</p>"
+            "field": "item.ean",
+            "description": "<p>Item ean code</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.manufacturer",
+            "description": "<p>Item manufacturer</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.phot",
+            "description": "<p>Item photo path</p>"
           },
           {
             "group": "Success 200",
@@ -670,7 +719,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "[\n {\n     \"_id\": \"5fccb43bbf6d7110f05d78c8\",\n     \"item\": {\n         \"_id\": \"5fc3f66286d62d1540799523\",\n         \"name\": \"name\",\n         \"description\": \"asd\",\n         \"owner\": \"5fbe83acf4a9ae3450523667\",\n         \"__v\": 0\n     },\n     \"quantity\": 2,\n     \"expiration\": \"1970-01-19T14:17:58.580Z\",\n     \"description\": \"another description\",\n     \"room\": {\n         \"_id\": \"5fbe83e4f4a9ae345052366b\",\n         \"name\": \"room1\"\n     }\n },\n {\n     \"_id\": \"5fccb45abf6d7110f05d78ca\",\n     \"item\": {\n         \"_id\": \"5fc3f4ba865c05280c628c34\",\n         \"name\": \"name\",\n         \"description\": \"asd\",\n         \"owner\": \"5fbe83acf4a9ae3450523667\",\n         \"__v\": 0\n     },\n     \"quantity\": 2,\n     \"expiration\": \"1970-01-19T14:17:58.580Z\",\n     \"description\": \"description\",\n     \"room\": {\n         \"_id\": \"5fbe83e4f4a9ae345052366b\",\n         \"name\": \"room1\"\n     }\n }\n]",
+          "content": "[\n    {\n        \"_id\": \"600825c81c89735084e33264\",\n        \"item\": {\n            \"_id\": \"600824adf1c47c1e80d941a3\",\n            \"name\": \"Test item\",\n            \"description\": \"Test item description\",\n            \"manufacturer\": \"Test item manufdacturer\",\n            \"__v\": 0,\n            \"photo\": \"/img/600823fb9afa7825281009da/600824adf1c47c1e80d941a3.jpeg\",\n            \"ean\": \"12345678901011\"\n        },\n        \"quantity\": 3,\n        \"expiration\": \"1970-01-01T00:02:03.456Z\",\n        \"description\": \"Storage item description\",\n        \"room\": {\n            \"_id\": \"600825951c89735084e33263\",\n            \"name\": \"Test 2 room \"\n        }\n    }\n]",
           "type": "json"
         }
       ]
@@ -752,10 +801,52 @@
           },
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "Object",
             "optional": false,
             "field": "storage.item",
-            "description": "<p>item id</p>"
+            "description": "<p>Item reference</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "storage.item._id",
+            "description": "<p>Item id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "storage.item.name",
+            "description": "<p>Item name</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "storage.item.description",
+            "description": "<p>Item description</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "storage.item.ean",
+            "description": "<p>Item ean code</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "storage.item.manufacturer",
+            "description": "<p>Item manufacturer</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "storage.item.photo",
+            "description": "<p>Item photo path</p>"
           },
           {
             "group": "Success 200",
@@ -783,7 +874,7 @@
       "examples": [
         {
           "title": "Response(example):",
-          "content": "[\n    {\n        \"_id\": \"5ff324fae7613431908d3e27\",\n        \"storage\": [\n            {\n                \"_id\": \"5ff3283d81a1883a146c7c18\",\n                \"item\": \"5ff32565ab575e1cf4120159\",\n                \"quantity\": 5,\n                \"expiration\": \"2020-12-24T17:30:00.000Z\",\n                \"description\": \"storage item description\"\n            }\n        ],\n        \"name\": \"Test room\",\n        \"description\": \"test room description\",\n        \"house\": \"5ff323d07e31d80928d4a5a4\",\n        \"__v\": 2\n    },\n    {\n        \"_id\": \"5ff3250eab575e1cf4120157\",\n        \"storage\": [],\n        \"name\": \"Test room 2\",\n        \"description\": \"Test room 2 description\",\n        \"house\": \"5ff323d07e31d80928d4a5a4\",\n        \"__v\": 0\n    }\n]",
+          "content": "[\n    {\n        \"_id\": \"600825651c89735084e33262\",\n        \"storage\": [],\n        \"name\": \"Test room \",\n        \"description\": \"Test room description\",\n        \"house\": \"60082520f1c47c1e80d941a4\",\n        \"__v\": 0\n    },\n    {\n        \"_id\": \"600825951c89735084e33263\",\n        \"storage\": [\n            {\n                \"_id\": \"600825c81c89735084e33264\",\n                \"item\": {\n                    \"_id\": \"600824adf1c47c1e80d941a3\",\n                    \"name\": \"Test item\",\n                    \"description\": \"Test item description\",\n                    \"manufacturer\": \"Test item manufdacturer\",\n                    \"__v\": 0,\n                    \"photo\": \"/img/600823fb9afa7825281009da/600824adf1c47c1e80d941a3.jpeg\",\n                    \"ean\": \"12345678901011\"\n                },\n                \"quantity\": 3,\n                \"expiration\": \"1970-01-01T00:02:03.456Z\",\n                \"description\": \"Storage item description\"\n            }\n        ],\n        \"name\": \"Test 2 room \",\n        \"description\": \"Test room 2 description\",\n        \"house\": \"60082520f1c47c1e80d941a4\",\n        \"__v\": 1\n    }\n]",
           "type": "json"
         }
       ]
@@ -896,7 +987,7 @@
             "type": "String",
             "optional": false,
             "field": "id",
-            "description": "<p>id of created house</p>"
+            "description": "<p>Created house id</p>"
           }
         ]
       },
@@ -1339,6 +1430,33 @@
           }
         ]
       }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Response message</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "photo",
+            "description": "<p>Image URI</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response(example):",
+          "content": "{\n    \"message\": \"Item image added\",\n    \"photo\": \"/img/5fd4a0ca340e8d405cd76507/60037638ce419d00178e7ce6.jpeg\"\n}",
+          "type": "json"
+        }
+      ]
     },
     "version": "0.0.0",
     "filename": "src/routes/items.js",
@@ -1802,56 +1920,63 @@
             "type": "Object",
             "optional": false,
             "field": "item",
-            "description": "<p>Item data</p>"
+            "description": "<p>Item reference</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "item._id",
-            "description": "<p>item's id</p>"
+            "description": "<p>Item id</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "item.name",
-            "description": "<p>item's name</p>"
+            "description": "<p>Item name</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "item.description",
-            "description": "<p>item's description</p>"
+            "description": "<p>Item description</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.ean",
+            "description": "<p>Item ean code</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "item.manufacturer",
-            "description": "<p>item's manufacturer name</p>"
+            "description": "<p>Item manufacturer</p>"
           },
           {
             "group": "Success 200",
             "type": "Object",
             "optional": false,
             "field": "item.owner",
-            "description": "<p>item's owner info</p>"
+            "description": "<p>Item owner reference</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "item.owner._id",
-            "description": "<p>item's owner id</p>"
+            "description": "<p>Item owner id</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "item.owner.login",
-            "description": "<p>item's owner login</p>"
+            "description": "<p>Item owner login</p>"
           },
           {
             "group": "Success 200",
@@ -1935,49 +2060,70 @@
             "type": "Object",
             "optional": false,
             "field": "item",
-            "description": "<p>Item data</p>"
+            "description": "<p>Item reference</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item._id",
+            "description": "<p>Item id</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "item.name",
-            "description": "<p>item's name</p>"
+            "description": "<p>Item name</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "item.description",
-            "description": "<p>item's description</p>"
+            "description": "<p>Item description</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.ean",
+            "description": "<p>Item ean code</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "item.manufacturer",
-            "description": "<p>item's manufacturer name</p>"
+            "description": "<p>Item manufacturer</p>"
           },
           {
             "group": "Success 200",
-            "type": "Object",
+            "type": "String",
+            "optional": false,
+            "field": "item.photo",
+            "description": "<p>Item photo path</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Objest",
             "optional": false,
             "field": "item.owner",
-            "description": "<p>item's owner info</p>"
+            "description": "<p>Item owner</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "item.owner._id",
-            "description": "<p>item's owner id</p>"
+            "description": "<p>Item owner id</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "item.owner.login",
-            "description": "<p>item's owner login</p>"
+            "description": "<p>Item owner login</p>"
           },
           {
             "group": "Success 200",
@@ -2005,7 +2151,7 @@
       "examples": [
         {
           "title": "Response(example):",
-          "content": "{\n    \"_id\": \"5ff3283d81a1883a146c7c18\",\n    \"item\": {\n        \"_id\": \"5ff32565ab575e1cf4120159\",\n        \"name\": \"Test item\",\n        \"description\": \"Test item description\",\n        \"manufacturer\": \"Test manufacturer\",\n        \"owner\": {\n            \"_id\": \"5ff3217ced3a2e44d4970bb6\",\n            \"login\": \"Test2\"\n        },\n        \"__v\": 0\n    },\n    \"quantity\": 1,\n    \"expiration\": \"2020-12-24T17:30:00.000Z\",\n    \"description\": \"Storage item description\"\n}",
+          "content": "{\n    \"_id\": \"600825c81c89735084e33264\",\n    \"item\": {\n        \"_id\": \"600824adf1c47c1e80d941a3\",\n        \"name\": \"Test item\",\n        \"description\": \"Test item description\",\n        \"manufacturer\": \"Test item manufdacturer\",\n        \"owner\": {\n            \"_id\": \"600823fb9afa7825281009da\",\n            \"login\": \"Testuser\"\n        },\n        \"__v\": 0,\n        \"photo\": \"/img/600823fb9afa7825281009da/600824adf1c47c1e80d941a3.jpeg\",\n        \"ean\": \"12345678901011\"\n    },\n    \"quantity\": 3,\n    \"expiration\": \"1970-01-01T00:02:03.456Z\",\n    \"description\": \"Storage item description\"\n}",
           "type": "json"
         }
       ]
@@ -2131,14 +2277,14 @@
             "type": "String",
             "optional": false,
             "field": "login",
-            "description": "<p>Username</p>"
+            "description": "<p>Username (min length: 5, max length: 20, regexp: ^[a-zA-Z0-9]+$)</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "password",
-            "description": "<p>User password</p>"
+            "description": "<p>User password (min length: 8, max length: 20, regexp: ^(?=.<em>[a-z])(?=.</em>[A-Z])(?=.<em>[0-9])(?=.</em>[@$!%<em>?&amp;])[A-Za-z0-9@$!%</em>?&amp;]{1,}$)</p>"
           },
           {
             "group": "Parameter",
@@ -2159,6 +2305,13 @@
             "optional": false,
             "field": "message",
             "description": "<p>Response message</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Created user id</p>"
           }
         ]
       },

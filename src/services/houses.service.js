@@ -48,7 +48,10 @@ exports.createRoom = async function (houseId, name, description) {
 
 exports.getRooms = async function (houseId) {
   try {
-    let house = await House.findById(houseId).populate('rooms');
+    let house = await await House.findById(houseId).populate({
+      path: 'rooms',
+      populate: { path: 'storage.item', select: '-owner' }
+    });
 
     return house.rooms;
   } catch (error) {
@@ -123,7 +126,7 @@ exports.getHouse = async function (houseId) {
       .populate('collaborators', 'login')
       .populate({
         path: 'rooms',
-        populate: { path: 'storage.item', select: 'name photo' }
+        populate: { path: 'storage.item', select: '-owner' }
       });
 
     if (requestedHouse == null) {
@@ -225,11 +228,7 @@ exports.getStorage = async function (userId) {
         }
       },
       {
-        $unset: [
-          'rooms.storage.item.description',
-          'rooms.storage.item.manufacturer',
-          'rooms.storage.item.owner'
-        ]
+        $unset: ['rooms.storage.item.owner']
       },
       {
         $addFields: {
@@ -278,6 +277,9 @@ exports.getHouseStorage = async function (houseId, name = undefined) {
           foreignField: '_id',
           as: 'rooms.storage.item'
         }
+      },
+      {
+        $unset: ['rooms.storage.item.owner']
       },
       {
         $addFields: {

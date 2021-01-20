@@ -21,7 +21,7 @@ router.use(checkAuthMiddleware);
  * @apiParam {String} name Name of the house
  * @apiParam {String} description Description of the house
  * @apiSuccess (Success 200) {String} message Response message
- * @apiSuccess (Success 200) {String} id id of created house
+ * @apiSuccess (Success 200) {String} id Created house id
  * @apiSuccessExample {json} Response(example):
 {
     "message": "House created",
@@ -101,35 +101,49 @@ router.get('/:id/collaborators', housesController.getCollaborators);
  * @apiSuccess (Success 200) {String} house House id
  * @apiSuccess (Success 200) {Object[]} storage Array of room storage items
  * @apiSuccess (Success 200) {String} storage._id storage item id
- * @apiSuccess (Success 200) {String} storage.item item id
+ * @apiSuccess (Success 200) {Object} storage.item Item reference
+ * @apiSuccess (Success 200) {String} storage.item._id Item id
+ * @apiSuccess (Success 200) {String} storage.item.name Item name
+ * @apiSuccess (Success 200) {String} storage.item.description Item description
+ * @apiSuccess (Success 200) {String} storage.item.ean Item ean code
+ * @apiSuccess (Success 200) {String} storage.item.manufacturer Item manufacturer
+ * @apiSuccess (Success 200) {String} storage.item.photo Item photo path
  * @apiSuccess (Success 200) {String} storage.quantity storage item quantity
  * @apiSuccess (Success 200) {String} storage.expiration storage item expiration date
  * @apiSuccess (Success 200) {String} storage.description storage item description
  * @apiSuccessExample {json} Response(example):
 [
     {
-        "_id": "5ff324fae7613431908d3e27",
-        "storage": [
-            {
-                "_id": "5ff3283d81a1883a146c7c18",
-                "item": "5ff32565ab575e1cf4120159",
-                "quantity": 5,
-                "expiration": "2020-12-24T17:30:00.000Z",
-                "description": "storage item description"
-            }
-        ],
-        "name": "Test room",
-        "description": "test room description",
-        "house": "5ff323d07e31d80928d4a5a4",
-        "__v": 2
+        "_id": "600825651c89735084e33262",
+        "storage": [],
+        "name": "Test room ",
+        "description": "Test room description",
+        "house": "60082520f1c47c1e80d941a4",
+        "__v": 0
     },
     {
-        "_id": "5ff3250eab575e1cf4120157",
-        "storage": [],
-        "name": "Test room 2",
+        "_id": "600825951c89735084e33263",
+        "storage": [
+            {
+                "_id": "600825c81c89735084e33264",
+                "item": {
+                    "_id": "600824adf1c47c1e80d941a3",
+                    "name": "Test item",
+                    "description": "Test item description",
+                    "manufacturer": "Test item manufdacturer",
+                    "__v": 0,
+                    "photo": "/img/600823fb9afa7825281009da/600824adf1c47c1e80d941a3.jpeg",
+                    "ean": "12345678901011"
+                },
+                "quantity": 3,
+                "expiration": "1970-01-01T00:02:03.456Z",
+                "description": "Storage item description"
+            }
+        ],
+        "name": "Test 2 room ",
         "description": "Test room 2 description",
-        "house": "5ff323d07e31d80928d4a5a4",
-        "__v": 0
+        "house": "60082520f1c47c1e80d941a4",
+        "__v": 1
     }
 ]
  */
@@ -197,7 +211,9 @@ router.get('/', housesController.getHouseList);
  * @apiSuccess (Success 200) {Object} item Item reference
  * @apiSuccess (Success 200) {String} item._id Item id
  * @apiSuccess (Success 200) {String} item.name Item name
- * @apiSuccess (Success 200) {String} item.ean Item barcode
+ * @apiSuccess (Success 200) {String} item.description Item description
+ * @apiSuccess (Success 200) {String} item.ean Item ean code
+ * @apiSuccess (Success 200) {String} item.manufacturer Item manufacturer
  * @apiSuccess (Success 200) {Object} room Room reference
  * @apiSuccess (Success 200) {String} room._id Room id
  * @apiSuccess (Success 200) {String} room.name Room name
@@ -251,7 +267,7 @@ router.get('/', housesController.getHouseList);
 router.get('/storage', housesController.getStorage);
 
 /**
- * @api {get} /houses/:id/storage Get the list of storage items from all house rooms
+ * @api {get} /houses/:id/storage Get the list of storage items from a house
  * @apiName GetHouseStorage
  * @apiGroup House
  * @apiPermission house owner, house collaborator
@@ -264,47 +280,34 @@ router.get('/storage', housesController.getStorage);
  * @apiSuccess (Success 200) {String} item._id Item id
  * @apiSuccess (Success 200) {String} item.name Item name
  * @apiSuccess (Success 200) {String} item.description Item description
- * @apiSuccess (Success 200) {String} item.owner Item owner
+ * @apiSuccess (Success 200) {String} item.ean Item ean code
+ * @apiSuccess (Success 200) {String} item.manufacturer Item manufacturer
+ * @apiSuccess (Success 200) {String} item.phot Item photo path
  * @apiSuccess (Success 200) {Object} room Room reference
  * @apiSuccess (Success 200) {String} room._id Room id
  * @apiSuccess (Success 200) {String} room.name Room name
  * @apiSuccessExample {json} Success-Response:
- * [
- *  {
- *      "_id": "5fccb43bbf6d7110f05d78c8",
- *      "item": {
- *          "_id": "5fc3f66286d62d1540799523",
- *          "name": "name",
- *          "description": "asd",
- *          "owner": "5fbe83acf4a9ae3450523667",
- *          "__v": 0
- *      },
- *      "quantity": 2,
- *      "expiration": "1970-01-19T14:17:58.580Z",
- *      "description": "another description",
- *      "room": {
- *          "_id": "5fbe83e4f4a9ae345052366b",
- *          "name": "room1"
- *      }
- *  },
- *  {
- *      "_id": "5fccb45abf6d7110f05d78ca",
- *      "item": {
- *          "_id": "5fc3f4ba865c05280c628c34",
- *          "name": "name",
- *          "description": "asd",
- *          "owner": "5fbe83acf4a9ae3450523667",
- *          "__v": 0
- *      },
- *      "quantity": 2,
- *      "expiration": "1970-01-19T14:17:58.580Z",
- *      "description": "description",
- *      "room": {
- *          "_id": "5fbe83e4f4a9ae345052366b",
- *          "name": "room1"
- *      }
- *  }
- * ]
+[
+    {
+        "_id": "600825c81c89735084e33264",
+        "item": {
+            "_id": "600824adf1c47c1e80d941a3",
+            "name": "Test item",
+            "description": "Test item description",
+            "manufacturer": "Test item manufdacturer",
+            "__v": 0,
+            "photo": "/img/600823fb9afa7825281009da/600824adf1c47c1e80d941a3.jpeg",
+            "ean": "12345678901011"
+        },
+        "quantity": 3,
+        "expiration": "1970-01-01T00:02:03.456Z",
+        "description": "Storage item description",
+        "room": {
+            "_id": "600825951c89735084e33263",
+            "name": "Test 2 room "
+        }
+    }
+]
  */
 router.get('/:id/storage', housesController.getHouseStorage);
 
@@ -325,9 +328,12 @@ router.get('/:id/storage', housesController.getHouseStorage);
  * @apiSuccess (Success 200) {String} rooms.house house id
  * @apiSuccess (Success 200) {Object[]} rooms.storage room storage
  * @apiSuccess (Success 200) {String} rooms.storage._id storage item id
- * @apiSuccess (Success 200) {Object} rooms.storage.item item reference
- * @apiSuccess (Success 200) {String} rooms.storage.item._id item's id
- * @apiSuccess (Success 200) {String} rooms.storage.item.name item's name
+ * @apiSuccess (Success 200) {Object} rooms.storage.item Item reference
+ * @apiSuccess (Success 200) {String} rooms.storage.item._id Item id
+ * @apiSuccess (Success 200) {String} rooms.storage.item.name Item name
+ * @apiSuccess (Success 200) {String} rooms.storage.item.description Item description
+ * @apiSuccess (Success 200) {String} rooms.storage.item.ean Item ean code
+ * @apiSuccess (Success 200) {String} rooms.storage.item.manufacturer Item manufacturer
  * @apiSuccess (Success 200) {String} rooms.storage.quantity storage item's quantity
  * @apiSuccess (Success 200) {String} rooms.storage.description storage item's description
  * @apiSuccess (Success 200) {String} rooms.storage.expiration storage item's expiration date
@@ -347,31 +353,36 @@ router.get('/:id/storage', housesController.getHouseStorage);
     ],
     "rooms": [
         {
-            "_id": "5ff324fae7613431908d3e27",
+            "_id": "600825951c89735084e33263",
             "storage": [
                 {
-                    "_id": "5ff3283d81a1883a146c7c18",
+                    "_id": "600825c81c89735084e33264",
                     "item": {
-                        "_id": "5ff32565ab575e1cf4120159",
-                        "name": "Test item"
+                        "_id": "600824adf1c47c1e80d941a3",
+                        "name": "Test item",
+                        "description": "Test item description",
+                        "manufacturer": "Test item manufdacturer",
+                        "__v": 0,
+                        "photo": "/img/600823fb9afa7825281009da/600824adf1c47c1e80d941a3.jpeg",
+                        "ean": "12345678901011"
                     },
-                    "quantity": 5,
-                    "expiration": "2020-12-24T17:30:00.000Z",
-                    "description": "new storage item description"
+                    "quantity": 3,
+                    "expiration": "1970-01-01T00:02:03.456Z",
+                    "description": "Storage item description"
                 }
             ],
-            "name": "new room name",
-            "description": "new room description",
-            "house": "5ff323d07e31d80928d4a5a4",
-            "__v": 2
+            "name": "Test 2 room ",
+            "description": "Test room 2 description",
+            "house": "60082520f1c47c1e80d941a4",
+            "__v": 1
         }
     ],
-    "_id": "5ff323d07e31d80928d4a5a4",
-    "name": "New test house name",
-    "description": "New test house description",
+    "_id": "60082520f1c47c1e80d941a4",
+    "name": "Test house",
+    "description": "Test house description",
     "owner": {
-        "_id": "5ff3217ced3a2e44d4970bb6",
-        "login": "Test2"
+        "_id": "600823fb9afa7825281009da",
+        "login": "Testuser"
     },
     "__v": 3
 }

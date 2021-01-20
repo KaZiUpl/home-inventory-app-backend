@@ -14,6 +14,7 @@ const router = express.Router();
  * @apiParam {String} password User password (min length: 8, max length: 20, regexp: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@$!%*?&])[A-Za-z0-9@$!%*?&]{1,}$)
  * @apiParam {String} email User email
  * @apiSuccess (Success 200) {String} message Response message
+ * @apiSuccess (Success 200) {String} id Created user id
  * @apiSuccessExample {json} Response(example):
 {
     "message": "User created successfully",
