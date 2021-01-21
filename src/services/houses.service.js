@@ -334,6 +334,9 @@ exports.checkHouseOwnership = async function (houseId, userId) {
 
 exports.checkHouseAccess = async function (houseId, userId) {
   try {
+    if (houseId == null || userId == null) {
+      throw new InternalServerError();
+    }
     let house = await House.findOne({
       _id: houseId,
       $or: [{ owner: userId }, { collaborators: userId }]
@@ -348,10 +351,16 @@ exports.checkHouseAccess = async function (houseId, userId) {
 
 exports.checkHouseLimit = async function (userId) {
   try {
-    let houseCount = await House.aggregate([
-      { $match: { owner: mongoose.Types.ObjectId(userId) } },
-      { $count: 'no_of_houses' }
+    if (userId == null) {
+      throw new InternalServerError();
+    }
+
+    let houseCount = House.aggregate([
+      { $match: { owner: mongoose.Types.ObjectId(userId) } }
     ]);
+
+    houseCount.append([{ $count: 'no_of_houses' }]);
+    houseCount = await houseCount.exec();
 
     if (houseCount[0] && houseCount[0].no_of_houses >= 5) {
       throw new BadRequestError('You have too many houses.');
@@ -363,6 +372,9 @@ exports.checkHouseLimit = async function (userId) {
 
 exports.checkRoomLimit = async function (houseId) {
   try {
+    if (houseId == null) {
+      throw new InternalServerError();
+    }
     let roomCount = await Room.aggregate([
       { $match: { house: mongoose.Types.ObjectId(houseId) } },
       { $count: 'no_of_rooms' }
@@ -378,6 +390,9 @@ exports.checkRoomLimit = async function (houseId) {
 
 exports.checkCollaboratorLimit = async function (houseId) {
   try {
+    if (houseId == null) {
+      throw new InternalServerError();
+    }
     let house = await House.findById(houseId);
     if (house == null) {
       throw new NotFoundError('House id is invalid');

@@ -69,7 +69,7 @@ exports.getRooms = async function (req, res, next) {
 
     let rooms = await HousesService.getRooms(req.params.id);
 
-    res.set('Cache-Control', 'private, max-age=300, must-revalidate');
+    //res.set('Cache-Control', 'private, max-age=300, must-revalidate');
     return res.status(200).json(rooms);
   } catch (error) {
     next(error);
@@ -101,7 +101,7 @@ exports.getHouseList = async function (req, res, next) {
   try {
     let houseList = await HousesService.getHouseList(req.userData.id);
 
-    res.set('Cache-Control', 'private, max-age=60, must-revalidate');
+    //res.set('Cache-Control', 'private, max-age=60, must-revalidate');
     return res.status(200).json(houseList);
   } catch (error) {
     next(error);
@@ -120,7 +120,7 @@ exports.getCollaborators = async function (req, res, next) {
 
     let collaboratorsList = await HousesService.getCollaborators(req.params.id);
 
-    res.set('Cache-Control', 'private, max-age=300, must-revalidate');
+    //res.set('Cache-Control', 'private, max-age=300, must-revalidate');
     return res.status(200).json(collaboratorsList);
   } catch (error) {
     next(error);
@@ -139,7 +139,7 @@ exports.getHouse = async function (req, res, next) {
 
     let house = await HousesService.getHouse(req.params.id);
 
-    res.set('Cache-Control', 'no-store, max-age=0');
+    //res.set('Cache-Control', 'no-store, max-age=0');
     return res.status(200).json(house);
   } catch (error) {
     next(error);
@@ -213,7 +213,7 @@ exports.getStorage = async function (req, res, next) {
   try {
     let storage = await HousesService.getStorage(req.userData.id);
 
-    res.set('Cache-Control', 'no-store, max-age=0');
+    //res.set('Cache-Control', 'no-store, max-age=0');
     return res.status(200).json(storage);
   } catch (error) {
     next(error);
@@ -232,7 +232,7 @@ exports.getHouseStorage = async function (req, res, next) {
 
     let items = await HousesService.getHouseStorage(req.params.id, name);
 
-    res.set('Cache-Control', 'no-store, max-age=0');
+    //res.set('Cache-Control', 'no-store, max-age=0');
     return res.status(200).json(items);
   } catch (error) {
     next(error);

@@ -31,7 +31,7 @@ describe('Users Endpoints', function () {
         .send({
           login: 'kacperkaz',
           email: 'kacperkaz@example.com',
-          password: 'asd'
+          password: 'S@feP44sword'
         })
         .expect('Content-Type', new RegExp('application/json;'))
         .expect(201)
@@ -59,21 +59,22 @@ describe('Users Endpoints', function () {
           .send({
             login: 'kacperkaz',
             email: 'asd@example.com',
-            password: 'asd'
+            password: 'S@feP44sword'
           })
           .expect('Content-Type', new RegExp('application/json;'))
           .expect(400)
           .then((res) => {
             expect(res.body).to.have.property('message');
+            console.log(res.body);
           });
       });
       it('should return 400 if email is taken', async function () {
         await request(server)
           .post('/users')
           .send({
-            login: 'asd',
+            login: 'SafeLogin',
             email: 'kacperkaz@example.com',
-            password: 'asd'
+            password: 'S@feP44sword'
           })
           .expect('Content-Type', new RegExp('application/json;'))
           .expect(400)

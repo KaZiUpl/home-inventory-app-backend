@@ -60,7 +60,7 @@ exports.getUser = async function (req, res, next) {
     }
     let user = await UsersService.getUser(req.params.id);
 
-    res.set('Cache-Control', 'private, max-age=86400, must-revalidate');
+    //res.set('Cache-Control', 'private, max-age=86400, must-revalidate');
     return res.status(200).json(user);
   } catch (error) {
     next(error);
@@ -83,7 +83,7 @@ exports.login = async function (req, res, next) {
       req.body.password
     );
 
-    res.set('Cache-Control', 'private, max-age=900, must-revalidate');
+    //res.set('Cache-Control', 'private, max-age=900, must-revalidate');
     return res.status(200).json(tokenOutput);
   } catch (error) {
     next(error);
@@ -99,7 +99,7 @@ exports.refreshToken = async function (req, res, next) {
   try {
     let tokenOutput = await UsersService.refreshToken(req.body.token);
 
-    res.set('Cache-Control', 'private, max-age=900, must-revalidate');
+    //res.set('Cache-Control', 'private, max-age=900, must-revalidate');
     return res.status(200).json(tokenOutput);
   } catch (error) {
     next(error);

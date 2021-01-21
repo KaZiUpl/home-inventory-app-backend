@@ -46,7 +46,7 @@ exports.getRoom = async function (req, res, next) {
 
     let room = await RoomsService.getRoom(req.params.id);
 
-    res.set('Cache-Control', 'private, max-age=60, must-revalidate');
+    //res.set('Cache-Control', 'private, max-age=60, must-revalidate');
     res.status(200).json(room);
   } catch (error) {
     next(error);
@@ -122,7 +122,7 @@ exports.getRoomStorage = async function (req, res, next) {
 
     let storage = await RoomsService.getRoomStorage(req.params.id);
 
-    res.set('Cache-Control', 'no-store, max-age=0');
+    //res.set('Cache-Control', 'no-store, max-age=0');
     res.status(200).json(storage);
   } catch (error) {
     next(error);
@@ -147,7 +147,7 @@ exports.getStorageItem = async function (req, res, next) {
       req.params.storageId
     );
 
-    res.set('Cache-Control', 'no-store, max-age=0');
+    //res.set('Cache-Control', 'no-store, max-age=0');
     res.status(200).json(storageItem);
   } catch (error) {
     next(error);

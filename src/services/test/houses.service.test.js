@@ -781,7 +781,14 @@ describe('Houses Service', function () {
     it('should be fulfilled if user has less than 5 houses', async function () {
       await expect(HousesService.checkHouseLimit(user2._id)).to.be.fulfilled;
     });
-    it('should throw if user has 5 houses', async function () {
+    it('should be rejected if user id is null', async function () {
+      await expect(HousesService.checkHouseLimit(null)).to.be.rejected;
+    });
+    it('should be fulfilled if user does not exist', async function () {
+      await expect(HousesService.checkHouseLimit(mongoose.Types.ObjectId())).to
+        .be.fulfilled;
+    });
+    it('should be rejected if user has 5 houses', async function () {
       await expect(HousesService.checkHouseLimit(user1._id)).to.be.rejected;
     });
   });
@@ -813,8 +820,15 @@ describe('Houses Service', function () {
     it('should be fulfilled if house has less than 10 rooms', async function () {
       await expect(HousesService.checkRoomLimit(house._id)).to.be.fulfilled;
     });
-    it('should throw if house has 10 rooms', async function () {
+    it('should be fulfilled if house does not exist', async function () {
+      await expect(HousesService.checkRoomLimit(mongoose.Types.ObjectId())).to
+        .be.fulfilled;
+    });
+    it('should be rejected if house has 10 rooms', async function () {
       await expect(HousesService.checkRoomLimit(fullHouse._id)).to.be.rejected;
+    });
+    it('should be rejected if house id is null', async function () {
+      await expect(HousesService.checkRoomLimit(null)).to.be.rejected;
     });
   });
   describe('Check Collaborator Limit', function () {
@@ -852,6 +866,14 @@ describe('Houses Service', function () {
 
       await expect(HousesService.checkCollaboratorLimit(house3._id)).to.be
         .rejected;
+    });
+    it('should be rejected if house id is null', async function () {
+      await expect(HousesService.checkCollaboratorLimit(null)).to.be.rejected;
+    });
+    it('should be rejected if house does not exist', async function () {
+      await expect(
+        HousesService.checkCollaboratorLimit(mongoose.Types.ObjectId())
+      ).to.be.rejected;
     });
   });
 });

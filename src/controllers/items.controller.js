@@ -33,7 +33,7 @@ exports.getItem = async function (req, res, next) {
 
     const requestedItem = await ItemsService.getItem(req.params.id);
 
-    res.set('Cache-Control', 'private, max-age=86400, must-revalidate');
+    //res.set('Cache-Control', 'private, max-age=86400, must-revalidate');
     res.status(200).json(requestedItem);
   } catch (error) {
     next(error);
@@ -48,7 +48,7 @@ exports.getItems = async function (req, res, next) {
       : undefined;
     let items = await ItemsService.getItems(req.userData.id, ean, name);
 
-    res.set('Cache-Control', 'private, max-age=86400, must-revalidate');
+    //res.set('Cache-Control', 'private, max-age=86400, must-revalidate');
     res.status(200).json(items);
   } catch (error) {
     next(error);
