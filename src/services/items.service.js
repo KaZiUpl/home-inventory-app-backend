@@ -102,12 +102,27 @@ exports.deleteItem = async function (itemId) {
       throw new ForbiddenError('You cannot delete global item');
     }
 
+    //check if item is used
     let rooms = await Room.findOne({ 'storage.item': itemId });
     if (rooms != undefined) {
       throw new BadRequestError('Item is in storage');
     }
 
+    //get image path
+    const imagePath = path.join(process.env.CWD, `/public${item.photo}`);
     await item.delete();
+
+    if (item.photo) {
+      //check file existence and delete file
+      let fileExists = await fs.promises
+        .access(imagePath, fs.constants.F_OK)
+        .then(() => true)
+        .catch(() => false);
+
+      if (fileExists) {
+        await fs.promises.unlink(imagePath);
+      }
+    }
   } catch (error) {
     throw error;
   }
