@@ -16,7 +16,7 @@ const {
   ForbiddenError
 } = require('../../error/errors');
 
-const UsersService = require('../users.service');
+const UsersService = require('../../services/users.service');
 const User = require('../../models/user.model');
 
 describe('Users Service', function () {

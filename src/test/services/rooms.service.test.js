@@ -6,7 +6,7 @@ chai.use(chaiAsPromised);
 
 const expect = chai.expect;
 
-const RoomsService = require('../rooms.service');
+const RoomsService = require('../../services/rooms.service');
 const Room = require('../../models/room.model');
 const House = require('../../models/house.model');
 const User = require('../../models/user.model');

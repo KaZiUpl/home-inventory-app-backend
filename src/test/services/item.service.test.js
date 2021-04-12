@@ -8,7 +8,7 @@ chai.use(chaiAsPromised);
 
 const expect = chai.expect;
 
-const ItemsService = require('../items.service');
+const ItemsService = require('../../services/items.service');
 const User = require('../../models/user.model');
 const Item = require('../../models/item.model');
 const Room = require('../../models/room.model');
@@ -255,17 +255,17 @@ describe('Items Service', function () {
       imageFilePNG = {
         name: 'test_image.png',
         type: 'image/png',
-        path: path.join(process.env.CWD, '/public/img/test/test_image.png')
+        path: path.join(process.env.CWD, '/src/test/fixtures/test_image.png')
       };
       imageFileJPG = {
         name: 'test_image.jpg',
         type: 'image/jpeg',
-        path: path.join(process.env.CWD, '/public/img/test/test_image.jpg')
+        path: path.join(process.env.CWD, '/src/test/fixtures/test_image.jpg')
       };
       textFile = {
         name: 'test_file.txt',
         type: 'text/plain',
-        path: path.join(process.env.CWD, '/public/img/test/test_file.txt')
+        path: path.join(process.env.CWD, '/src/test/fixtures/test_file.txt')
       };
     });
     after(function () {
