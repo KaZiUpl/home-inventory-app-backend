@@ -4,8 +4,8 @@ const https = require('https');
 const dotenv = require('./config/dotenv');
 const fs = require('fs');
 
-let privateKey = fs.readFileSync('./src/selfsigned.key', 'utf8');
-let certificate = fs.readFileSync('./src/selfsigned.crt', 'utf8');
+let privateKey = fs.readFileSync('./selfsigned.key', 'utf8');
+let certificate = fs.readFileSync('./selfsigned.crt', 'utf8');
 
 mongoose
   .connect(dotenv.mongodbUri, {
