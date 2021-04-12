@@ -521,8 +521,11 @@ describe('Items Endpoints', function () {
         recursive: true
       });
       //create paths
-      imagePath = path.join(process.env.CWD, '/public/img/test/test_image.png');
-      filePath = path.join(process.env.CWD, '/public/img/test/test_file.txt');
+      imagePath = path.join(
+        process.env.CWD,
+        '/src/test/fixtures/test_image.png'
+      );
+      filePath = path.join(process.env.CWD, '/src/test/fixtures/test_file.txt');
     });
     after(async function () {
       //delete user directory
